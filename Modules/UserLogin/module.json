@@ -1,0 +1,13 @@
+{
+    "name": "UserLogin",
+    "alias": "userlogin",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\UserLogin\\Providers\\UserLoginServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

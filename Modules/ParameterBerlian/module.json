@@ -1,0 +1,13 @@
+{
+    "name": "ParameterBerlian",
+    "alias": "parameterberlian",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ParameterBerlian\\Providers\\ParameterBerlianServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

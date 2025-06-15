@@ -1,0 +1,92 @@
+@extends('layouts.app')
+
+@section('title', 'Update Supplier')
+
+@section('breadcrumb')
+    <ol class="breadcrumb border-0 m-0">
+        <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('suppliers.index') }}">Suppliers</a></li>
+        <li class="breadcrumb-item active">Edit</li>
+    </ol>
+@endsection
+
+@section('content')
+    <div class="container-fluid">
+        <form action="{{ route('suppliers.update', $supplier) }}" method="POST">
+            @csrf
+            @method('patch')
+            <div class="row">
+                <div class="col-lg-12">
+                    @include('utils.alerts')
+                    
+                </div>
+                <div class="col-lg-12">
+                    <div class="card">
+
+
+       <div class="card-body">
+                    <div class="flex flex-row grid grid-cols-2 gap-2">
+                        <div class="p-1">
+                            <div class="form-group">
+                                <label class="mb-1" for="supplier_name">{{__('Supplier Name')}}  <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="supplier_name" 
+                                value="{{ $supplier->supplier_name }}">
+                            </div>
+
+                               <div class="form-group">
+                                        <label class="mb-1"  for="toko">{{__('Store')}}  <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="toko" value="{{ $supplier->toko }}">
+                                    </div>
+                             <div class="form-group">
+                                <label class="mb-1" for="supplier_email">Email  <span class="small text-danger">(Boleh dikosongkan)</span></label>
+                                <input type="email" class="form-control" name="supplier_email" value="{{ $supplier->supplier_email }}">
+                            </div>
+
+                              <div class="form-group">
+                                        <label class="mb-1"  for="city">{{__('City')}}  <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="city" value="{{ $supplier->city }}">
+                                    </div>  
+
+                                    
+                        </div>
+
+
+                        <div class="p-1">
+                           
+
+                                 <div class="form-group">
+                                        <label class="mb-1" for="supplier_phone">{{__('Phone')}} <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="supplier_phone" value="{{ $supplier->supplier_phone }}">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="mb-1" for="address">{{__('Address')}} <span class="text-danger">*</span></label>
+                                       
+                                        <textarea rows="5" name="address" class="form-control">
+                                             {{ $supplier->address }}
+                                        </textarea>
+                                    </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+<div class="flex justify-between px-3 pb-2 py-2 border-top">
+    <div></div>
+    <div class="form-group">
+        <button class="btn btn-primary">Update Supplier <i class="bi bi-check"></i></button>
+    </div>
+</div>
+                    
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+@endsection
+

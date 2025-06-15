@@ -1,0 +1,13 @@
+{
+    "name": "CustomerSales",
+    "alias": "customersales",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\CustomerSales\\Providers\\CustomerSalesServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

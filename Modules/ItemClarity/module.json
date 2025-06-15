@@ -1,0 +1,13 @@
+{
+    "name": "ItemClarity",
+    "alias": "itemclarity",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ItemClarity\\Providers\\ItemClarityServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

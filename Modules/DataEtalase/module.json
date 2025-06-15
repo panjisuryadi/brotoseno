@@ -1,0 +1,13 @@
+{
+    "name": "DataEtalase",
+    "alias": "dataetalase",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\DataEtalase\\Providers\\DataEtalaseServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

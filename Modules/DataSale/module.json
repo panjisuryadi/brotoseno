@@ -1,0 +1,13 @@
+{
+    "name": "DataSale",
+    "alias": "datasale",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\DataSale\\Providers\\DataSaleServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

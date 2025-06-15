@@ -1,0 +1,13 @@
+{
+    "name": "GoldParameter",
+    "alias": "goldparameter",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GoldParameter\\Providers\\GoldParameterServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

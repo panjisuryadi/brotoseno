@@ -1,0 +1,13 @@
+{
+    "name": "Bandrol",
+    "alias": "bandrol",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Bandrol\\Providers\\BandrolServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

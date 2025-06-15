@@ -1,0 +1,13 @@
+{
+    "name": "GoldCategory",
+    "alias": "goldcategory",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GoldCategory\\Providers\\GoldCategoryServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

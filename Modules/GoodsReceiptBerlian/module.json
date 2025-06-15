@@ -1,0 +1,18 @@
+{
+    "name": "GoodsReceiptBerlian",
+    "alias": "goodsreceiptberlian",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GoodsReceiptBerlian\\Providers\\GoodsReceiptBerlianServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "migration": {
+        "seeds": [
+            "Modules\\GoodsReceiptBerlian\\database\\seeders\\SeedQcAttributeTableSeeder"
+        ]
+    },
+    "requires": []
+}

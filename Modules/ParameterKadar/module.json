@@ -1,0 +1,13 @@
+{
+    "name": "ParameterKadar",
+    "alias": "parameterkadar",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ParameterKadar\\Providers\\ParameterKadarServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

@@ -1,0 +1,13 @@
+{
+    "name": "Baki",
+    "alias": "baki",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Baki\\Providers\\BakiServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

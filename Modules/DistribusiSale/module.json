@@ -1,0 +1,14 @@
+{
+    "name": "DistribusiSale",
+    "alias": "distribusisale",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\DistribusiSale\\Providers\\DistribusiSaleServiceProvider",
+        "Modules\\DistribusiSale\\Providers\\EventServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

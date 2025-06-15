@@ -1,0 +1,13 @@
+{
+    "name": "Accessory",
+    "alias": "accessory",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Accessory\\Providers\\AccessoryServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

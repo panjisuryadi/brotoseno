@@ -1,0 +1,13 @@
+{
+    "name": "KategoriMutiara",
+    "alias": "kategorimutiara",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\KategoriMutiara\\Providers\\KategoriMutiaraServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

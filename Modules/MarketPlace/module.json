@@ -1,0 +1,13 @@
+{
+    "name": "MarketPlace",
+    "alias": "marketplace",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\MarketPlace\\Providers\\MarketPlaceServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

@@ -1,0 +1,13 @@
+{
+    "name": "DataBank",
+    "alias": "databank",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\DataBank\\Providers\\DataBankServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

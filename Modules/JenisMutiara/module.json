@@ -1,0 +1,13 @@
+{
+    "name": "JenisMutiara",
+    "alias": "jenismutiara",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\JenisMutiara\\Providers\\JenisMutiaraServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

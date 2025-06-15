@@ -1,0 +1,13 @@
+{
+    "name": "Karat",
+    "alias": "karat",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Karat\\Providers\\KaratServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

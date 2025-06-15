@@ -1,0 +1,13 @@
+{
+    "name": "JenisGroup",
+    "alias": "jenisgroup",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\JenisGroup\\Providers\\JenisGroupServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

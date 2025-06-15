@@ -1,0 +1,13 @@
+{
+    "name": "Stok",
+    "alias": "stok",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Stok\\Providers\\StokServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

@@ -1,0 +1,13 @@
+{
+    "name": "KondisiPembelian",
+    "alias": "kondisipembelian",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\KondisiPembelian\\Providers\\KondisiPembelianServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

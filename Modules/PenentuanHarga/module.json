@@ -1,0 +1,13 @@
+{
+    "name": "PenentuanHarga",
+    "alias": "penentuanharga",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\PenentuanHarga\\Providers\\PenentuanHargaServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

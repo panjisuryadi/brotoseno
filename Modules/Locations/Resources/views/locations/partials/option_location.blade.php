@@ -1,0 +1,1 @@
+<?php $dash.='>'; ?>@foreach($sublocations as $sublocation) <option value="{{$sublocation->id}}" level="<?php echo strlen(trim($dash)); ?>">{!!$dash!!} &nbsp;&nbsp;{{$sublocation->name}} &nbsp;</option> @if(count($sublocation->childs)) @include('locations::locations.partials.option_location',['sublocations' => $sublocation->childs]) @endif @endforeach

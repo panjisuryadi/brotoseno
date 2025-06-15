@@ -1,0 +1,13 @@
+{
+    "name": "DiamondCertificate",
+    "alias": "diamondcertificate",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\DiamondCertificate\\Providers\\DiamondCertificateServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

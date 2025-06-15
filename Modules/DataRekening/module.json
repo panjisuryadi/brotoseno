@@ -1,0 +1,13 @@
+{
+    "name": "DataRekening",
+    "alias": "datarekening",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\DataRekening\\Providers\\DataRekeningServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

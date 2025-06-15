@@ -1,0 +1,13 @@
+{
+    "name": "JenisPerhiasan",
+    "alias": "jenisperhiasan",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\JenisPerhiasan\\Providers\\JenisPerhiasanServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

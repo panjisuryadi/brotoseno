@@ -1,0 +1,13 @@
+{
+    "name": "ItemRound",
+    "alias": "itemround",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ItemRound\\Providers\\ItemRoundServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

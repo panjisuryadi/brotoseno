@@ -1,0 +1,13 @@
+{
+    "name": "PenerimaanBarangDP",
+    "alias": "penerimaanbarangdp",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\PenerimaanBarangDP\\Providers\\PenerimaanBarangDPServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

@@ -1,0 +1,13 @@
+{
+    "name": "UserCabang",
+    "alias": "usercabang",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\UserCabang\\Providers\\UserCabangServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

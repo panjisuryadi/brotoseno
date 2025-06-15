@@ -1,0 +1,14 @@
+{
+    "name": "ReturSale",
+    "alias": "retursale",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ReturSale\\Providers\\ReturSaleServiceProvider",
+        "Modules\\ReturSale\\Providers\\EventServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

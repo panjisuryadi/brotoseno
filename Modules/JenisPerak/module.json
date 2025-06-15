@@ -1,0 +1,13 @@
+{
+    "name": "JenisPerak",
+    "alias": "jenisperak",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\JenisPerak\\Providers\\JenisPerakServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

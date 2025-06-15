@@ -1,0 +1,13 @@
+{
+    "name": "StokCabang",
+    "alias": "stokcabang",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\StokCabang\\Providers\\StokCabangServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

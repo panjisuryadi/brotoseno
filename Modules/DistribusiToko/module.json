@@ -1,0 +1,13 @@
+{
+    "name": "DistribusiToko",
+    "alias": "distribusitoko",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\DistribusiToko\\Providers\\DistribusiTokoServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

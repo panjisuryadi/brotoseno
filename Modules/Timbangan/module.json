@@ -1,0 +1,13 @@
+{
+    "name": "Timbangan",
+    "alias": "timbangan",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Timbangan\\Providers\\TimbanganServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

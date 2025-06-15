@@ -1,0 +1,19 @@
+{
+    "name": "KaratBerlian",
+    "alias": "karatberlian",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\KaratBerlian\\Providers\\KaratBerlianServiceProvider"
+    ],
+    "migration": {
+        "seeds": [
+            "Modules\\KaratBerlian\\database\\seeders\\KaratBerlianSeederTableSeeder",
+            "Modules\\KaratBerlian\\database\\seeders\\ShapeSeederTableSeeder"
+        ]
+    },
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

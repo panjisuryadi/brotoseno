@@ -1,0 +1,13 @@
+{
+    "name": "CostParameter",
+    "alias": "costparameter",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\CostParameter\\Providers\\CostParameterServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

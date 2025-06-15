@@ -1,0 +1,13 @@
+{
+    "name": "KategoriProduk",
+    "alias": "kategoriproduk",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\KategoriProduk\\Providers\\KategoriProdukServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

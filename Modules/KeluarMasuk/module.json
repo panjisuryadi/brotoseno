@@ -1,0 +1,13 @@
+{
+    "name": "KeluarMasuk",
+    "alias": "keluarmasuk",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\KeluarMasuk\\Providers\\KeluarMasukServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

@@ -1,0 +1,19 @@
+{
+    "name": "GoodsReceipt",
+    "alias": "goodsreceipt",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GoodsReceipt\\Providers\\GoodsReceiptServiceProvider",
+        "Modules\\GoodsReceipt\\Providers\\EventServiceProvider"
+    ],
+    "aliases": {},
+    "migration": {
+        "seeds": [
+            "Modules\\GoodsReceipt\\database\\seeders\\KlasifikasiBerlianTableSeeder"
+        ]
+    },
+    "files": [],
+    "requires": []
+}

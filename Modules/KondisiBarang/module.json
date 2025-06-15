@@ -1,0 +1,13 @@
+{
+    "name": "KondisiBarang",
+    "alias": "kondisibarang",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\KondisiBarang\\Providers\\KondisiBarangServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

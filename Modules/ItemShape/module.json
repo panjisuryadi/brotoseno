@@ -1,0 +1,13 @@
+{
+    "name": "ItemShape",
+    "alias": "itemshape",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ItemShape\\Providers\\ItemShapeServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

@@ -1,0 +1,13 @@
+{
+    "name": "JenisBuyBack",
+    "alias": "jenisbuyback",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\JenisBuyBack\\Providers\\JenisBuyBackServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

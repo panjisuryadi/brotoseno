@@ -1,0 +1,15 @@
+#drop-zone {
+            max-width: 450px;
+            height: 450px;
+            border: 2px dotted blue;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        img {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+            display: none;
+        }

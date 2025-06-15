@@ -1,0 +1,13 @@
+{
+    "name": "LaporanAsset",
+    "alias": "laporanasset",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\LaporanAsset\\Providers\\LaporanAssetServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

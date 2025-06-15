@@ -1,0 +1,13 @@
+{
+    "name": "KodeTransaksi",
+    "alias": "kodetransaksi",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\KodeTransaksi\\Providers\\KodeTransaksiServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

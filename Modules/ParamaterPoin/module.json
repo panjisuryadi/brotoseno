@@ -1,0 +1,13 @@
+{
+    "name": "ParamaterPoin",
+    "alias": "paramaterpoin",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ParamaterPoin\\Providers\\ParamaterPoinServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

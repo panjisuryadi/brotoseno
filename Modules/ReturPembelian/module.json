@@ -1,0 +1,13 @@
+{
+    "name": "ReturPembelian",
+    "alias": "returpembelian",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ReturPembelian\\Providers\\ReturPembelianServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

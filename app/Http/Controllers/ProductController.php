@@ -384,6 +384,44 @@ class ProductController extends Controller
         );
     }
 
+    public function list_pembelian(Request $request)
+    {
+        $product_categories = Category::all();  // Assuming Supplier model is set up
+        $groups = Group::all();  // Assuming Supplier model is set up
+        $models = ProdukModel::all();  // Assuming Supplier model is set up
+        $dataKarat = Karat::whereNull('parent_id')->get();
+        $hari_ini = new DateTime();
+        $hari_ini = $hari_ini->format('Y-m-d');
+        $isLogamMulia   = true;
+        // $harga = Harga::where('tanggal', date('Y-m-d'))->first();
+        // echo json_encode($harga);
+        // exit();
+
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $dataKarat = Karat::whereNull('parent_id')->get();
+        return view(
+            'products.list_pembelian', // Path to your create view file
+            compact(
+                'module_title',
+                'module_name',
+                'module_path',
+                'module_icon',
+                'module_model',
+                'product_categories',
+                'groups',
+                'models',
+                'isLogamMulia',
+                'hari_ini',
+                // 'inputs',
+                'dataKarat',
+            )
+        );
+    }
+
     public function list_nota(Request $request)
     {
         $product_categories = Category::all();  // Assuming Supplier model is set up

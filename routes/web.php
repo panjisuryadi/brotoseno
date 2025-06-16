@@ -172,6 +172,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/buyback_insert', 'BuyBackController@insert')
         ->name('buyback.insert');
 
+    Route::get('/product/pembelian', 'ProductsController@list_pembelian')
+        ->name('product.pembelian');
+
     Route::get('/product_history', 'HistoryProductsController@list')
         ->name('history_product.list');
 

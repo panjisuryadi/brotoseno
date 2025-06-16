@@ -529,7 +529,7 @@ class GoodReceiptController extends Controller
             'code'                       => $input['code'],
             'no_invoice'                 => $input['no_invoice'],
             'date'                       => $input['tanggal'],
-            'status'                     => 0, // inputed need to input product to be 1
+            'status'                     => 9, // inputed need to input product to be 1
             'karat_id'                   => null,
             'tipe_pembayaran'            => $input['tipe_pembayaran'],
             'supplier_id'                => $input['supplier_id'],

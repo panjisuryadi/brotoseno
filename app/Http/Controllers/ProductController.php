@@ -1380,23 +1380,78 @@ class ProductController extends Controller
                 'product_name', 'karat', 'berat_emas', 'cabang', 'action'
             ])
             ->make(true);
-        }
+    }
 
-        private function getUploadedImage($image, $uploaded_image)
-        {
-            $folderPath = "uploads/";
-            if (!empty($uploaded_image)) {
-                Storage::disk('public')->move("temp/dropzone/{$uploaded_image}", "{$folderPath}{$uploaded_image}");
-                return $uploaded_image;
-            } elseif (!empty($image)) {
-                $image_parts = explode(";base64,", $image);
-                $image_base64 = base64_decode($image_parts[1]);
-                $fileName = 'webcam_' . uniqid() . '.jpg';
-                $file = $folderPath . $fileName;
-                Storage::disk('public')->put($file, $image_base64);
-                return $fileName;
-            }
+    public function data_pembelian(Request $request)
+    {   
+        $id     = $request->id;
+
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        $module_action = 'List';
+        $$module_name = $module_model::with('category', 'product_item', 'baki');
+        if ($request->get('status')) {
+            $$module_name = $$module_name->where('status_id', $request->get('status'));
         }
+        if($id == 1){ // with nota
+            $$module_name->where('is_nota', true)->get();
+        }
+        if($id == 2){ // without nota
+            $$module_name->where('is_nota', false)->get();
+        }
+        $$module_name->where('product_price', '=', 0)->get();
+        $harga = Harga::latest()->first();  
+        if($harga == null){
+            $harga  = 0;
+        }else{
+            $harga = $harga->harga;
+        }     
+        // $harga  = 1000000;
+        $$module_name = $$module_name->latest()->get();
+        $$module_name->each(function ($item) use ($harga) {
+            $item->harga = $harga; // Add the harga attribute to the model
+        });
+        $data = GoodsReceipt::where('status', 9)->latest()->get();
+
+        return Datatables::of($data)
+            ->addColumn('action', function ($data) {
+                return view(
+                    'products.action',
+                    compact('data')
+                );
+            })
+
+            ->editColumn('total_berat_kotor', function ($data) {
+                return $data->total_berat_kotor.' gr';
+            })
+
+            ->rawColumns([
+                'created_at', 'product_image', 'keterangan', 'code', 'weight', 'status', 'tracking',
+                'product_name', 'karat', 'berat_emas', 'cabang', 'action'
+            ])
+            ->make(true);
+    }
+
+    private function getUploadedImage($image, $uploaded_image)
+    {
+        $folderPath = "uploads/";
+        if (!empty($uploaded_image)) {
+            Storage::disk('public')->move("temp/dropzone/{$uploaded_image}", "{$folderPath}{$uploaded_image}");
+            return $uploaded_image;
+        } elseif (!empty($image)) {
+            $image_parts = explode(";base64,", $image);
+            $image_base64 = base64_decode($image_parts[1]);
+            $fileName = 'webcam_' . uniqid() . '.jpg';
+            $file = $folderPath . $fileName;
+            Storage::disk('public')->put($file, $image_base64);
+            return $fileName;
+        }
+    }
 
     
         public function index_data(Request $request)

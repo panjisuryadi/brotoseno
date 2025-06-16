@@ -172,7 +172,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/buyback_insert', 'BuyBackController@insert')
         ->name('buyback.insert');
 
-    Route::get('/product/pembelian', 'ProductsController@list_pembelian')
+    Route::get('/product/pembelian', 'ProductController@list_pembelian')
         ->name('product.pembelian');
 
     Route::get('/product_history', 'HistoryProductsController@list')
@@ -225,6 +225,9 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::delete('/products/delete/{id}', 'ProductController@delete_product')
         ->name('products.delete');
+
+    Route::get('/products/data_pembelian', 'ProductController@data_pembelian')
+        ->name('products.data_pembelian');
 
     Route::get('/products_datanota', 'ProductController@datanota')
         ->name('products.datanota');
@@ -330,6 +333,9 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/penerimaan-barangs/detail/{id}', 'GoodReceiptController@detail')
         ->name('penerimaan.detail');
+
+    Route::get('/penerimaan-barangs/sukses/{id}', 'GoodReceiptController@sukses')
+        ->name('penerimaan.sukses');
 
     Route::get('/penerimaan-barangs/product/{id}', 'GoodReceiptController@products')
         ->name('penerimaan.product');

@@ -388,6 +388,7 @@ class GoodReceiptController extends Controller
         // $module_name_singular = Str::singular($module_name);
         // $code = $module_model::generateCode();
         $module_action = 'Tambah';
+        $id         = $request->id;
         abort_if(Gate::denies('tambah_goodsreceipts'), 403);
         $products   = GoodsReceiptItem::where('goodsreceipt_id', $request->id)->get();
         $input      = GoodsReceipt::where('id', $request->id)->first();
@@ -405,6 +406,7 @@ class GoodReceiptController extends Controller
         return view(
             'goodsreceipts.products', // Path to your create view file
             compact(
+                'id',
                 'products',
                 'supplier',
                 'input',
@@ -551,8 +553,16 @@ class GoodReceiptController extends Controller
         $goodsreceipt_id = $goodsreceipt->id;
         $this->_saveTipePembelian($input, $goodsreceipt_id);
         $this->_saveGoodsReceiptItem($products, $goodsreceipt, $kategori_produk_id);
-        
-        return redirect()->action([GoodReceiptController::class, 'detail'], ['id' => $goodsreceipt_id]);
+        return redirect('/goodsreceipt');
+        // http://localhost:8000/goodsreceipt
+        // return redirect()->action([GoodReceiptController::class, 'detail'], ['id' => $goodsreceipt_id]);
+    }
+
+    public function sukses($id){
+        $goodsreceipt   = GoodsReceipt::where('id', $id)->firstOrFail();
+        $goodsreceipt->status = 0;
+        $goodsreceipt->save();
+        return redirect()->action([ProductController::class, 'list_pembelian']);
     }
 
     public function insert_2(Request $request)

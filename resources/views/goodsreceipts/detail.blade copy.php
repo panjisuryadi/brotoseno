@@ -33,8 +33,9 @@
 
     <!-- HERE -->
     <!-- <form wire:submit.prevent="submit" enctype="multipart/form-data"> -->
-    <form method="POST" action="./" enctype="multipart/form-data">
+    <form method="POST" action="/penerimaan-barangs/product" enctype="multipart/form-data">
         @csrf
+        <input type="hidden" name="id" value="{{ $id }}">
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
@@ -48,7 +49,7 @@
                             @endif
 
                             <div class="relative flex justify-left">
-                                <span class="font-semibold tracking-widest bg-white pl-0 pr-3 text-sm uppercase text-dark">{{__('Goods Receipts')}} <i class="bi bi-question-circle-fill text-info" data-toggle="tooltip" data-placement="top" title="{{__('Goods Receipts')}}"></i>
+                                <span class="font-semibold tracking-widest bg-white pl-0 pr-3 text-sm uppercase text-dark">{{ $nama }} | Berat kotor = {{ $products[0]->berat_kotor }} | Berat Real = {{ $products[0]->berat_real }} <i class="bi bi-question-circle-fill text-info" data-toggle="tooltip" data-placement="top" title="{{ $nama }} | Berat kotor = {{ $products[0]->berat_kotor }} | Berat Real = {{ $products[0]->berat_real }}"></i>
                                 </span>
 
 
@@ -62,117 +63,250 @@
                             </a>
 
                         </div>
-                        <!-- <div class="row mb-4">
-                        <div class="col-sm-3 mb-3 mb-md-0">
-                            <label for="">No Penerimaan Barang</label>
-                            <input type="text" class="form-control" value="{{ $input['code'] }}" readonly>
-                            <label for="" class="mt-2">No Surat Barang</label>
-                            <input type="text" class="form-control" value="{{ $input['no_invoice'] }}" readonly>
-                            <label for="" class="mt-2">Supplier</label>
-                            <input type="text" class="form-control" value="{{ $supplier['supplier_name'] }}" readonly>
-                        </div>
-                        <div class="col-sm-3 mb-3 mb-md-0">
-                            <label for="" class="mt-2">Tanggal</label>
-                            <input type="text" class="form-control" value="{{ $input['date'] }}" readonly>
-                            <label for="" class="mt-2">Catatan</label>
-                            <input type="text" class="form-control" value="{{ $input['note'] }}" readonly>
-                            <label for="" class="mt-2">Tipe Pembayaran</label>
-                            <input type="text" class="form-control" value="{{ $input['tipe_pembayaran'] }}" readonly>
-                        </div>
-                        <div class="col-sm-3 mb-3 mb-md-0">
-                            <label for="" class="mt-2">Nama Pengirim</label>
-                            <input type="text" class="form-control" value="{{ $input['pengirim'] }}" readonly>
-                            <label for="" class="mt-2">Total Berat Kotor</label>
-                            <input type="text" class="form-control" value="{{ $input['total_berat_kotor'] }}" readonly>
-                            <label for="" class="mt-2">Total Berat Bersih</label>
-                            <input type="text" class="form-control" value="{{ $input['total_emas'] }}" readonly>
-                        </div>
-                        <div class="col-sm-3 mb-3 mb-md-0 ">
-                            <label for="" class="mt-2">Total Berat Qty</label>
-                            <input type="text" class="form-control" value="{{ $input['total_qty'] }}" readonly>
-                            <label for="" class="mt-2">Barat yang Harus di bayar</label>
-                            <input type="text" class="form-control" value="{{ $input['total_bayar'] }}" readonly>
-                        </div>
-                        </div> -->
-                        <!-- <div class="">
-                            <label for="">No Penerimaan Barang</label>
-                            <input type="text" class="form-control" value="{{ $input['code'] }}" readonly>
-                            <label for="" class="mt-2">No Surat Barang</label>
-                            <input type="text" class="form-control" value="{{ $input['no_invoice'] }}" readonly>
-                            <label for="" class="mt-2">Supplier</label>
-                            <input type="text" class="form-control" value="{{ $supplier['supplier_name'] }}" readonly>
-                            <label for="" class="mt-2">Tanggal</label>
-                            <input type="text" class="form-control" value="{{ $input['date'] }}" readonly>
-                            <label for="" class="mt-2">Catatan</label>
-                            <input type="text" class="form-control" value="{{ $input['note'] }}" readonly>
-                            <label for="" class="mt-2">Tipe Pembayaran</label>
-                            <input type="text" class="form-control" value="{{ $input['tipe_pembayaran'] }}" readonly>
-                            <label for="" class="mt-2">Nama Pengirim</label>
-                            <input type="text" class="form-control" value="{{ $input['pengirim'] }}" readonly>
-                            <label for="" class="mt-2">Total Berat Kotor</label>
-                            <input type="text" class="form-control" value="{{ $input['total_berat_kotor'] }}" readonly>
-                            <label for="" class="mt-2">Total Berat Bersih</label>
-                            <input type="text" class="form-control" value="{{ $input['total_emas'] }}" readonly>
-                            <label for="" class="mt-2">Total Berat Qty</label>
-                            <input type="text" class="form-control" value="{{ $input['total_qty'] }}" readonly>
-                            <label for="" class="mt-2">Barat yang Harus di bayar</label>
-                            <input type="text" class="form-control" value="{{ $input['total_bayar'] }}" readonly>
-                        </div> -->
+                        @php
+                            $number = 0; // Declare and initialize the variable
+                        @endphp
 
-                        <div class="mt-3">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr class="text-center">
-                                        <th>Karat</th>
-                                        <th>Berat Kotor</th>
-                                        <th>Berat Real</th>
-                                        <th>Qty</th>
-                                        <th>Status</th>
-                                        <th>#</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php
-                                        $submit = 'block';
-                                    @endphp
-                                    @foreach($products as $pro)
-                                        @php
-                                            $id_karat = $pro->karat_id;  
-                                        @endphp
-                                    <tr class="text-center">
-                                        @foreach($dataKarat as $karat)
-                                            @if ($id_karat == $karat->id)
-                                                <td>{{ $karat->label }}</td>
-                                            @else
-                                            @endif
-                                        @endforeach
-                                        <td>{{ $pro->berat_kotor }}</td>
-                                        <td>{{ $pro->berat_real }}</td>
-                                        <td>{{ $pro->qty }}</td>
-                                        @if($pro->status == 1)
-                                            @php
-                                            $submit = 'none';
-                                            @endphp
-                                            <td>Waiting</td>
-                                            <!-- <td><button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#createModal">Detail</button></td> -->
-                                            <td><a href="/penerimaan-barangs/product/{{ $pro->id }}" target="_blank" class="btn btn-sm btn-warning">Detail</a></td>
-                                        @else
-                                            <td>Done</td>
-                                            <td>-</td>
+                        @foreach($products as $pro)
+                            @php
+                                $id_karat = $pro->karat_id;  
+                            @endphp
+                            @for($x = 0; $x < $pro->qty; $x++)
+                            <div class="flex flex-row grid grid-cols-3 gap-2 mt-2">
+
+                                <div class="px-0 py-2">
+                                    <div class="form-group">
+                                        <div class="py-1">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="upload" id="up2" checked>
+                                                <label class="form-check-label" for="up2">Upload</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="upload" id="up1">
+                                                <label class="form-check-label" for="up1">Webcam</label>
+                                            </div>
+                                        </div>
+                                        <div id="upload2" style="display: none !important;" class="align-items-center justify-content-center" wire:ignore>
+                                        @livewire('webcam', ['key' => 0], key('cam-'. 0))
+                                        </div>
+                                        <div id="upload1" wire:ignore>
+                                            <div class="form-group">
+
+                                                <div class="dropzone d-flex flex-wrap align-items-center justify-content-center" id="document-dropzone">
+                                                    <div class="dz-message" data-dz-message>
+                                                        <i class="bi bi-cloud-arrow-up"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @if ($errors->has('image'))
+                                            <span class="invalid feedback" role="alert">
+                                                <small class="text-danger">{{ $errors->first('image') }}</small class="text-danger">
+                                            </span>
                                         @endif
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-span-2 px-2">
+                                    <div class="flex flex-row grid grid-cols-2 gap-1">
+                                        <div class="form-group">
+                                            <?php
+                                            $field_name = 'category[]';
+                                            $field_lable = label_case('category');
+                                            $field_placeholder = $field_lable;
+                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                            $required = "required";
+                                            ?>
+                                            <label for="product_category">Product Category</label>
+                                            <select id="product_category" class="form-control @error('new_product.product_category_id') is-invalid @enderror" name="{{ $field_name }}">
+                                            <option value="">Semua Produk</option>
+
+                                                @foreach($product_categories as $category)
+                                                    <option value="{{ $category->id }}">{{ $category->category_name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <?php
+                                            $field_name = 'model[]';
+                                            $field_lable = label_case('model');
+                                            $field_placeholder = $field_lable;
+                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                            $required = "required";
+                                            ?>
+                                            <label for="{{ $field_name }}">{{ $field_lable }}</label>
+                                            <select class="form-control @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_name }}" wire:model="{{ $field_name }}">
+                                                <option value="" selected disabled>Pilih Model</option>
+                                                @foreach($models as $model)
+                                                <option value="{{$model->id}}">
+                                                    {{$model->name}}
+                                                </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <?php
+                                            $field_name = 'karat[]';
+                                            $field_id   = 'karat_'.$number;
+                                            $field_lable = label_case('karat');
+                                            $field_placeholder = $field_lable;
+                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                            $required = "required";
+                                            ?>
+                                            <label for="{{ $field_name }}">@lang('Karat') <span class="text-danger">*</span></label>
+                                            <select class="form-control select2 @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}" readonly>
+                                                @foreach($dataKarat as $karat)
+                                                    @if ($id_karat == $karat->id)
+                                                        <option value="{{ $karat->id }}" selected>{{ $karat->label }}</option>
+                                                    @else
+                                                        <!-- <option value="{{ $karat->id }}" >{{ $karat->label }}</option> -->
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <?php
+                                            $field_name = 'group[]';
+                                            $field_id   = 'group_'.$number;
+                                            $field_lable = label_case('group');
+                                            $field_placeholder = $field_lable;
+                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                            $required = "required";
+                                            ?>
+                                            <label for="{{ $field_name }}">@lang($field_lable)
+                                                <span class="text-danger">*</span>
+                                                <span class="small">Jenis Perhiasan</span>
+                                            </label>
+                                            <select class="form-control @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}">
+                                                <option value="" selected disabled>Pilih {{ $field_lable }}</option>
+                                                @foreach($groups as $group)
+                                                <option value="{{ $group->id }}">{{ $group->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div> 
+
+                                        <div class="form-group">
+                                            <?php
+                                            $field_name = 'code[]';
+                                            $field_id   = 'code_'.$number;
+                                            $field_lable = label_case('code');
+                                            $field_placeholder = $field_lable;
+                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                            $required = "required";
+                                            ?>
+                                            <label for="{{ $field_name }}">{{ $field_lable }}<span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <input type="text" id="{{ $field_id }}" name="{{ $field_name }}" class="form-control @error($field_name) is-invalid @enderror" readonly>
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-info relative rounded-l-none" onclick="gencode({{ $number }});" type="button">Check</button>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    {{-- ///batas --}}
+                                    <div class="flex flex-row grid grid-cols-4 gap-2">
+                                    <div class="form-group">
+                                        <?php
+                                        $field_name = 'acc[]';
+                                        $field_id   = 'acc_'.$number;
+                                        $field_lable = label_case('Accessories');
+                                        $field_placeholder = $field_lable;
+                                        $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                        $required = "required";
+                                        ?>
+                                        <label class="text-xs" for="{{ $field_name }}">{{ $field_lable }}</label>
+                                        <input class="form-control @error($field_name) is-invalid @enderror"
+                                        type="number"
+                                        name="{{ $field_name }}"
+                                        step="0.001"
+                                        id="{{ $field_id }}"
+                                        onkeyup="getotal({{ $number }});"
+                                        id="{{ $field_name }}"
+                                        placeholder="{{ $field_placeholder }}"
+                                        min="0"
+                                        >
+                                    </div>
+                                    <div class="form-group">
+                                        <?php
+                                        $field_name = 'tag[]';
+                                        $field_id   = 'tag_'.$number;
+                                        $field_lable = label_case('tag');
+                                        $field_placeholder = $field_lable;
+                                        $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                        $required = "required";
+                                        ?>
+                                        <label class="text-xs" for="{{ $field_name }}">{{ $field_lable }}</label>
+                                        <input class="form-control @error($field_name) is-invalid @enderror"
+                                        type="number"
+                                        name="{{ $field_name }}"
+                                        onkeyup="getotal( {{ $number }} );"
+                                        min="0" step="0.001"
+                                        id="{{ $field_id }}"
+                                        placeholder="{{ $field_placeholder }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <?php
+                                        $field_name = 'emas[]';
+                                        $field_id   = 'emas_'.$number;
+                                        $field_lable = label_case('emas');
+                                        $field_placeholder = $field_lable;
+                                        $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                        $required = "required";
+                                        ?>
+                                        <label class="text-xs" for="{{ $field_name }}">{{ $field_lable }}<span class="text-danger">*</span></label>
+                                        <input class="form-control @error($field_name) is-invalid @enderror"
+                                        type="number"
+                                        name="{{ $field_name }}"
+                                        min="0" step="0.001"
+                                        id="{{ $field_id }}"
+                                        onkeyup="getotal( {{ $number}} );"
+                                        placeholder="{{ $field_placeholder }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <?php
+                                        $field_name = 'total[]';
+                                        $field_id   = 'total_'.$number;
+                                        $field_lable = label_case('Total');
+                                        $field_placeholder = $field_lable;
+                                        $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                        $required = "required";
+                                        ?>
+                                        <label class="text-xs" for="{{ $field_name }}">{{ $field_lable }}<span class="text-danger">*</span></label>
+                                        <input class="form-control"
+                                        type="number"
+                                        name="{{ $field_name }}"
+                                        id="{{ $field_id }}"
+                                        onkeyup="getotal({{ $number }});"
+                                        placeholder="{{ $field_placeholder }}"
+                                        readonly>
+                                    </div>
+                                </div>
+                                </div>
+
+                                {{-- batas --}}
+                                </div>
+
+                                <hr>
+
+                                @php
+                                    $number++;
+                                @endphp
+                            @endfor
+                        @endforeach
+
 
                         <div class="mt-4 flex justify-between">
                             <div></div>
                             <div class="form-group">
                                 <a class="px-5 btn btn-danger" href="{{ route("goodsreceipt.index") }}">
                                     @lang('Cancel')</a>
-                                <a href="/penerimaan-barangs/sukses/{{$id}}" class="btn btn-success" style="display: {{$submit}};">Submit</a>
-                                <!-- <button type="button" href="/goodsreceipt" class="px-5 btn btn-success" {{ $submit }}>@lang('Save') <i class="bi bi-check"></i></button> -->
+                                <button type="submit" class="px-5 btn btn-success">@lang('Save') <i class="bi bi-check"></i></button>
                             </div>
                         </div>
 
@@ -183,7 +317,7 @@
     </form>
 
 <!-- MODAL -->
-<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" data-backdrop="static" wire:ignore.self>
     <div class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -226,9 +360,7 @@
                             @endif
                         </div>
                     </div>
-                    @php
-                    $number = 1;
-                    @endphp
+
                     <div class="col-span-2 px-2">
                         <div class="flex flex-row grid grid-cols-2 gap-1">
                             <div class="form-group">

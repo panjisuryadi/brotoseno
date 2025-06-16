@@ -38,14 +38,9 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <div class="btn-group">
-                        <a href="#" class="px-3 btn btn-danger" data-toggle="modal" data-target="#createModal">
-                            Add Product <i class="bi bi-plus"></i>
-                        </a>
-                    </div>
                     <div class="flex justify-between pb-3 border-bottom">
                         <div> 
-                            <i class="bi bi-plus"></i> &nbsp; <span class="text-lg font-semibold"> List Produk Satuan</span>
+                            <i class="bi bi-plus"></i> &nbsp; <span class="text-lg font-semibold"> List Pembelian</span>
                         </div>
                         <div id="buttons"></div>
                     </div>
@@ -54,14 +49,10 @@
                             <thead>
                                 <tr>
                                     <th style="width: 5%!important;">NO</th>
-                                    <th style="width: 15%!important;">Image</th>
-                                    <th style="width: 15%!important;">Product</th>
+                                    <th style="width: 15%!important;">Date</th>
+                                    <th style="width: 15%!important;">Total Berat Kotor</th>
                                     <!-- <th style="width: 15%!important;" class="text-center">Harga Beli</th> -->
-                                    <th style="width: 10%!important;" class="text-center">Berat</th>
-                                    <th style="width: 15%!important;" class="text-center">Code</th>
-                                    <th style="width: 10%!important;" class="text-center">QR</th>
-                                    <th style="width: 15%!important;" class="text-center">Keterangan</th>
-                                    <th style="width: 15%!important;" class="text-center">Date</th>
+                                    <th style="width: 10%!important;" class="text-center">Total Qty</th>
                                     <th style="width: 15%!important;" class="text-center">#</th>
                                     
                  <!-- <th style="width: 18%!important;" class="text-center">
@@ -72,187 +63,6 @@
                         </table>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" data-backdrop="static">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title text-lg font-bold" id="addModalLabel">Add Product Satuan</h3>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body p-4">
-                <form action="/products_insert_nota" method="post" enctype="multipart/form-data">
-                    @csrf
-                    <input type="hidden" name="webcam" id="hasilcapture">
-                    <div class="px-0 py-2">
-                                @php
-                                $number = 0;
-                                @endphp
-                                <div class="col-span-2 px-2">
-                                    <div class="flex flex-row grid grid-cols-2 gap-1">
-                                        <div class="form-group">
-                                            <div class="py-1">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="upload" id="up2" checked>
-                                                    <label class="form-check-label" for="up2">Upload</label>
-                                                </div>
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="upload" id="up1">
-                                                    <label class="form-check-label" for="up1">Webcam</label>
-                                                </div>
-                                            </div>
-                                            <div id="upload2" style="display: none !important;" class="align-items-center justify-content-center" wire:ignore>
-                                            @livewire('webcam', ['key' => 0], key('cam-'. 0))
-                                            </div>
-                                            <div id="upload1" wire:ignore>
-                                                <div class="form-group">
-                                                    <div class="dropzone d-flex flex-wrap align-items-center justify-content-center" id="document-dropzone">
-                                                        <div class="dz-message" data-dz-message>
-                                                            <i class="bi bi-cloud-arrow-up"></i>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            @if ($errors->has('image'))
-                                                <span class="invalid feedback" role="alert">
-                                                    <small class="text-danger">{{ $errors->first('image') }}</small class="text-danger">
-                                                </span>
-                                            @endif
-                                        </div>
-                                        
-                                        <!-- </div> -->
-                                        <div class="form-group">
-                                            <?php
-                                            $field_id   = 'product_category_'.$number;
-                                            ?>
-                                            <label for="product_category">Product Category</label>
-                                            <select name="new_product_category_id" id="{{$field_id}}" class="form-control @error('new_product.product_category_id') is-invalid @enderror" required>
-                                            <option value="">Semua Produk</option>
-
-                                                @foreach($product_categories as $category)
-                                                    <option value="{{ $category->id }}" code="{{ $category->category_code }}">{{ $category->category_name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <?php
-                                            $field_name = 'new_product.model_id';
-                                            $field_lable = label_case('model');
-                                            $field_placeholder = $field_lable;
-                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
-                                            $required = "required";
-                                            ?>
-                                            <label for="{{ $field_name }}">{{ $field_lable }}</label>
-                                            <select class="form-control @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_name }}" required>
-                                                <option value="" selected disabled>Pilih Model</option>
-                                                @foreach($models as $model)
-                                                <option value="{{$model->id}}">
-                                                    {{$model->name}}
-                                                </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <?php
-                                            $field_name = 'new_product.karat_id';
-                                            $field_id   = 'karat_'.$number;
-                                            $field_lable = label_case('karat');
-                                            $field_placeholder = $field_lable;
-                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
-                                            $required = "required";
-                                            ?>
-                                            <label for="{{ $field_name }}">@lang('Karat') <span class="text-danger">*</span></label>
-                                            <select class="form-control select2 @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}" required>
-                                                @foreach($dataKarat as $karat)
-                                                    <option value="{{ $karat->id }}" >{{ $karat->label }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <?php
-                                            $field_name = 'new_product.group_id';
-                                            $field_id   = 'group_'.$number;
-                                            $field_lable = label_case('group');
-                                            $field_placeholder = $field_lable;
-                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
-                                            $required = "required";
-                                            ?>
-                                            <label for="{{ $field_name }}">@lang($field_lable)
-                                                <span class="text-danger">*</span>
-                                                <span class="small">Jenis Perhiasan</span>
-                                            </label>
-                                            <select class="form-control @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}" required>
-                                                <option value="" selected disabled>Pilih {{ $field_lable }}</option>
-                                                @foreach($groups as $group)
-                                                <option value="{{ $group->id }}">{{ $group->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div> 
-
-                                        <div class="form-group">
-                                            <?php
-                                            $field_name = 'new_product.code';
-                                            $field_id   = 'code_'.$number;
-                                            $field_lable = label_case('code');
-                                            $field_placeholder = $field_lable;
-                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
-                                            $required = "required";
-                                            ?>
-                                            <label for="{{ $field_name }}">{{ $field_lable }}<span class="text-danger">*</span></label>
-                                            <div class="input-group">
-                                                <input type="text" id="{{ $field_id }}" name="new_product_code_id" class="form-control @error($field_name) is-invalid @enderror" readonly required>
-                                                <span class="input-group-btn">
-                                                    <button class="btn btn-info relative rounded-l-none" onclick="gencode({{ $number }});" type="button">Check</button>
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <?php
-                                            $field_name = 'new_product.keterangan';
-                                            $field_id   = 'keterangan_'.$number;
-                                            $field_lable = label_case('keterangan');
-                                            $field_placeholder = $field_lable;
-                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
-                                            $required = "required";
-                                            ?>
-                                            <label for="{{ $field_name }}">{{ $field_lable }}<span class="text-danger">*</span></label>
-                                            <textarea id="{{ $field_id }}" name="new_product_keterangan" class="form-control"></textarea>
-                                            <!-- <div class="input-group">
-                                            </div> -->
-                                        </div>
-
-                                        <div class="form-group">
-                                            <?php
-                                            $field_name = 'new_product.berat';
-                                            $field_id   = 'berat_'.$number;
-                                            $field_lable = label_case('berat');
-                                            $field_placeholder = $field_lable;
-                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
-                                            $required = "required";
-                                            ?>
-                                            <label for="{{ $field_name }}">{{ $field_lable }} (gram)<span class="text-danger">*</span></label>
-                                            <input type="text" id="{{ $field_id }}" name="new_product_berat" class="form-control " required>
-                                            <!-- <div class="input-group">
-                                            </div> -->
-                                        </div>
-
-                                    </div>
-
-                                    {{-- ///batas --}}
-                                    
-                                </div>
-                                <button class="btn btn-success">Submit</button>
-                </form>
             </div>
         </div>
     </div>
@@ -323,7 +133,7 @@
         ],
         "sPaginationType": "simple_numbers",
         // ajax: '{{ route("$module_name.index_data") }}',
-        ajax: '/products_datanota',
+        ajax: '/products/data_pembelian',
         dom: 'Blfrtip',
         buttons: [
             {
@@ -353,55 +163,27 @@
             }
         },
         {
-            data: 'product_image',
-            name: 'product_image'
+            data: 'date',
+            name: 'date'
         }, 
         {
-            data: 'product_name',
-            name: 'product_name'
+            data: 'total_berat_kotor',
+            name: 'total_berat_kotor'
         },
         // {
         //     data: 'karat',
         //     name: 'karat'
         // },
         {
-            data: 'berat_emas',
-            name: 'berat_emas'
+            data: 'total_qty',
+            name: 'total_qty'
         },
         {
-            data: 'code',
-            name: 'code'
-        },
-        {
-            data: 'qr',
-            name: 'qr'
-        },
-        {
-            data: 'keterangan',
-            name: 'keterangan'
-        },
-        {
-            data: 'created_at',
-            name: 'created_at'
-        },
-        {
-            data: 'delete',
-            name: 'delete'
-        },
-        // {
-        //     data: 'tracking',
-        //     name: 'tracking'
-        // },
-        // {
-        //     data: 'status',
-        //     name: 'status'
-        // },
-        // {
-        //     data: 'action',
-        //     name: 'action',
-        //     orderable: false,
-        //     searchable: false
-        // }
+            data: 'action',
+            name: 'action',
+            orderable: false,
+            searchable: false
+        }
         ]
     })
     .buttons()

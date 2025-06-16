@@ -491,6 +491,19 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link py-2',
                 ]);
 
+            $beli = $pos->add('<i class="c-sidebar-nav-icon  bi bi-person text-sm"></i> ' . __('Pembelian'), [
+                'route' => 'product.pembelian',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 1,
+                    'activematches' => ['storeemployees*'],
+                    'permission'    => ['access_storeemployees'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link py-2',
+                ]);
+
             $buyback = $pos->add('<i class="c-sidebar-nav-icon  bi bi-person text-sm"></i> ' . __('Buyback'), [
                 'route' => 'buyback.list',
                 'class' => 'nav-item',

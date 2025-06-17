@@ -491,6 +491,19 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link py-2',
                 ]);
 
+            $beli = $pos->add('<i class="c-sidebar-nav-icon  bi bi-person text-sm"></i> ' . __('Pembelian'), [
+                'route' => 'product.pembelian',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 1,
+                    'activematches' => ['storeemployees*'],
+                    'permission'    => ['access_storeemployees'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link py-2',
+                ]);
+
             $buyback = $pos->add('<i class="c-sidebar-nav-icon  bi bi-person text-sm"></i> ' . __('Buyback'), [
                 'route' => 'buyback.list',
                 'class' => 'nav-item',
@@ -1666,8 +1679,24 @@ class GenerateMenus
             // ParamaterPoins
 
             // Karats
+            // $Parameters->add(
+            //     '<i class="c-sidebar-nav-icon  bi bi-dot text-sm"></i> ' . __('Karat Emas'),
+            //     [
+            //         'route' => 'karats.list',
+            //         'class' => 'nav-item',
+            //     ]
+            // )
+            //     ->data([
+            //         'order'         => 3,
+            //         'activematches' => ['karats*'],
+            //         'permission'    => ['access_karats'],
+            //     ])
+            //     ->link->attr([
+            //         'class' => 'c-sidebar-nav-link py-2',
+            //     ]);
+
             $Parameters->add(
-                '<i class="c-sidebar-nav-icon  bi bi-dot text-sm"></i> ' . __('Karat Emas'),
+                '<i class="c-sidebar-nav-icon bi bi-dot text-sm" onclick="openPasswordModal(event, \'' . route('karats.list') . '\');"></i> ' . __('Karat Emas'),
                 [
                     'route' => 'karats.list',
                     'class' => 'nav-item',
@@ -1680,10 +1709,27 @@ class GenerateMenus
                 ])
                 ->link->attr([
                     'class' => 'c-sidebar-nav-link py-2',
+                    'onclick' => "openPasswordModal(event, '" . route('karats.list') . "')",
                 ]);
 
+            // $Parameters->add(
+            //     '<i class="c-sidebar-nav-icon  bi bi-dot text-sm" onclick="openPasswordModal(event);"></i> ' . __('Diskon'),
+            //     [
+            //         'route' => 'discounts.list',
+            //         'class' => 'nav-item',
+            //     ]
+            // )
+            //     ->data([
+            //         'order'         => 3,
+            //         'activematches' => ['karats*'],
+            //         'permission'    => ['access_karats'],
+            //     ])
+            //     ->link->attr([
+            //         'class' => 'c-sidebar-nav-link py-2',
+            //     ]);
+
             $Parameters->add(
-                '<i class="c-sidebar-nav-icon  bi bi-dot text-sm"></i> ' . __('Diskon'),
+                '<i class="c-sidebar-nav-icon bi bi-dot text-sm" onclick="openPasswordModal(event, \'' . route('discounts.list') . '\');"></i> ' . __('Diskon'),
                 [
                     'route' => 'discounts.list',
                     'class' => 'nav-item',
@@ -1696,6 +1742,7 @@ class GenerateMenus
                 ])
                 ->link->attr([
                     'class' => 'c-sidebar-nav-link py-2',
+                    'onclick' => "openPasswordModal(event, '" . route('discounts.list') . "')",
                 ]);
 
 

@@ -62,7 +62,7 @@
                             </a>
 
                         </div>
-                        <div class="row mb-4">
+                        <!-- <div class="row mb-4">
                         <div class="col-sm-3 mb-3 mb-md-0">
                             <label for="">No Penerimaan Barang</label>
                             <input type="text" class="form-control" value="{{ $input['code'] }}" readonly>
@@ -93,7 +93,7 @@
                             <label for="" class="mt-2">Barat yang Harus di bayar</label>
                             <input type="text" class="form-control" value="{{ $input['total_bayar'] }}" readonly>
                         </div>
-                        </div>
+                        </div> -->
                         <!-- <div class="">
                             <label for="">No Penerimaan Barang</label>
                             <input type="text" class="form-control" value="{{ $input['code'] }}" readonly>
@@ -132,9 +132,11 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @php
+                                        $submit = 'block';
+                                    @endphp
                                     @foreach($products as $pro)
                                         @php
-                                            $submit = '';
                                             $id_karat = $pro->karat_id;  
                                         @endphp
                                     <tr class="text-center">
@@ -149,7 +151,7 @@
                                         <td>{{ $pro->qty }}</td>
                                         @if($pro->status == 1)
                                             @php
-                                            $submit = 'disabled';
+                                            $submit = 'none';
                                             @endphp
                                             <td>Waiting</td>
                                             <!-- <td><button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#createModal">Detail</button></td> -->
@@ -169,7 +171,7 @@
                             <div class="form-group">
                                 <a class="px-5 btn btn-danger" href="{{ route("goodsreceipt.index") }}">
                                     @lang('Cancel')</a>
-                                <a href="/goodsreceipt" class="btn btn-success" {{ $submit }}>Submit</a>
+                                <a href="/penerimaan-barangs/sukses/{{$id}}" class="btn btn-success" style="display: {{$submit}};">Submit</a>
                                 <!-- <button type="button" href="/goodsreceipt" class="px-5 btn btn-success" {{ $submit }}>@lang('Save') <i class="bi bi-check"></i></button> -->
                             </div>
                         </div>

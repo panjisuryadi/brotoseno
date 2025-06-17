@@ -392,7 +392,16 @@ class KaratController extends Controller
                              </div>';
 
                         })
-                        ->rawColumns(['karat', 'rekomendasi', 'action','coef','type','ph', 'harga'])
+                        ->addColumn('rounded', function($data){
+                            $price  = ($data->coef*$data->harga)+(($data->coef*$data->persen*$data->harga)/100);
+                            $rounded = ceil($price / 1000) * 1000;
+                          
+                            return '<div class="items-center font-semibold text-center">
+                             ' .rupiah($rounded) . '
+                             </div>';
+
+                        })
+                        ->rawColumns(['karat', 'rekomendasi', 'rounded', 'action','coef','type','ph', 'harga'])
                         ->make(true);
     }
 

@@ -1,0 +1,114 @@
+<div class="row">
+    <div class="col-12 col-md-7">
+        <div class="form-group">
+            <?php
+            $field_name = 'title';
+            $field_lable = label_case($field_name);
+            $field_placeholder = $field_lable;
+            $required = "required";
+            ?>
+            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
+            {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control') }}
+            @if ($errors->has($field_name))
+            <span class="invalid feedback"role="alert">
+                <small class="text-danger">{{ $errors->first($field_name) }}.</small>
+            </span>
+            @endif
+        </div>
+        @if($module_action == 'Edit')
+        <div class="form-group">
+            <label class="mb-0" for="status">Status</label>
+            
+            <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input"
+                id="status" name="status"
+                value="1" {{ $$module_name_singular->status == 1 ? 'checked':'' }}>
+                <label class="custom-control-label" for="status">
+                    Aktif
+                </label>
+            </div>
+        </div>
+        @else
+        <div class="form-group">
+            <label class="mb-0" for="status">Status</label>
+            <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input"
+                id="status" name="status"
+                value="1" {{ old('status') ? 'checked' : '' }}>
+                <label class="custom-control-label" for="status">
+                    Aktif
+                </label>
+            </div>
+             @if ($errors->has('status'))
+            <span class="invalid feedback"role="alert">
+                <small class="text-danger">{{ $errors->first('status') }}.</small>
+            </span>
+            @endif
+             </div>
+        @endif
+       
+        
+    </div>
+    <div class="col-12 col-md-5">
+        
+        
+        <div class="form-group">
+            <?php
+            $field_name = 'image';
+            $field_lable = label_case($field_name);
+            $field_placeholder = $field_lable;
+            $required = "required";
+            ?>
+            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
+            <div x-data="showImage()" class="flex items-center justify-center">
+                <div class="m-0 w-full">
+                    <div class="flex items-center justify-center w-full">
+                        <label
+                            class="flex flex-col w-full h-48 border-4 border-dashed hover:bg-gray-200 hover:border-gray-400">
+                            <div class="relative flex flex-col items-center justify-center pt-7">
+                                @if($module_action == 'Edit')
+                                <img id="preview" src="{{ storage($$module_name_singular->image) }}" class="absolute inset-0 w-full h-48">
+                                @else
+                                <img id="preview" class="absolute inset-0 w-full h-48">
+                                @endif
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="w-12 h-12 mt-4 text-gray-400 group-hover:text-gray-600" viewBox="0 0 20 20"
+                                    fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z
+                                        clip-rule="evenodd" />
+                                    </svg>
+                                    <p class="pt-1 text-sm tracking-wider text-gray-400 group-hover:text-gray-600">
+                                    Select a photo</p>
+                                </div>
+                                <input type="file" name="{{ $field_name }}" class="opacity-0" accept="image/*" @change="showPreview(event)" />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                @if ($errors->has($field_name))
+                <span class="invalid feedback"role="alert">
+                    <small class="text-danger">{{ $errors->first($field_name) }}.</small
+                    class="text-danger">
+                </span>
+                @endif
+            </div>
+        </div>
+        <div class="px-3 w-full">
+            
+            <div class="form-group">
+                <?php
+                $field_name = 'description';
+                $field_lable = label_case($field_name);
+                $field_placeholder = $field_lable;
+                $required = "required";
+                ?>
+                {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
+                {{ html()->textarea($field_name)->class('form-control') }}
+            </div>
+        </div>
+        
+    </div>
+
+
+    <x-library.ckeditor />

@@ -314,6 +314,8 @@ class JualController extends Controller
     public function insert(Request $request){
         // echo json_encode($_POST);
         // exit();
+        $set_harga  = Harga::latest()->first();
+        $set_harga  = $set_harga->harga;
         $config = Config::where('name', 'nota')->first();
         $value   = $config->value;
         $val    = json_decode($value, true);
@@ -396,6 +398,8 @@ class JualController extends Controller
                 $gram   = '-';
                 $images = 'non';
                 $harga  = $request->harga[$number];
+                $total_real = $harga;
+
                 if($lanjut){
                     $serv   = Service::create([
                         'sales' => $id,
@@ -419,7 +423,21 @@ class JualController extends Controller
                 $images = $product->images;
                 $desc   = $product->product_code;
                 $gram   = $product->berat_emas;
+                $karat_id   = $product->karat_id;
                 $harga  = $request->harga[$number];
+                // GET COEF 
+                $karat  = Karat::where('id', $karat_id)->first();
+                $coef   = $karat->coef;
+                $margin = $karat->margin;
+                $diskon = $karat->diskon;
+
+                // $price  = ($coef*$harga*$berat)+($coef*$harga*$berat*$persen/100);
+                // $price  = ceil($price/1000);
+                // $price  = $price*1000;
+                
+                $total_real = ($coef*$set_harga*$gram)+($coef*$harga*$gram*$margin/100)-$request->diskon[$number]+$request->ongkos[$number];
+                
+
                 $product->status_id = 2;
                 $product->status = 2;
                 $product->baki_id = 0;
@@ -465,6 +483,7 @@ class JualController extends Controller
                     'diskon'      => $request->diskon[$number],
                     'ongkos'      => $request->ongkos[$number],
                     'total'     => $harga,
+                    'total_real'     => $total_real,
                 ]);
                 $sales_id   = $salesItem->id;
             }
@@ -584,7 +603,7 @@ class JualController extends Controller
 
                             <h3 class="small font-medium text-gray-600 dark:text-white "> ' . $data->product_name . '</h3>
                              <div class="text-xs font-normal text-blue-500 font-semibold">
-                            ' . @$data->cabang->name . '</div>
+                            ' . @$data->cabang->name ?? '' . '</div>
 
 
                         </div>
@@ -618,12 +637,43 @@ class JualController extends Controller
             })
 
             ->editColumn('rekomendasi', function ($data) {
+                $coef   = isset($data->karat->coef) ? $data->karat->coef : 0;
+                $persen = isset($data->karat->persen) ? $data->karat->persen : 0;
+                $harga  = isset($data->harga) ? $data->harga : 0;
+                $berat  = isset($data->berat_emas) ? $data->berat_emas : 0;
+                $price  = ($coef*$harga*$berat)+($coef*$harga*$berat*$persen/100);
+                $price  = ceil($price/1000);
+                $price  = $price*1000;
                 $tb = '<div class="items-center gap-x-2">
                                 <div class="text-sm text-center text-gray-500">
-                                Rp .' . @rupiah((($data->karat->coef*$data->harga)+($data->karat->coef*$data->harga*$data->karat->persen/100))*$data->berat_emas) . ' <br>
+                                Rp .' . @rupiah($price). ' <br>
                                 </div>
                                 </div>';
                 return $tb;
+            })
+
+            // ->editColumn('rekomendasi', function ($data) {
+            //     $tb = '<div class="items-center gap-x-2">
+            //                     <div class="text-sm text-center text-gray-500">
+            //                     Rp .' . @rupiah((($data->karat->coef*$data->harga)+($data->karat->coef*$data->harga*$data->karat->persen/100))*$data->berat_emas) . ' <br>
+            //                     </div>
+            //                     </div>';
+            //     return $tb;
+            // })
+
+            ->addColumn('rounded', function ($data) {
+                // $price  = ((($data->karat->coef*$data->harga)+($data->karat->coef*$data->harga*$data->karat->persen/100))*$data->berat_emas);
+                // $rounded = ceil($price / 1000) * 1000;
+                
+                // return '<div class="items-center font-semibold text-center">
+                //     ' .rupiah($rounded) . '
+                //     </div>';
+                // $tb = '<div class="items-center gap-x-2">
+                //                 <div class="text-sm text-center text-gray-500">
+                //                 Rp .' . @rupiah((($data->karat->coef*$data->harga)+($data->karat->coef*$data->harga*$data->karat->persen/100))*$data->berat_emas) . ' <br>
+                //                 </div>
+                //                 </div>';
+                // return $tb;
             })
 
             ->editColumn('karat', function ($data) {
@@ -657,7 +707,7 @@ class JualController extends Controller
                 return tgljam($data->created_at);
             })
             ->rawColumns([
-                'created_at', 'product_image', 'rekomendasi', 'weight', 'status', 'tracking',
+                'created_at', 'product_image', 'rounded', 'rekomendasi', 'weight', 'status', 'tracking',
                 'product_name', 'karat', 'cabang', 'action'
             ])
             ->make(true);
@@ -741,7 +791,7 @@ class JualController extends Controller
             })
 
             ->addColumn('baki', function ($data) {
-                return $data->baki->name;
+                return $data->baki->name ?? '';
             })
 
             ->addColumn('status', function ($data) {

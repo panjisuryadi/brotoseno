@@ -1,0 +1,44 @@
+@extends('backend.layouts.app')
+
+@section('title') {{ __($module_action) }} {{ __($module_title) }} @endsection
+
+@section('breadcrumbs')
+<x-backend-breadcrumbs>
+    <x-backend-breadcrumb-item route='{{route("backend.$module_name.index")}}' icon='{{ $module_icon }}'>
+        {{ __($module_title) }}
+    </x-backend-breadcrumb-item>
+    <x-backend-breadcrumb-item type="active">{{ __($module_action) }}</x-backend-breadcrumb-item>
+</x-backend-breadcrumbs>
+@endsection
+
+@section('content')
+<div class="card">
+    <div class="card-body">
+
+ 
+                {{ html()->form('POST', route("backend.$module_name.store"))->acceptsFiles()->class('form')->open() }}
+
+                @include ("$module_path.{{moduleNameLower}}.form")
+
+                <div class="flex justify-between gap-2">
+                         <div class="form-group">
+                          
+                         </div>
+                
+                            <div class="form-group">
+                                <x-buttons.cancel></x-buttons.cancel>
+                                  {{ html()->button($text = "<i class='fas fa-plus-circle'></i> " . ucfirst($module_action) . "", $type = 'submit')->class('btn px-5 btn-success') }}
+                            </div>
+                       
+                </div>
+
+                {{ html()->form()->close() }}
+
+            
+    </div>
+
+  
+</div>
+
+
+@endsection

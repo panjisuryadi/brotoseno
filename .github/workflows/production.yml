@@ -2,17 +2,17 @@ name: CahayaPOS
 
 on:
   push:
-    branches: [ dev ]
+    branches: [ production ]
   pull_request:
-    branches: [ dev ]
+    branches: [ production ]
 
 jobs:
-  cahaya-development:
+  cahaya-production:
 
     runs-on: ubuntu-latest
 
     steps:
-    - name: Deploy to development
+    - name: Deploy to production
       uses: appleboy/ssh-action@master
       with:
          host: ${{ secrets.SSH_HOST }}
@@ -20,16 +20,11 @@ jobs:
          key: ${{ secrets.SSH_PRIVATE_KEY }}
          port: ${{ secrets.SSH_PORT }}
          script: |
-          cd /home/dev.cahaya.hokkie.id/public_html
+          cd /home/cahaya.hokkie.id/public_html
           git stash
-          git pull origin dev
+          git pull origin production
           sudo update-alternatives --set php /usr/bin/php8.0
           php artisan migrate
           php artisan optimize:clear
           sudo chmod 777 -R storage
           sudo chmod 777 -R bootstrap/cache
-
-       #-----------------------------------------
-        #php artisan schedule:run >> /dev/null 2>&1
-        #-----------------------------------------
-  

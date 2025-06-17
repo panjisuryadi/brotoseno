@@ -15,6 +15,7 @@ class SalesItem extends Model
         'diskon',
         'ongkos',
         'total',
+        'total_real',
         'nomor',
         'sales_gold_id',
     ];

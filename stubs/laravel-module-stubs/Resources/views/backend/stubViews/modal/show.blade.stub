@@ -1,0 +1,31 @@
+<div class="px-3 break-all py-4">
+ 
+{{ $$module_name_singular }}
+
+<div class="flex text-base justify-between gap-2 py-1">
+    <div>title :</div>
+    <div>{{ $$module_name_singular->title }}</div>
+
+</div>
+
+
+
+
+</div>
+
+<script>
+jQuery.noConflict();
+(function( $ ) {
+
+ 
+$(document).ready(function(){
+
+    var Tombol = "<button type='button' class='btn btn-danger px-5' data-dismiss='modal'>{{ __('Close') }}</button>";
+ 
+    $('#ModalFooter').html(Tombol);
+
+    
+
+});
+})(jQuery);
+</script>

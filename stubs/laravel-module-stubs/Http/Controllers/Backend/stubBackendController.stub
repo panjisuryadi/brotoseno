@@ -1,0 +1,438 @@
+<?php
+
+namespace {{namespace}}\{{moduleName}}\Http\Controllers\Backend;
+
+use App\Authorizable;
+use App\Http\Controllers\Backend\BackendBaseController;
+use Carbon\Carbon;
+use Flash;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Response;
+use Illuminate\Support\Str;
+use Lang;
+use Image;
+use Stevebauman\Purify\Facades\Purify;
+
+class {{moduleName}}Controller extends BackendBaseController
+{
+    use Authorizable;
+
+    public function __construct()
+    {
+        // Page Title
+        $this->module_title = '{{moduleName}}';
+
+        // module name
+        $this->module_name = '{{moduleNameLower}}';
+
+        // directory path of the module
+        $this->module_path = '{{moduleNameLower}}::backend';
+
+        // module icon
+        $this->module_icon = 'fas fa-plus';
+
+        // module model name, path
+        $this->module_model = "{{namespace}}\{{moduleName}}\Models\{{moduleName}}";
+    }
+
+
+    public function index()
+    {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        $module_action = 'List';
+
+         //$$module_name = $module_model::paginate();
+
+        return view(
+           "$module_path.{{moduleNameLower}}.index_datatable",
+            compact('module_title', 'module_name', 'module_icon', 'module_name_singular', 'module_action')
+        );
+    }
+
+
+
+ public function index_data(Request $request)
+    {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        $module_action = 'List';
+
+        $$module_name = $module_model::latest()->get();
+        $data = $$module_name;
+
+        return Datatables::of($$module_name)
+                        ->addColumn('action', function ($data) {
+                           $module_name = $this->module_name;
+                            $module_model = $this->module_model;
+                            $module_path = $this->module_path;
+                         return view("$module_path.{{moduleNameLower}}.action",
+                            compact('module_name', 'data', 'module_model'));
+                                })
+
+                            ->editColumn('image', function ($data) {
+                               $images ='<div class="content-center items-center">
+                               <img class="w-10 h-10 rounded" src="'.  storage(@$data->image,'thumbnail') . '">';
+                                return $images;
+                            })
+
+                          ->editColumn('title', function ($data) {
+                                $return_data = '<span class="text-gray-500">' .@$data->title. '</span>';
+                                return $return_data;
+                             })
+
+                           ->editColumn('updated_at', function ($data) {
+                            $module_name = $this->module_name;
+
+                            $diff = Carbon::now()->diffInHours($data->updated_at);
+                            if ($diff < 25) {
+                                return \Carbon\Carbon::parse($data->updated_at)->diffForHumans();
+                            } else {
+                                return \Carbon\Carbon::parse($data->created_at)->isoFormat('L');
+                            }
+                        })
+                        ->rawColumns(['updated_at', 'action',  'title', 'image'])
+                        ->make(true);
+                 }
+
+
+
+
+
+
+ public function create()
+    {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        $module_action = 'Create';
+
+        return view(
+           "$module_path.{{moduleNameLower}}.modal.create",
+            compact('module_title', 'module_name', 'module_icon', 'module_name_singular','module_path', 'module_action')
+        );
+    }
+
+
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function store_default(Request $request)
+    {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        $module_action = 'Store';
+
+       $this->validate($request, [
+                    'title' => 'required|string|max:191',
+                    'status' => 'required',
+                    'image'     =>'image|mimes:jpeg,png,jpg,gif|max:2048',
+                   
+
+                ]);
+        $params = $request->except('_token');
+        $params['title'] = $params['title'];
+        $params['slug'] = Str::slug($params['title']);
+        $params['status'] = $params['status'];
+        $description = $params['description'];
+        $description = Purify::clean($description);
+        $params['description'] = $description;
+        $params['user_id'] = auth()->user()->id;
+      
+                 if ($image = $request->file('image')) {
+                    if ($$module_name_singular->image !== 'no_foto.png') {
+                        @unlink(imageUrl() . $$module_name_singular->image);
+                        @unlink(imageUrl() . 'thumbnails/' . $$module_name_singular->image);
+                    }
+
+                    $gambar = 'article_' .date('YmdHis') . "." . $image->getClientOriginalExtension();
+                    $normal = Image::make($image)->resize(800, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                    })->encode();
+                    $normalpath = $gambar;
+                    Storage::disk('local')->put($normalpath, (string) $normal);
+                    $thumbnail = Image::make($image)->resize(90, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                    })->encode();
+                    $thumbnailPath = 'thumbnails/' . $gambar;
+                    Storage::disk('local')->put($thumbnailPath, (string) $thumbnail);
+                    $params['image'] = $gambar;
+                } else {
+                    $params['image'] = 'no_foto.png';
+                }
+
+        $$module_name_singular = $module_model::create($params);
+
+        Flash::success("<i class='fas fa-check'></i> New '".Str::singular($module_title)."' Added")->important();
+
+        return redirect("admin/$module_name");
+    }
+
+
+
+   //store ajax version
+
+public function store(Request $request)
+    {
+       $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+        $validator = \Validator::make($request->all(),[
+           //'code' => 'required|max:191|unique:'.$module_model.',code',
+             'name' => 'required|max:191',
+             'description' => 'required|max:191',
+           
+
+        ]);
+        if (!$validator->passes()) {
+          return response()->json(['error'=>$validator->errors()]);
+        }
+
+       // $input = $request->all();
+        $params = $request->except('_token');
+        $params['title'] = $params['title'];
+        $params['slug'] = Str::slug($params['title']);
+        $params['status'] = $params['status'];
+        $description = $params['description'];
+        $description = Purify::clean($description);
+        $params['description'] = $description;
+        $$module_name_singular = $module_model::create($params);
+
+        return response()->json(['success'=>'  '.$module_title.' Sukses disimpan.']);
+    }
+
+
+
+
+
+    /**
+     * Display the specified resource.
+     *
+     * @param int $id
+     *
+     * @return Response
+     */
+    public function show($id)
+    {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        $module_action = 'Show';
+
+        $$module_name_singular = $module_model::findOrFail($id);
+            return view(
+            "$module_path.{{moduleNameLower}}.modal.show",
+            compact('module_title', 'module_name', 'module_icon', 'module_name_singular', 'module_action', "$module_name_singular")
+        );
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param int $id
+     *
+     * @return Response
+     */
+    public function edit($id)
+    {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        $module_action = 'Edit';
+
+        $$module_name_singular = $module_model::findOrFail($id);
+        return view(
+            "$module_path.{{moduleNameLower}}.modal.edit",
+            compact('module_title', 'module_name', 'module_icon', 'module_name_singular', 'module_path', 'module_action', "$module_name_singular")
+        );
+    }
+
+
+
+
+//update ajax version
+public function update(Request $request, $id)
+    {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+        $module_action = 'Update';
+        $$module_name_singular = $module_model::findOrFail($id);
+        $validator = \Validator::make($request->all(),
+            [
+          
+            'name' => 'required|max:191',
+
+
+        ]);
+
+       if (!$validator->passes()) {
+          return response()->json(['error'=>$validator->errors()]);
+        }
+
+        //$params = $request->all();
+        $params = $request->except('_token');
+        $params['title'] = $params['title'];
+        $params['slug'] = Str::slug($params['title']);
+        $params['status'] = $params['status'];
+        $description = $params['description'];
+        $description = Purify::clean($description);
+        $params['description'] = $description;
+        $$module_name_singular->update($params);
+        return response()->json(['success'=>'  '.$module_title.' Sukses diupdate.']);
+
+ }
+
+
+
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param Request $request
+     * @param int     $id
+     *
+     * @return Response
+     */
+    public function update_default(Request $request, $id)
+    {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        $module_action = 'Update';
+
+        $$module_name_singular = $module_model::findOrFail($id);
+
+                $this->validate($request, [
+                    'title' => 'required|string|max:191',
+                    'status' => 'required',
+                    'image'     =>'image|mimes:jpeg,png,jpg,gif|max:2048',
+                   
+
+                ]);
+              
+                $params = $request->except('_token');
+                $params['title'] = $params['title'];
+                $params['slug'] = Str::slug($params['title']);
+                $params['status'] = $params['status'];
+                $description = $params['description'];
+                $description = Purify::clean($description);
+                $params['description'] = $description;
+
+
+                 if ($image = $request->file('image')) {
+                    if ($$module_name_singular->image !== 'no_foto.png') {
+                        @unlink(imageUrl() . $$module_name_singular->image);
+                        @unlink(imageUrl() . 'thumbnails/' . $$module_name_singular->image);
+                    }
+
+                    $gambar = 'article_' .date('YmdHis') . "." . $image->getClientOriginalExtension();
+                    $normal = Image::make($image)->resize(800, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                    })->encode();
+                    $normalpath = $gambar;
+                    Storage::disk('local')->put($normalpath, (string) $normal);
+                    $thumbnail = Image::make($image)->resize(90, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                    })->encode();
+                    $thumbnailPath = 'thumbnails/' . $gambar;
+                    Storage::disk('local')->put($thumbnailPath, (string) $thumbnail);
+                    $params['image'] = $gambar;
+                } else {
+                    unset($params['image']);
+                }
+
+        $$module_name_singular->update($params);
+
+        Flash::success("<i class='fas fa-check'></i> '".Str::singular($module_title)."' Updated Successfully")->important();
+
+           return redirect("admin/$module_name");
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param int $id
+     *
+     * @return Response
+     */
+    public function destroy($id)
+    {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        $module_action = 'destroy';
+
+        $$module_name_singular = $module_model::findOrFail($id);
+
+        if ($$module_name_singular->image !== 'no_foto.png') {
+                  @unlink(imageUrl() . $$module_name_singular->image);
+                  @unlink(imageUrl() . 'thumbnails/' . $$module_name_singular->image);
+                }
+        $$module_name_singular->delete();
+
+        Flash::success('<i class="fas fa-check"></i> '.label_case($module_name_singular).' Deleted Successfully!')->important();
+
+        return redirect("admin/$module_name");
+    }
+
+
+
+
+
+
+
+
+
+
+}

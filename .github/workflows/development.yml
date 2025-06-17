@@ -24,6 +24,7 @@ jobs:
           git stash
           git pull origin dev
           sudo update-alternatives --set php /usr/bin/php8.0
+          php artisan migrate
           php artisan optimize:clear
           sudo chmod 777 -R storage
           sudo chmod 777 -R bootstrap/cache

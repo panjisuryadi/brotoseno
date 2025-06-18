@@ -1320,7 +1320,9 @@ class GenerateMenus
             // ]);
 
 
-            $jual = $menu->add('<i class="c-sidebar-nav-icon bi bi-bag"></i> Sales', [
+
+
+            $jual = $menu->add('<i class="c-sidebar-nav-icon bi bi-bag"></i> Report', [
                 'class' => 'c-sidebar-nav-dropdown',
             ])
                 ->data([
@@ -1355,7 +1357,8 @@ class GenerateMenus
                 'class' => 'c-sidebar-nav-dropdown-toggle',
                 'href'  => '#',
             ]);
-            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Report') . '', [
+
+            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Sales') . '', [
                 'route' => 'sale.report',
                 'class' => 'nav-item',
             ])
@@ -1367,6 +1370,36 @@ class GenerateMenus
                 ->link->attr([
                     'class' => 'c-sidebar-nav-link',
                 ]);
+
+             $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Hutang') . '', [
+                'route' => 'sale.report',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 91,
+                    'activematches' => 'settings*',
+                    'permission'    => ['access_settings'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link',
+                ]);
+
+            //////////start menu
+            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Pembelian') . '', [
+                'route' => 'sale.report',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 91,
+                    'activematches' => 'settings*',
+                    'permission'    => ['access_settings'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link',
+                ]);
+
+            /// end menu
+
 
             // EMAS - PEMBELIAN
             // $Penjualan = $jual->add('<i class="c-sidebar-nav-icon mb-1 bi bi-bag"></i>' . __('Laporan') . '', [

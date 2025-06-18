@@ -27,9 +27,9 @@ $user = \App\Models\User::findOrFail(Auth::user()->id);
                             <i class="bi bi-bar-chart font-2xl"></i>
                         </div>
                         <div>
-                            <div class="text-value text-primary">{{ format_currency($revenue) }}</div>
+                            <div class="text-value text-primary">{{ format_currency($totalGoldSales) }}</div>
                             <div class="text-muted text-uppercase font-weight-bold small">
-                           @lang('Revenue')
+                           @lang('Sales')
                         </div>
                         </div>
                     </div>
@@ -43,9 +43,9 @@ $user = \App\Models\User::findOrFail(Auth::user()->id);
                             <i class="bi bi-arrow-return-left font-2xl"></i>
                         </div>
                         <div>
-                            <div class="text-value text-warning">{{ format_currency($sale_returns) }}</div>
+                            <div class="text-value text-warning">{{ $totalGoldWeight }} Gram</div>
                             <div class="text-muted text-uppercase font-weight-bold small">
-                          @lang('Sales Return')
+                          @lang('Sales Weight')
                         </div>
                         </div>
                     </div>
@@ -59,9 +59,9 @@ $user = \App\Models\User::findOrFail(Auth::user()->id);
                             <i class="bi bi-arrow-return-right font-2xl"></i>
                         </div>
                         <div>
-                            <div class="text-value text-success">{{ format_currency($purchase_returns) }}</div>
+                            <div class="text-value text-success">{{ $totalGoldQuantity }} Pcs</div>
                             <div class="text-muted text-uppercase font-weight-bold small">
-                            @lang('Purchases Return')
+                            @lang('Sales Quantity')
                         </div>
                         </div>
                     </div>
@@ -75,9 +75,9 @@ $user = \App\Models\User::findOrFail(Auth::user()->id);
                             <i class="bi bi-trophy font-2xl"></i>
                         </div>
                         <div>
-                            <div class="text-value text-info">{{ format_currency($profit) }}</div>
+                            <div class="text-value text-info">{{ $totalCustomer }} Orang</div>
                             <div class="text-muted text-uppercase font-weight-bold small">
-                             @lang('Profit')
+                             @lang('Total Customer')
                         </div>
                         </div>
                     </div>

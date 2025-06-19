@@ -28,6 +28,7 @@ use Modules\Sale\Entities\SaleManual;
 use Modules\Sale\Http\Requests\StorePosSaleRequest;
 use PDF;
 use Auth;
+use Carbon\Carbon;
 use Modules\Adjustment\Entities\AdjustmentSetting;
 use Modules\Product\Models\ProductStatus;
 use Yajra\DataTables\DataTables;
@@ -164,9 +165,55 @@ class JualController extends Controller
         $customers = Customer::all();
         $product_categories = Category::all();
         $module_title   = $this->module_title;
+
+        ///// start data pada card
+        $todayDate = Carbon::today(); // hari ini
+        $todaySalesGold = SalesGold::whereDate('created_at', $todayDate)->get(); // data penjualan hari ini
+
+        // 1. HASIL PENJUALAN HARI INI (card ungu)
+        $totalGoldSales = 0;
+        // loop data hari ini dan kalkulasikan semua total ke dalam $totalGoldSales
+        foreach ($todaySalesGold as $data) {
+            $totalGoldSales = $totalGoldSales + $data->total;
+        }
+
+        // 2. TOTAL BERAT PENJUALAN HARI INI (card kuning)
+        // 3. TOTAL KUANTITAS PENJUALAN HARI INI (card hijau)
+        $totalGoldWeight = 0;
+        $totalGoldQuantity = 0;
+
+        foreach ($todaySalesGold as $data) {
+            $arrayProducts = json_decode($data->products, true); // mengambil products menjadi array product_id
+            foreach ($arrayProducts as $product_id) {
+                $allProducts[] =  $product_id; // mengambil semua product_id yang ada
+                $totalGoldQuantity = count($allProducts); // menghitung total semua product / emas (berdasarkan product_id)
+                $goldWeight = Product::where('id', $product_id)->first()->berat_emas; // mengambil berat emas dari setiap product
+                $totalGoldWeight = $totalGoldWeight + $goldWeight; // kalkulasi semua berat emas
+            }
+        }
+        
+        // 4. JUMLAH PELANGGAN HARI INI (card biru)
+        $totalCustomer = SalesGold::whereDate('created_at', $todayDate)->count();
+        // total sementara 17 juni 2025 = Rp. 11.252.326
+        // total berat emas sementara = 8,44
+        // total item sementara = 5
+        // jumlah pelanggan sementara = 4
+        /// end data pada card
+
         return view(
             'sale.report', compact(
-                'module_title', 'product_categories', 'customers', 'karat', 'category', 'group', 'models'
+                'module_title', 
+                'product_categories', 
+                'customers', 
+                'karat', 
+                'category', 
+                'group', 
+                'models',
+                'totalGoldSales',
+                'totalGoldWeight',
+                'totalGoldQuantity',
+                'totalCustomer',
+                'todayDate',
             )
         );
     }

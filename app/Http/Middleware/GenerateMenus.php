@@ -135,7 +135,7 @@ class GenerateMenus
             //         'class' => 'c-sidebar-nav-link py-3',
             //     ]);
 
-            
+
 
 
             //menuemas
@@ -1358,6 +1358,7 @@ class GenerateMenus
                 'href'  => '#',
             ]);
 
+            // REPORT - PENJUALAN
             $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Sales') . '', [
                 'route' => 'sale.report',
                 'class' => 'nav-item',
@@ -1371,8 +1372,23 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link',
                 ]);
 
-             $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Hutang') . '', [
-                'route' => 'sale.report',
+            // REPORT - HUTANG
+            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Debt') . '', [
+                'route' => 'goodsreceipt.debts',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 91,
+                    'activematches' => 'settings*',
+                    'permission'    => ['access_settings'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link',
+                ]);
+
+            // REPORT - PEMBELIAN
+            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Purchase') . '', [
+                'route' => 'goodsreceipt.index',
                 'class' => 'nav-item',
             ])
                 ->data([
@@ -1385,7 +1401,8 @@ class GenerateMenus
                 ]);
 
             //////////start menu
-            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Pembelian') . '', [
+            // REPORT - STOK
+            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Stock') . '', [
                 'route' => 'sale.report',
                 'class' => 'nav-item',
             ])
@@ -2610,7 +2627,7 @@ class GenerateMenus
             //         ->link->attr([
             //             'class' => 'c-sidebar-nav-link',
             //         ]);
-    
+
 
             $setting->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('System Settings') . '', [
                 'route' => 'settings.index',

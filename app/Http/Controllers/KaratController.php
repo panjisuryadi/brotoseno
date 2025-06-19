@@ -385,10 +385,11 @@ class KaratController extends Controller
 
                         })
                         ->editColumn('harga', function($data){
-                            $output = '';
-                          
+                            // $output = '';
+                            $price  = $data->coef*@$data->harga;
+                            $rounded = ceil($price / 1000) * 1000;
                             return '<div class="items-center font-semibold text-center">
-                             ' .rupiah(@$data->coef*@$data->harga) . '
+                             ' .rupiah(@$rounded) . '
                              </div>';
 
                         })

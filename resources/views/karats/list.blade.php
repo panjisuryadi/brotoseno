@@ -76,11 +76,11 @@
                                     <th style="width: 8%!important;" class="text-center">
                                         Margin
                                     </th> 
+                                    <!-- <th style="width: 8%!important;" class="text-center">
+                                        Harga Jual
+                                    </th>  -->
                                     <th style="width: 8%!important;" class="text-center">
                                         Harga Jual
-                                    </th> 
-                                    <th style="width: 8%!important;" class="text-center">
-                                        Harga Rounded
                                     </th> 
                                     <th style="width: 10%!important;" class="text-center">
                                        {{__('Action')}}
@@ -142,6 +142,15 @@
 <x-library.datatable />
 @push('page_scripts')
    <script type="text/javascript">
+    function muncul_submit(){
+        let pass = document.getElementById('password').value;
+        console.log(pass);
+        if (pass === 'luvenia12345') {
+            document.getElementById('SimpanUpdate').style.display = 'block';
+        } else {
+            document.getElementById('SimpanUpdate').style.display = 'none';
+        }
+    }
         $('#datatable').DataTable({
            processing: true,
            serverSide: true,
@@ -208,10 +217,10 @@
                     data: 'margin',
                     name: 'margin'
                 },
-                {
-                    data: 'rekomendasi',
-                    name: 'rekomendasi'
-                },
+                // {
+                //     data: 'rekomendasi',
+                //     name: 'rekomendasi'
+                // },
                 {
                     data: 'rounded',
                     name: 'rounded'

@@ -205,6 +205,7 @@
                                             ?>
                                             <label for="{{ $field_name }}">{{ $field_lable }}<span class="text-danger">*</span></label>
                                             <div class="input-group">
+                                                <input type="hidden" name="temp_code" id="temp_code">
                                                 <input type="text" id="{{ $field_id }}" name="new_product_code_id" class="form-control @error($field_name) is-invalid @enderror" readonly required>
                                                 <span class="input-group-btn">
                                                     <button class="btn btn-info relative rounded-l-none" onclick="gencode({{ $number }});" type="button">Check</button>
@@ -371,7 +372,21 @@
             karat       = karat.split('|')[0]?.trim();
             let date    = new Date();
             let formattedDate = ("0" + date.getDate()).slice(-2) + ("0" + (date.getMonth() + 1)).slice(-2) + date.getFullYear().toString().slice(-2);
-            let code    = categoryCode+karat+formattedDate+rand;
+            let temp_code    = categoryCode+karat+formattedDate+rand;
+            $("#temp_code").val(temp_code);
+
+            const now = new Date();
+
+            const datePart = now.toISOString().split('T')[0]; // "2025-06-18"
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+
+            const formatted = `${datePart} ${hours}.${minutes}`;
+            const input = formatted.replace(/[-.:\s]/g, '');
+
+            console.log(formatted);
+
+            let code    = 'BL'+input;
             $("#code_"+number).val(code);
         }
     $('#datatable').DataTable({

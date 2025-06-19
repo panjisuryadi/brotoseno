@@ -3,6 +3,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/1.4.0/perfect-scrollbar.js"></script>
 <script src="{{ asset('vendor/datatables/buttons.server-side.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script type="text/javascript">
 
 $(function () {
@@ -61,6 +62,10 @@ function showTime(){
 </div>
 {{-- end modal ======================================================================--}}
 <script type='text/javascript'>
+    // $('.pilih2').select2({
+    //     placeholder: 'Select an option',
+    //     allowClear: true
+    // });
     var jq = $.noConflict();
     (function($){
       $('document').ready(function(){

@@ -3,7 +3,6 @@
 @section('title', 'POS')
 
 @section('third_party_stylesheets')
-
 @endsection
 
 @section('breadcrumb')
@@ -26,6 +25,8 @@
 
 </style>
 @endpush
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
 
 @section('content')
 <div class="container-fluid">
@@ -59,6 +60,9 @@
                 <form action="./sale/insert" id="sale" method="post">
                     @csrf
                     <input type="hidden" name="customer" id="customer">
+                    <input type="hidden" name="hidden_cash" id="hidden_cash">
+                    <input type="hidden" name="hidden_edc" id="hidden_edc">
+                    <input type="hidden" name="hidden_transfer" id="hidden_transfer">
                     <div class="flex-grow-1 d-flex flex-column gap-2 overflow-auto" id="preview-area" style="max-height: 300px; /* or whatever fits your layout */overflow-y: auto;">
                         
                     <!-- <span class="text-muted">Selected product preview goes here</span> -->
@@ -107,23 +111,46 @@
                 <label for="">Customer</label>
             </div>
             <div class="col-md-4">
-                <select name="customer" id="customer_modal" class="form-control">
+                <select name="customer" id="customer_modal" class="pilih2 form-control">
                     <option value="0">Pilih Customer / User Umum</option>
                 @foreach($customers as $index => $c)
-                    <option value="{{$c->id}}">{{$c->customer_name}}</option>
+                    <option value="{{$c->id}}">{{$c->customer_phone}} - {{$c->customer_name}}</option>
                 @endforeach
                 </select>
             </div>
             <div class="col-md-2">
                 <label for="">Payment</label>
             </div>
-            <div class="col-md-4">
-                <select name="payment" id="payment" class="form-control">
-                    <option value="cash">Cash</option>                
-                    <option value="edc">EDC</option>                
-                    <option value="transfer">Transfer</option>                
-                </select>
+            <div class="col-md-2">
+                <div class="row">
+                    <div class="col-12 form-group">
+                        <label>
+                            <input type="checkbox" name="cash" id="cash" onchange="rubah_disabled();">
+                            Cash
+                        </label>
+                        <input type="number" name="nominal_cash" id="nominal_cash" class="form-control" value="0" onkeyup="check_total();" disabled>
+                    </div>
+
+                    <div class="col-12 form-group">
+                        <label>
+                            <input type="checkbox" name="edc" onchange="rubah_disabled();" id="edc">
+                            EDC
+                        </label>
+                        <input type="number" name="nominal_edc" id="nominal_edc" class="form-control" value="0" onkeyup="check_total();" disabled>
+                    </div>
+
+                    <div class="col-12 form-group">
+                        <label>
+                            <input type="checkbox" name="transfer" onchange="rubah_disabled();" id="transfer">
+                            Transfer
+                        </label>
+                        <input type="number" name="nominal_transfer" id="nominal_transfer" class="form-control" value="0" onkeyup="check_total();" disabled>
+                    </div>
+                </div>
+                
+            
             </div>
+            
             <hr>
         </div>
         
@@ -138,7 +165,7 @@
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" form="" class="btn btn-primary" onclick="submit_form();">submit</button>
+        <button type="button" form="" class="btn btn-primary" onclick="submit_form();" id="submit_form" style="display: none;">submit</button>
       </div>
     </div>
   </div>
@@ -180,20 +207,65 @@
 </div>
 
 @endsection
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
 
 @push('page_scripts')
 <script src="{{ asset('js/jquery-mask-money.js') }}"></script>
+
 <!-- Bootstrap JS (with Popper) – CDN version -->
 <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AHR5oKn06PWzGk+E9Y1kCfmhktbZ5d9+8wCjUY8H7Sk/9kccB+ApPBALSczF+" crossorigin="anonymous"></script> -->
     <script> 
+
+    function check_total(){
+        let kabeh   = parseInt($('#nominal_cash').val()) + parseInt($('#nominal_edc').val()) + parseInt($('#nominal_transfer').val());
+        console.log(kabeh);
+        let total   = $("#total").html(); // Rp 1.405.000
+        let totalInt = parseInt(total.replace(/[^0-9]/g, '')); // "1405000" → 1405000
+        console.log(totalInt);
+        if(totalInt == kabeh){
+            $("#submit_form").show();
+        }else{
+            $("#submit_form").hide();
+        }
+    }
+
+    function rubah_disabled() {
+        let isCashChecked     = $('#cash').prop('checked');
+        let isEdcChecked      = $('#edc').prop('checked');
+        let isTransferChecked = $('#transfer').prop('checked');
+
+        // console.log('Cash checked:', isCashChecked);
+        // console.log('EDC checked:', isEdcChecked);
+        // console.log('Transfer checked:', isTransferChecked);
+
+        // Enable/disable inputs based on checkbox status
+        $('#nominal_cash').prop('disabled', !isCashChecked);
+        $('#nominal_edc').prop('disabled', !isEdcChecked);
+        $('#nominal_transfer').prop('disabled', !isTransferChecked);
+
+        
+        // console.log(totalInt); // 1405000
+    }
+
     $(document).ready(function(){
+        $('.pilih2').select2({
+            placeholder: 'Select an option',
+            allowClear: true
+        });
         $('#confirmProductModal').on('hidden.bs.modal', function () {
             remove_copy();
         });
     });
     function submit_form(){
         let cust = $("#customer_modal").val();
+        let cash = $("#nominal_cash").val();
+        let edc = $("#nominal_edc").val();
+        let transfer = $("#nominal_transfer").val();
         $("#customer").val(cust);
+        $("#hidden_cash").val(cash);
+        $("#hidden_edc").val(edc);
+        $("#hidden_transfer").val(transfer);
         $("#sale").submit();
         // return true;
     }

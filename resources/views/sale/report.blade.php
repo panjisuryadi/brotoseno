@@ -34,6 +34,76 @@
 @endsection
 @section('content')
 <div class="container-fluid">
+
+    @can('show_total_stats')
+        <div class="row">
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0">
+                    <div class="card-body p-0 d-flex align-items-center shadow-sm">
+                        <div class="bg-gradient-primary p-4 mfe-3 rounded-left">
+                            <i class="bi bi-cash font-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-value text-primary">{{ format_currency($totalGoldSales) }}</div>
+                            <div class="text-muted text-uppercase font-weight-bold small">
+                           @lang('Sales')
+                        </div>
+                        {{-- <p class="text-muted font-weight-bold small">{{ $todayDate->format("d/m/Y") }}</p> --}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0">
+                    <div class="card-body p-0 d-flex align-items-center shadow-sm">
+                        <div class="bg-gradient-warning p-4 mfe-3 rounded-left">
+                            <i class="bi bi-speedometer2 font-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-value text-warning">{{ $totalGoldWeight }} Gram</div>
+                            <div class="text-muted text-uppercase font-weight-bold small">
+                          @lang('Sales Weight')
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0">
+                    <div class="card-body p-0 d-flex align-items-center shadow-sm">
+                        <div class="bg-gradient-success p-4 mfe-3 rounded-left">
+                            <i class="bi bi-arrow-return-right font-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-value text-success">{{ $totalGoldQuantity }} Pcs</div>
+                            <div class="text-muted text-uppercase font-weight-bold small">
+                            @lang('Sales Quantity')
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0">
+                    <div class="card-body p-0 d-flex align-items-center shadow-sm">
+                        <div class="bg-gradient-info p-4 mfe-3 rounded-left">
+                            <i class="bi bi-people font-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-value text-info">{{ $totalCustomer }} Orang</div>
+                            <div class="text-muted text-uppercase font-weight-bold small">
+                             @lang('Total Customer')
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endcan
+
     <div class="row">
         <div class="col-12">
             <div class="card">

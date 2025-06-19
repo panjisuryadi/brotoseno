@@ -15,6 +15,9 @@ class SalesGold extends Model
         'products',
         'services',
         'total',
+        'cash',
+        'edc',
+        'transfer',
     ];
 
     public function pelanggan()

@@ -423,12 +423,29 @@ class JualController extends Controller
         }
 
         if($lanjut){
+            $cash       = $request->hidden_cash;
+            $edc        = $request->hidden_edc;
+            $transfer   = $request->hidden_transfer;
+            $sum        = $cash+$edc+$transfer;
+            // echo json_encode($_POST);
+            // echo $request->customer;
+            // echo $request->nominal_cash;
+            // echo '<br>';
+            // echo $total;
+            // exit();
+            if($total !== $sum){
+                toast('Total TIdak Sama!', 'error');
+                return redirect()->back();
+            }
             $salesGold  = SalesGold::create([
                 'nomor' => $nomor,
                 'customer' => $request->customer,
                 'products' => json_encode($products),
                 'services' => json_encode($services),
                 'total' => $total,
+                'cash' => $cash,
+                'edc' => $edc,
+                'transfer' => $transfer,
             ]);
             $id = $salesGold->id;
         }

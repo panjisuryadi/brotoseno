@@ -24,7 +24,7 @@ $user = \App\Models\User::findOrFail(Auth::user()->id);
                 <div class="card border-0">
                     <div class="card-body p-0 d-flex align-items-center shadow-sm">
                         <div class="bg-gradient-primary p-4 mfe-3 rounded-left">
-                            <i class="bi bi-bar-chart font-2xl"></i>
+                            <i class="bi bi-cash font-2xl"></i>
                         </div>
                         <div>
                             <div class="text-value text-primary">{{ format_currency($totalGoldSales) }}</div>
@@ -40,7 +40,7 @@ $user = \App\Models\User::findOrFail(Auth::user()->id);
                 <div class="card border-0">
                     <div class="card-body p-0 d-flex align-items-center shadow-sm">
                         <div class="bg-gradient-warning p-4 mfe-3 rounded-left">
-                            <i class="bi bi-arrow-return-left font-2xl"></i>
+                            <i class="bi bi-speedometer2 font-2xl"></i>
                         </div>
                         <div>
                             <div class="text-value text-warning">{{ $totalGoldWeight }} Gram</div>
@@ -72,7 +72,7 @@ $user = \App\Models\User::findOrFail(Auth::user()->id);
                 <div class="card border-0">
                     <div class="card-body p-0 d-flex align-items-center shadow-sm">
                         <div class="bg-gradient-info p-4 mfe-3 rounded-left">
-                            <i class="bi bi-trophy font-2xl"></i>
+                            <i class="bi bi-people font-2xl"></i>
                         </div>
                         <div>
                             <div class="text-value text-info">{{ $totalCustomer }} Orang</div>

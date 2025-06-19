@@ -62,8 +62,9 @@ class HomeController extends Controller
         // $profit = $revenue - $product_costs;
         // $sales = Sale::completed()->sum('total_amount');
 
-        $today = Carbon::today(); // hari ini
-        $todaySalesGold = SalesGold::whereDate('created_at', $today)->get(); // data penjualan hari ini
+        ///// start data pada card
+        $todayDate = Carbon::today(); // hari ini
+        $todaySalesGold = SalesGold::whereDate('created_at', $todayDate)->get(); // data penjualan hari ini
 
         // 1. HASIL PENJUALAN HARI INI (card ungu)
         $totalGoldSales = 0;
@@ -88,11 +89,12 @@ class HomeController extends Controller
         }
         
         // 4. JUMLAH PELANGGAN HARI INI (card biru)
-        $totalCustomer = SalesGold::whereDate('created_at', $today)->count();
+        $totalCustomer = SalesGold::whereDate('created_at', $todayDate)->count();
         // total sementara 17 juni 2025 = Rp. 11.252.326
         // total berat emas sementara = 8,44
         // total item sementara = 5
         // jumlah pelanggan sementara = 4
+        /// end data pada card
 
         return view('home', [
             'paging'     => $paging,

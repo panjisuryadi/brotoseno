@@ -127,6 +127,7 @@ class ProductController extends Controller
         $product    = Product::create([
             'category_id'       => $request->new_product_category_id,
             'product_code'       => $request->new_product_code_id,
+            'temp_code'       => $request->temp_code,
             'product_name'       => $product_name,
             'product_price'       => $request->new_product_harga,
             'product_barcode_symbology'       => 'C128',
@@ -136,6 +137,7 @@ class ProductController extends Controller
             'images'       => $gam,
             'berat_emas'       => $request->new_product_berat,
             'status_id'       => 3,
+            'karat_id'       => $request->new_product_karat_id,
             'group_id'       => $request->new_product_group_id,
             'model_id'       => $request->new_product_model_id,
             'goodreceipt_item_id' => 0,
@@ -256,15 +258,6 @@ class ProductController extends Controller
     {   
         // echo json_encode($_POST);
         // exit();
-        $id = $request->id;
-        // UPDATE STATUS PRODUCT
-        $products   = Product::where('id', $id)->firstOrFail();
-        $products->status_id   = $request->status;
-        if($request->status == 1){
-            $products->baki_id   = $request->baki;
-        }
-        $products->save();
-        // INSERT HISTORY
         $stat[1] = 'O';
         $stat[2] = 'S';
         $stat[3] = 'P';
@@ -281,6 +274,33 @@ class ProductController extends Controller
         $stat[14] = 'N';
         $stat[15] = 'H';
         // $stat[1] = 'L';
+        $id = $request->id;
+        // UPDATE STATUS PRODUCT
+        $products   = Product::where('id', $id)->firstOrFail();
+        $product_code   = $products->product_code;
+        $temp_code      = $products->temp_code;
+
+
+        $products->status_id   = $request->status;
+        $products->status   = $request->status;
+        if($request->status == 1){
+            $products->baki_id   = $request->baki;
+        }
+        // $products->save();
+        // INSERT HISTORY
+        
+        // GANTI CODE IF READY
+        if($request->status == 1){
+            if(substr($product_code, 0, 2) == 'BL'){
+                $products->product_code   = $temp_code;
+                $products->temp_code   = $product_code;
+
+
+            }
+        }
+        // exit();
+        $products->save();
+
         $product_history = ProductHistories::create([
             'product_id'    => $id,
             'status'        => $stat[$request->status],
@@ -856,6 +876,9 @@ class ProductController extends Controller
                         <div>
                            <div class="text-xs font-normal text-yellow-600 dark:text-gray-400">
                             ' . $data->category?->category_name . '</div>
+
+                            <div class="text-xs font-normal text-blue-600 dark:text-gray-400">
+                            ' . $data->product_code . '</div>
 
                             <h3 class="small font-medium text-gray-600 dark:text-white "> ' . $data->product_name . '</h3>
                              <div class="text-xs font-normal text-blue-500 font-semibold">

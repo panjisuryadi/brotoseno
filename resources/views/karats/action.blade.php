@@ -8,20 +8,6 @@ $product    = Product::where('karat_id', $data->id)
 ->count();
 ?>
 
-@if($product > 0)
-
-<div class="text-center">
-<a href="#" onclick="alert('Ada {{$product}} Product Aktif menggunakan karat berikut, kosongkan terlebih dahulu untuk dapat men Edit');"
-id=""
-data-toggle="tooltip"
- class="btn btn-outline-info btn-sm">
-    <i class="bi bi-pencil"></i> &nbsp;@lang('Edit') Karat
-</a>
-</div>
-    <button type="submit" class="btn btn-outline-danger btn-sm" data-toggle="tooltip" onclick="alert('Ada {{$product}} Product Aktif menggunakan karat berikut, kosongkan terlebih dahulu untuk dapat men Delete');">
-        <i class="bi bi-trash"></i> &nbsp;@lang('Delete')
-    </button>
-@else
 
 <div class="text-center">
 <a href="{{ route(''.$module_name.'.edit', $data->id) }}"
@@ -31,6 +17,14 @@ data-toggle="tooltip"
     <i class="bi bi-pencil"></i> &nbsp;@lang('Edit') Karat
 </a>
 </div>
+
+@if($product > 0)
+
+<button type="submit" class="btn btn-outline-danger btn-sm" data-toggle="tooltip" onclick="alert('ada {{$product}} produk menggunakan kategori karat tersebut, Hapus produk tersebut terlebih dahulu untuk dapat Edit dan Hapus kategori Karat');">
+    <i class="bi bi-trash"></i> &nbsp;@lang('Delete')
+</button>
+@else
+
 
 <form action="{{ route('karats.delete', $data->id) }}" method="POST" style="display:inline;">
     @csrf

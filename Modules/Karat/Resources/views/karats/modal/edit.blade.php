@@ -39,7 +39,7 @@
                     $required = "required";
                     ?>
                   <label for="{{ $field_name }}">{{ $field_lable }} %<span class="text-danger">* </span></label>
-                  <input class="form-control" type="text" name="{{ $field_name }}" id="{{ $field_name }}" value="{{$detail->name }}">
+                  <input class="form-control" type="text" name="{{ $field_name }}" id="{{ $field_name }}" value="{{$detail->name }}" readonly>
               </div>
 
               <div class="form-group">
@@ -51,16 +51,31 @@
                     $required = "required";
                     ?>
                   <label for="{{ $field_name }}">{{ $field_lable }} %<span class="text-danger">* </span></label>
-                  <input class="form-control" type="text" name="{{ $field_name }}" id="{{ $field_name }}" value="{{$detail->kode }}">
+                  <input class="form-control" type="text" name="{{ $field_name }}" id="{{ $field_name }}" value="{{$detail->kode }}" readonly>
+              </div>
+
+              <div class="form-group">
+                  <label for="password">Password</label>
+                  <input class="form-control" type="password" name="password" id="password" onkeyup="muncul_submit();">
               </div>
               
           </div>
       </form>
   </div>
   <script>
+    function muncul_submit(){
+        let pass = document.getElementById('password').value;
+        console.log(pass);
+        if (pass === 'luvenia12345') {
+            document.getElementById('SimpanUpdate').style.display = 'block';
+        } else {
+            document.getElementById('SimpanUpdate').style.display = 'none';
+        }
+    }
       jQuery.noConflict();
       (function($) {
 
+        
           function autoRefresh() {
               var table = $('#datatable').DataTable();
               table.ajax.reload();
@@ -104,9 +119,10 @@
               });
           }
           $(document).ready(function() {
+            
 
               var Tombol = "<button type='button' class='btn btn-danger px-5' data-dismiss='modal'>{{ __('Close') }}</button>";
-              Tombol += "<button type='button' class='px-5 btn btn-primary' id='SimpanUpdate'>{{ __('Update') }}</button>";
+              Tombol += "<button type='button' class='px-5 btn btn-primary' id='SimpanUpdate' style='display:none;'>{{ __('Update') }}</button>";
               $('#ModalFooter').html(Tombol);
 
               $("#FormEdit").find('input[type=text],textarea,select').filter(':visible:first').focus();

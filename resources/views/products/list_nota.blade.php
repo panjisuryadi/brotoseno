@@ -246,6 +246,26 @@
                                             </div> -->
                                         </div>
 
+                                        <div class="form-group">
+                                            <?php
+                                            $field_name = 'new_product.baki_id';
+                                            $field_id   = 'baki_id_'.$number;
+                                            $field_lable = label_case('Baki');
+                                            $field_placeholder = $field_lable;
+                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                            $required = "required";
+                                            ?>
+                                            <label for="{{ $field_name }}">Baki</label>
+                                            <select name="{{ $field_name }}" id="{{ $field_id }}" class="form-control">
+                                                <option value="">Select Baki</option>
+                                                @foreach($baki as $b)
+                                                <option value="{{$b->id}}">{{$b->posisi}} - {{$b->name}}</option>
+                                                @endforeach
+                                            </select>
+                                            <!-- <div class="input-group">
+                                            </div> -->
+                                        </div>
+
                                     </div>
 
                                     {{-- ///batas --}}

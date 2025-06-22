@@ -34,6 +34,9 @@ use Modules\Product\Models\ProductStatus;
 use Yajra\DataTables\DataTables;
 use Modules\Karat\Models\Karat;
 use Modules\ProdukModel\Models\ProdukModel;
+use Modules\DataBank\Models\DataBank;
+use Modules\DataRekening\Models\DataRekening;
+
 
 class JualController extends Controller
 {
@@ -80,8 +83,12 @@ class JualController extends Controller
         $models  = ProdukModel::latest()->get();
         $customers = Customer::all();
         $product_categories = Category::all();
+        $cc = Config::where('name', 'cc')->first();
+        $bank   = DataBank::latest()->get();
+        $rekening   = DataRekening::latest()->get();
 
-        return view('sale.list', compact('product_categories', 'customers', 'karat', 'category', 'group', 'models'));
+
+        return view('sale.list', compact('product_categories', 'customers', 'karat', 'category', 'group', 'models', 'cc', 'bank', 'rekening'));
     }
 
     public function data_report(Request $request)
@@ -361,6 +368,8 @@ class JualController extends Controller
     public function insert(Request $request){
         // echo json_encode($_POST);
         // exit();
+
+
         $set_harga  = Harga::latest()->first();
         $set_harga  = $set_harga->harga;
         $config = Config::where('name', 'nota')->first();
@@ -426,7 +435,12 @@ class JualController extends Controller
             $cash       = $request->hidden_cash;
             $edc        = $request->hidden_edc;
             $transfer   = $request->hidden_transfer;
-            $sum        = $cash+$edc+$transfer;
+            $qr         = $request->hidden_qr;
+            $cc         = $request->hidden_muncul_cc;
+            $cc_up      = $request->hidden_cc;
+            $bank       = $request->hidden_bank;
+            $rekening   = $request->hidden_rekening;
+            $sum        = $cash+$edc+$transfer+$qr+$cc;
             // echo json_encode($_POST);
             // echo $request->customer;
             // echo $request->nominal_cash;
@@ -446,6 +460,11 @@ class JualController extends Controller
                 'cash' => $cash,
                 'edc' => $edc,
                 'transfer' => $transfer,
+                'qr' => $qr,
+                'cc' => $cc,
+                'cc_up' => $cc_up,
+                'bank_id' => $bank,
+                'rekening_id' => $rekening,
             ]);
             $id = $salesGold->id;
         }

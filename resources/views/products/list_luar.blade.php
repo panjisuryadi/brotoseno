@@ -25,6 +25,16 @@
         color: #bd4019 !important;
     }
 </style>
+
+<!-- jQuery (must come first) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Then Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Bootstrap JS (for modals, dropdowns, etc.) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
 @endsection
 @section('breadcrumb')
 <ol class="breadcrumb border-0 m-0">
@@ -58,7 +68,8 @@
                                     <th style="width: 15%!important;">Product</th>
                                     <th style="width: 15%!important;" class="text-center">Harga Beli</th>
                                     <th style="width: 10%!important;" class="text-center">Berat</th>
-                                    <th style="width: 15%!important;" class="text-center">Code</th>
+                                    <th style="width: 15%!important;" class="text-center">Temp Code</th>
+                                    <th style="width: 15%!important;" class="text-center">QR</th>
                                     <th style="width: 25%!important;" class="text-center">Keterangan</th>
                                     <th style="width: 15%!important;" class="text-center">Date</th>
                                     
@@ -465,8 +476,12 @@
             name: 'berat_emas'
         },
         {
-            data: 'code',
-            name: 'code'
+            data: 'temp',
+            name: 'temp'
+        },
+        {
+            data: 'qr',
+            name: 'qr'
         },
         {
             data: 'keterangan',
@@ -476,10 +491,7 @@
             data: 'created_at',
             name: 'created_at'
         },
-        // {
-        //     data: 'tracking',
-        //     name: 'tracking'
-        // },
+        
         // {
         //     data: 'status',
         //     name: 'status'

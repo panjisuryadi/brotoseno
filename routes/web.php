@@ -154,6 +154,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/config/update', 'ConfigController@update')
         ->name('config.update');
 
+    Route::post('/config/cc', 'ConfigController@update_cc')
+        ->name('config.cc');
+
     Route::post('/config', 'ConfigController@create')
         ->name('config.create');
 

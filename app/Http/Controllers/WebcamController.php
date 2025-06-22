@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use App\Models\Webcam;
+use App\Models\Config;
 use PDF;
 use Auth;
 use Yajra\DataTables\DataTables;
@@ -49,12 +50,15 @@ class WebcamController extends Controller
         $module_icon = $this->module_icon;
         $module_model = $this->module_model;
 
+        $cc = Config::where('name', 'cc')->first();
+
         $webcam  = Webcam::latest()->first();
 
         return view(
             'webcam.list', // Path to your create view file
             compact(
                 'webcam',
+                'cc',
                 'module_title',
                 'module_name',
                 'module_path',

@@ -204,7 +204,17 @@ class ProductController extends Controller
         // $gambar = 'products_20250522095614.png';
 
         $berat  = str_replace(',', '.', $request->new_product_berat);
-
+        $stat   = 4; // pending
+        $baki_id    = $request->new_product_baki_id;
+        if(!empty($baki_id)){
+            $baki   = Baki::where('id', $baki_id)->first();
+            $posisi = $baki->posisi;
+            if($posisi == 'etalase'){
+                $stat   = 1;
+            }
+        }else{
+            $baki_id    = 0;
+        }
         $product    = Product::create([
             'category_id'       => $request->new_product_category_id,
             'product_code'       => $request->new_product_code_id,
@@ -214,10 +224,11 @@ class ProductController extends Controller
             'product_unit'       => 'Gram',
             'karat_id'       => $request->new_product_karat_id,
             'product_stock_alert'       => 5,
-            'status'       => 4, // brankas
+            'status'       => $stat, // brankas
             'images'       => $gambar,
             'berat_emas'       => $berat,
-            'status_id'       => 4, // brankas
+            'baki_id'       => $baki_id,
+            'status_id'       => $stat, // brankas
             'group_id'       => $request->new_product_group_id,
             'model_id'       => $request->new_product_model_id,
             'goodreceipt_item_id' => 0,
@@ -461,6 +472,8 @@ class ProductController extends Controller
         $module_icon = $this->module_icon;
         $module_model = $this->module_model;
         $dataKarat = Karat::whereNull('parent_id')->get();
+
+        $baki   = Baki::latest()->get();
         return view(
             'products.list_nota', // Path to your create view file
             compact(
@@ -476,6 +489,7 @@ class ProductController extends Controller
                 'hari_ini',
                 // 'inputs',
                 'dataKarat',
+                'baki',
             )
         );
     }
@@ -1220,6 +1234,15 @@ class ProductController extends Controller
                 );
             })
 
+            ->addColumn('qr', function ($data) {
+                $module_name = $this->module_name;
+                $module_model = $this->module_model;
+                return view(
+                    'product::products.partials.qrcode_button',
+                    compact('module_name', 'data', 'module_model')
+                );
+            })
+
             ->editColumn('product_name', function ($data) {
                 $tb = '<div class="flex items-center gap-x-2">
                         <div>
@@ -1227,6 +1250,7 @@ class ProductController extends Controller
                             ' . $data->category?->category_name . '</div>
 
                             <h3 class="small font-medium text-gray-600 dark:text-white "> ' . $data->product_name . '</h3>
+                            <h3 class="small font-medium text-blue-600 dark:text-white "> ' . $data->product_code . '</h3>
                              <div class="text-xs font-normal text-blue-500 font-semibold">
                             ' . @$data->cabang->name . '</div>
 
@@ -1250,8 +1274,19 @@ class ProductController extends Controller
             })
 
             ->editColumn('code', function ($data) {
+                if(empty($data->temp_code)){
+                    return '';
+                }
                 return $data->product_code;
             })
+
+            ->editColumn('temp', function ($data) {
+                if(empty($data->temp_code)){
+                    return $data->product_code;
+                }
+                return $data->temp_code;
+            })
+
             ->editColumn('keterangan', function ($data) {
                 return $data->product_history->keterangan ?? '';
             })

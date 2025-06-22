@@ -63,6 +63,12 @@
                     <input type="hidden" name="hidden_cash" id="hidden_cash">
                     <input type="hidden" name="hidden_edc" id="hidden_edc">
                     <input type="hidden" name="hidden_transfer" id="hidden_transfer">
+                    <input type="hidden" name="hidden_qr" id="hidden_qr">
+                    <input type="hidden" name="hidden_cc" id="hidden_cc">
+                    <input type="hidden" name="hidden_muncul_cc" id="hidden_muncul_cc">
+                    <input type="hidden" name="hidden_bank" id="hidden_bank">
+                    <input type="hidden" name="hidden_rekening" id="hidden_rekening">
+                    <input type="hidden" name="persen_cc" id="persen_cc" value="{{$cc->value}}">
                     <div class="flex-grow-1 d-flex flex-column gap-2 overflow-auto" id="preview-area" style="max-height: 300px; /* or whatever fits your layout */overflow-y: auto;">
                         
                     <!-- <span class="text-muted">Selected product preview goes here</span> -->
@@ -107,10 +113,10 @@
       
       <div class="modal-body">
         <div class="row">
-            <div class="col-md-2">
+            <div class="col-md-1">
                 <label for="">Customer</label>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <select name="customer" id="customer_modal" class="pilih2 form-control">
                     <option value="0">Pilih Customer / User Umum</option>
                 @foreach($customers as $index => $c)
@@ -118,41 +124,72 @@
                 @endforeach
                 </select>
             </div>
+            <div class="col-md-1 hidden_bank" style="display: none;">
+                <label for="">Bank</label>
+            </div>
+            <div class="col-md-3 hidden_bank" style="display: none;">
+                <select name="bank" id="bank" class="pilih2 form-control">
+                    <option value="0">Pilih Bank</option>
+                    @foreach($bank as $index => $b)
+                    <option value="{{$b->id}}">{{$b->nama_bank}} - {{$b->no_akun}}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-1 hidden_rekening" style="display: none;">
+                <label for="">Rekening</label>
+            </div>
+            <div class="col-md-3 hidden_rekening" style="display: none;">
+                <select name="rekening" id="rekening" class="pilih2 form-control">
+                    <option value="0">Pilih Rekening</option>
+                    @foreach($rekening as $index => $r)
+                    <option value="{{$r->id}}">{{$r->nama_rekening}} - {{$r->no_rekening}}</option>
+                    @endforeach
+                </select>
+            </div>
+            
+        </div>
+        <div class="row mt-3">
             <div class="col-md-2">
                 <label for="">Payment</label>
             </div>
             <div class="col-md-2">
-                <div class="row">
-                    <div class="col-12 form-group">
-                        <label>
-                            <input type="checkbox" name="cash" id="cash" onchange="rubah_disabled();">
-                            Cash
-                        </label>
-                        <input type="number" name="nominal_cash" id="nominal_cash" class="form-control" value="0" onkeyup="check_total();" disabled>
-                    </div>
-
-                    <div class="col-12 form-group">
-                        <label>
-                            <input type="checkbox" name="edc" onchange="rubah_disabled();" id="edc">
-                            EDC
-                        </label>
-                        <input type="number" name="nominal_edc" id="nominal_edc" class="form-control" value="0" onkeyup="check_total();" disabled>
-                    </div>
-
-                    <div class="col-12 form-group">
-                        <label>
-                            <input type="checkbox" name="transfer" onchange="rubah_disabled();" id="transfer">
-                            Transfer
-                        </label>
-                        <input type="number" name="nominal_transfer" id="nominal_transfer" class="form-control" value="0" onkeyup="check_total();" disabled>
-                    </div>
-                </div>
-                
-            
+                <label>
+                    <input type="checkbox" name="cash" id="cash" onchange="rubah_disabled();" checked>
+                    Cash
+                </label>
+                <input type="number" name="nominal_cash" id="nominal_cash" class="form-control" value="0" onkeyup="check_total();">
             </div>
-            
-            <hr>
+            <div class="col-md-2">
+                <label>
+                    <input type="checkbox" name="transfer" id="transfer" onchange="rubah_disabled();">
+                    Transfer
+                </label>
+                <input type="number" name="nominal_transfer" id="nominal_transfer" class="form-control" value="0" onkeyup="check_total();" disabled>
+            </div>
+            <div class="col-md-2">
+                <label>
+                    <input type="checkbox" name="edc" id="edc" onchange="rubah_disabled();">
+                    EDC
+                </label>
+                <input type="number" name="nominal_edc" id="nominal_edc" class="form-control" value="0" onkeyup="check_total();" disabled>
+            </div>
+            <div class="col-md-2">
+                <label>
+                    <input type="checkbox" name="qr" id="qr" onchange="rubah_disabled();">
+                    QR
+                </label>
+                <input type="number" name="nominal_qr" id="nominal_qr" class="form-control" value="0" onkeyup="check_total();" disabled>
+            </div>
+            <div class="col-md-2">
+                <label>
+                    <input type="checkbox" name="cc" id="cc" onchange="rubah_disabled();">
+                    CC
+                </label>
+                <input type="number" name="muncul_cc" id="muncul_cc" class="form-control" value="0" disabled style="display:none;">
+                <input type="number" name="nominal_cc" id="nominal_cc" class="form-control" value="0" onkeyup="check_total();" disabled style="color: red;">
+            </div>
         </div>
+        <hr class="mt-3">
         
         <div class="mt-5" id="copy">
 
@@ -165,7 +202,7 @@
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" form="" class="btn btn-primary" onclick="submit_form();" id="submit_form" style="display: none;">submit</button>
+        <button type="button" form="" class="btn btn-primary" onclick="submit_form();" id="submit_form" style="display: block;">submit</button>
       </div>
     </div>
   </div>
@@ -218,8 +255,33 @@
     <script> 
 
     function check_total(){
-        let kabeh   = parseInt($('#nominal_cash').val()) + parseInt($('#nominal_edc').val()) + parseInt($('#nominal_transfer').val());
-        console.log(kabeh);
+        let isCcChecked         = $('#cc').prop('checked');
+        let nominal_cash        = parseInt($('#nominal_cash').val());
+        let nominal_edc         = parseInt($('#nominal_edc').val());
+        let nominal_transfer    = parseInt($('#nominal_transfer').val());
+        let nominal_qr          = parseInt($('#nominal_qr').val());
+        let nominal_cc          = parseInt($('#nominal_cc').val());
+
+        if(isCcChecked){
+            let persenCc            = $("#persen_cc").val();
+            let total               = $("#total-nominal").html();
+            const nilai = parseInt(total.replace(/[^\d]/g, ''), 10);
+
+            let semua   = nominal_cash+nominal_edc+nominal_transfer+nominal_qr;
+            // console.log(semua);
+            let sisa    = nilai-semua;
+            // console.log(sisa);
+            $("#muncul_cc").show();
+            $("#muncul_cc").val(sisa);
+            $('#nominal_cc').val(sisa+(sisa*persenCc/100));
+        }else{
+            $('#nominal_cc').val(0);
+        }
+
+        let muncul_cc           = parseInt($('#muncul_cc').val());
+
+        let kabeh   = nominal_cash+nominal_edc+nominal_transfer+nominal_qr+muncul_cc;
+        console.log(kabeh); // 1239
         let total   = $("#total").html(); // Rp 1.405.000
         let totalInt = parseInt(total.replace(/[^0-9]/g, '')); // "1405000" → 1405000
         console.log(totalInt);
@@ -231,19 +293,63 @@
     }
 
     function rubah_disabled() {
+        check_total();
         let isCashChecked     = $('#cash').prop('checked');
         let isEdcChecked      = $('#edc').prop('checked');
         let isTransferChecked = $('#transfer').prop('checked');
+        let isQrChecked = $('#qr').prop('checked');
+        let isCcChecked = $('#cc').prop('checked');
+        let persenCc = $("#persen_cc").val();
 
-        // console.log('Cash checked:', isCashChecked);
-        // console.log('EDC checked:', isEdcChecked);
-        // console.log('Transfer checked:', isTransferChecked);
+        if(isCashChecked){
+            // $(".hidden_rekening").show();
+        }else{
+            // $(".hidden_rekening").hide();
+            $('#nominal_cash').val(0);
+        }
+        if(isEdcChecked){
+            $(".hidden_rekening").show();
+        }else{
+            $(".hidden_rekening").hide();
+            $('#nominal_edc').val(0);
+        }
+        if(isTransferChecked){
+            $(".hidden_bank").show();
+        }else{
+            $(".hidden_bank").hide();
+            $('#nominal_transfer').val(0);
+        }
+        if(isQrChecked){
+            // $(".hidden_rekening").show();
+        }else{
+            // $(".hidden_rekening").hide();
+            $('#nominal_qr').val(0);
+        }
+        if(isCcChecked){
+            let nominal_cash        = parseInt($("#nominal_cash").val());
+            let nominal_edc         = parseInt($("#nominal_edc").val());
+            let nominal_transfer    = parseInt($("#nominal_transfer").val());
+            let nominal_qr          = parseInt($("#nominal_qr").val());
+            let total               = $("#total-nominal").html();
+            const nilai = parseInt(total.replace(/[^\d]/g, ''), 10);
+            // console.log(nilai);
 
-        // Enable/disable inputs based on checkbox status
+            let semua   = nominal_cash+nominal_edc+nominal_transfer+nominal_qr;
+            // console.log(semua);
+            let sisa    = nilai-semua;
+            // console.log(sisa);
+            $("#muncul_cc").show();
+            $("#muncul_cc").val(sisa);
+            $('#nominal_cc').val(sisa+(sisa*persenCc/100));
+        }else{
+            $('#nominal_cc').val(0);
+        }
+        
         $('#nominal_cash').prop('disabled', !isCashChecked);
         $('#nominal_edc').prop('disabled', !isEdcChecked);
         $('#nominal_transfer').prop('disabled', !isTransferChecked);
-
+        $('#nominal_qr').prop('disabled', !isQrChecked);
+        // $('#nominal_cc').prop('disabled', !isCcChecked);
         
         // console.log(totalInt); // 1405000
     }
@@ -257,15 +363,26 @@
             remove_copy();
         });
     });
+
     function submit_form(){
         let cust = $("#customer_modal").val();
         let cash = $("#nominal_cash").val();
         let edc = $("#nominal_edc").val();
         let transfer = $("#nominal_transfer").val();
+        let qr = $("#nominal_qr").val();
+        let cc = $("#nominal_cc").val();
+        let muncul_cc = $("#muncul_cc").val();
+        let bank = $("#bank").val();
+        let rekening = $("#rekening").val();
         $("#customer").val(cust);
         $("#hidden_cash").val(cash);
         $("#hidden_edc").val(edc);
         $("#hidden_transfer").val(transfer);
+        $("#hidden_qr").val(qr);
+        $("#hidden_cc").val(cc);
+        $("#hidden_muncul_cc").val(muncul_cc);
+        $("#hidden_bank").val(bank);
+        $("#hidden_rekening").val(rekening);
         $("#sale").submit();
         // return true;
     }
@@ -295,6 +412,10 @@
         $("#copy").html(clone.html());
         let total = $("#total-nominal").html();
         $("#total").html(total);
+        const nilai = parseInt(total.replace(/[^\d]/g, ''), 10);
+        // console.log(value); // 2681000
+
+        $("#nominal_cash").val(nilai);
 
     }
 

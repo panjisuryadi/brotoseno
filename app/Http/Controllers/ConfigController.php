@@ -134,4 +134,13 @@ class ConfigController extends Controller
         
         return redirect()->action([ConfigController::class, 'list']);
     }
+
+    public function update_cc(Request $request){
+        $config = Config::where('name', 'cc')->firstOrFail();
+        $config->value = $request->cc;
+        $config->save();
+        
+        return redirect()->action([WebcamController::class, 'list']);
+    }
+
 }

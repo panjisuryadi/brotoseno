@@ -75,9 +75,9 @@ $user = \App\Models\User::findOrFail(Auth::user()->id);
                             <i class="bi bi-people font-2xl"></i>
                         </div>
                         <div>
-                            <div class="text-value text-info">{{ $totalCustomer }} Orangs</div>
+                            <div class="text-value text-info">{{ $totalCustomer }} Orang</div>
                             <div class="text-muted text-uppercase font-weight-bold small">
-                             @lang('Total Customer A')
+                             @lang('Total Customer')
                         </div>
                         </div>
                     </div>

@@ -62,8 +62,8 @@
                         reader.readAsDataURL($refs.photo.files[0]);
     ">
 
-     <label for="Image" class="block text-gray-700 text-sm font-bold mb-2 text-center">{{ __('Image') }}</label>
-
+     <!-- <label for="Image" class="block text-gray-700 text-sm font-bold mb-2 text-center">{{ __('Image') }}</label> -->
+<!-- 
     <div class="text-center">
             <div class="mt-2" x-show="! photoPreview">
             <img src="{{asset("img/harvest/enam.png")}}" class="w-40 h-40 m-auto rounded-full shadow">
@@ -75,7 +75,7 @@
         <button type="button" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-400 focus:shadow-outline-blue active:text-gray-800 active:bg-gray-50 transition ease-in-out duration-150 mt-2 ml-3" x-on:click.prevent="$refs.photo.click()">
           @lang('Select Image')
         </button>
-    </div>
+    </div> -->
 
 @if ($errors->has($field_name))
     <span class="invalid feedback"role="alert">

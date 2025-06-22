@@ -29,7 +29,7 @@
                             <thead>
                                 <tr>
                                     <th style="width: 5%!important;">No</th>
-                                    <th style="width: 12% !important;">{{ __('Image') }}</th>
+                                    <!-- <th class="hide-column" style="width: 12% !important;">{{ __('Image') }}</th> -->
                                     <th>{{ __('Name') }}</th>
                                     <th>{{ __('Description') }}</th>
                                     <th style="width: 15%!important;" class="text-center">
@@ -113,7 +113,7 @@
                     }
                 },
 
-                {data: 'image', name: 'image'}, 
+                // {data: 'image', name: 'image'}, 
                 {data: 'name', name: 'name'},
                 {
                     data: 'description',

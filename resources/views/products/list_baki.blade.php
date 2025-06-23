@@ -35,7 +35,7 @@
 
             <!-- Left Side: Product List -->
             <div class="col-md-6">
-                <h1><strong>Origin</strong></h1>
+                <h1><strong>ORIGIN</strong></h1>
                 <br>
                 <table id="datatable" style="width: 100%" class="mt-5 table table-bordered table-hover table-responsive-sm">
                     <thead>
@@ -54,7 +54,7 @@
             </div>
 
             <div class="col-md-6">
-                <h1><strong>Destination | {{$baki->name}} | {{$baki->posisi}}</strong></h1>
+                <h1><strong>DESTINATION | {{$baki->name}} | {{$baki->posisi}}</strong></h1>
                 <br>
                 <table id="datatable2" style="width: 100%" class="mt-5 table table-bordered table-hover table-responsive-sm">
                     <thead>

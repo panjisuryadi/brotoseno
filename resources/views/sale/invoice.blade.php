@@ -52,7 +52,7 @@
         }
 
 
-        
+
         .header {
             text-align: center; /* Center the content */
             width: 100%;
@@ -191,7 +191,7 @@
             width: 50%;
             text-align: right;
         }
-       
+
     </style>
 </head>
 
@@ -219,9 +219,9 @@
         <div class="header">
             <!-- Left side: Logo -->
             <img src="{{ $imageSrc }}" alt="Logo">
-            
+
             <!-- Centered: Toko Emas Cahaya -->
-            <h3>Toko Emas Cahaya {{ $product['print'] }}</h3>
+            <h3>Toko Emas Lovin Cahaya {{ $product['print'] }}</h3>
             <p>{{ $product['alamat'] }}</p>
             <p>{{ $product['telp'] }}</p>
         </div>
@@ -288,7 +288,7 @@
                 <!-- Left cell: Footer text -->
                 <td style="width: 50%; vertical-align: top; font-size: 11px; padding-right: 10px;">
                     <p style="margin: 0;">Hormat Kami,</p>
-                    <p style="margin: 0;">Toko Emas Cahaya</p>
+                    <p style="margin: 0;">Toko Emas Lovin Cahaya</p>
                 </td>
                 <!-- Right cell: Totals -->
                 <td style="width: 50%; vertical-align: top; font-size: 11px; text-align: right; padding-left: 10px;">
@@ -298,14 +298,14 @@
                     <p style="margin: 0;"><strong>Grand Total:</strong> Rp {{ number_format($product['harga'], 0, ',', '.') }}</p>
                 </td>
             </tr>
-            
+
         </table>
 
         <p style="font-size:12px;"><u>{{$product['info']}}</u></p>
         <!-- <div class="summary-footer-container">
             <div class="footer-text">
                 <p>Hormat Kami,</p>
-                <p>Toko Emas Cahaya</p>
+                <p>Toko Emas Lovin  Cahaya</p>
             </div>
 
             <div class="total-section">

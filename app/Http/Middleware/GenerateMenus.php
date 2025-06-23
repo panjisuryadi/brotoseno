@@ -1372,6 +1372,20 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link',
                 ]);
 
+            // REPORT - REKAP PENJUALAN
+            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . 'Rekap Penjualan'. '', [
+                'route' => 'sale.recap',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 91,
+                    'activematches' => 'settings*',
+                    'permission'    => ['access_settings'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link',
+                ]);
+
             // REPORT - HUTANG
             $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Debt') . '', [
                 'route' => 'goodsreceipt.debts',

@@ -317,6 +317,122 @@ class JualController extends Controller
         );
     }
 
+
+
+    public function data_recap(Request $request)
+    {
+        $data = SalesGold::query();
+
+        if ($request->filled('bulan') && $request->filled('tahun')) {
+            $data->whereMonth('created_at', $request->bulan)
+                ->whereYear('created_at', $request->tahun);
+        }
+
+        $data = $data->latest()->get();
+
+        $rekap = $data->groupBy(function ($item) {
+            return Carbon::parse($item->created_at)->format('Y-m-d');
+        })->map(function ($items, $tanggal) {
+            $total = $items->sum('total');
+
+            $berat = 0;
+            foreach ($items as $row) {
+                $produk = json_decode($row->products, true);
+                foreach ($produk as $id_produk) {
+                    $berat += Product::find($id_produk)?->berat_emas ?? 0;
+                }
+            }
+
+            return [
+                'tanggal' => $tanggal,
+                'berat_emas' => $berat,
+                'total' => $total,
+            ];
+        })->sortByDesc('tanggal')->values();
+
+        return DataTables::of($rekap)
+            ->editColumn('tanggal', fn($row) => Carbon::parse($row['tanggal'])->format('d/m/y'))
+            ->editColumn('berat_emas', fn($row) => number_format($row['berat_emas'], 2) . ' gr')
+            ->editColumn('total', fn($row) => 'Rp ' . number_format($row['total'], 0, ',', '.'))
+            ->make(true);
+    }
+
+
+    public function recap(Request $request)
+        {
+            if (AdjustmentSetting::exists()) {
+                toast('Stock Opname sedang Aktif!', 'error');
+                return redirect()->back();
+            }
+
+            Cart::instance('sale')->destroy();
+
+            $karat = Karat::latest()->get();
+            $category = Category::latest()->get();
+            $group = Group::latest()->get();
+            $models = ProdukModel::latest()->get();
+            $customers = Customer::all();
+            $product_categories = Category::all();
+
+            // Ambil filter dari request
+            $bulan = $request->bulan;
+            $tahun = $request->tahun;
+
+            // Ambil data SalesGold berdasarkan filter (jika ada)
+            $salesGold = SalesGold::when($bulan, function ($query) use ($bulan) {
+                    return $query->whereMonth('created_at', $bulan);
+                })
+                ->when($tahun, function ($query) use ($tahun) {
+                    return $query->whereYear('created_at', $tahun);
+                })
+                ->get();
+
+            // Total nilai penjualan
+            $totalGoldSales = $salesGold->sum('total');
+
+            // Hitung berat dan jumlah produk
+            $totalGoldWeight = 0;
+            $allProducts = [];
+
+            foreach ($salesGold as $data) {
+                $arrayProducts = json_decode($data->products, true);
+                foreach ($arrayProducts as $product_id) {
+                    $allProducts[] = $product_id;
+                    $berat = Product::find($product_id)?->berat_emas ?? 0;
+                    $totalGoldWeight += $berat;
+                }
+            }
+
+            $totalGoldQuantity = count($allProducts);
+            $totalCustomer = $salesGold->count();
+
+            $module_title = $this->module_title;
+
+            return view('sale.recap', compact(
+                'module_title',
+                'karat',
+                'category',
+                'group',
+                'models',
+                'customers',
+                'product_categories',
+                'totalGoldSales',
+                'totalGoldWeight',
+                'totalGoldQuantity',
+                'totalCustomer',
+                'bulan',
+                'tahun'
+            ));
+        }
+
+
+
+
+
+
+
+
+
     public function test_pdf(){
         $data = [
             'title' => 'Nota Emas',

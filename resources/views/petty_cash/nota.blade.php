@@ -65,7 +65,7 @@
     <div class="invoice">
         <div class="header">
             <img src="logo.png" alt="Logo"> <!-- Replace with your actual logo -->
-            <h2>Toko Emas Cahaya</h2>
+            <h2>Toko Emas Lovin Cahaya</h2>
             <p>Ruko Sentra Gading Blok SG3 - No.6, Depan Pasar Modern Sinpasa, Gading Serpong Tangerang</p>
             <p>Telp: 021-54761931</p>
         </div>
@@ -109,7 +109,7 @@
 
         <div class="footer">
             <p>Hormat Kami,</p>
-            <p>Toko Emas Cahaya</p>
+            <p>Toko Emas Lovin Cahaya</p>
         </div>
     </div>
 

@@ -1417,7 +1417,7 @@ class GenerateMenus
             //////////start menu
             // REPORT - STOK
             $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Stock') . '', [
-                'route' => 'sale.report',
+                'route' => 'stock-report.index',
                 'class' => 'nav-item',
             ])
                 ->data([

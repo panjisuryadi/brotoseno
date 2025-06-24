@@ -27,7 +27,7 @@ $user = \App\Models\User::findOrFail(Auth::user()->id);
                             <i class="bi bi-cash font-2xl"></i>
                         </div>
                         <div>
-                            <div class="text-value text-primary">{{ format_currency($totalGoldSales) }}</div>
+                            <div class="text-value text-primary">{{ $formattedTotalGoldSales }}</div>
                             <div class="text-muted text-uppercase font-weight-bold small">
                            @lang('Sales')
                         </div>

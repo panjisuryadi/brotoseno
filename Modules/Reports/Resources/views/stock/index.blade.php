@@ -39,9 +39,9 @@
                             </div>
                             <div>
                                 {{-- <div class="text-value text-primary">{{ format_currency($totalGoldSales) }}</div> --}}
-                                <div class="text-value text-primary">{{ number_format($stockWeight, 0, ',', '.') }} Gram</div>
+                                <div class="text-value text-primary">{{ $formattedStockWeight }}</div>
                                 <div class="text-muted text-uppercase font-weight-bold small">
-                                    Berat Total
+                                    @lang('Total Weight')
                                 </div>
                                 {{-- <p class="text-muted font-weight-bold small">{{ $todayDate->format("d/m/Y") }}</p> --}}
                             </div>
@@ -58,7 +58,7 @@
                             <div>
                                 <div class="text-value text-warning">{{ $stockQuantity }} Pcs</div>
                                 <div class="text-muted text-uppercase font-weight-bold small">
-                                    Kuantitas Total
+                                    @lang('Total Quantity')
                                 </div>
                             </div>
                         </div>
@@ -72,14 +72,30 @@
                                 <i class="bi bi-cash font-2xl"></i>
                             </div>
                             <div>
-                                <div class="text-value text-success">{{ $formattedIDR }}</div>
+                                <div class="text-value text-success">{{ $formattedNilaiAset }}</div>
                                 <div class="text-muted text-uppercase font-weight-bold small">
-                                    IDR
+                                    @lang('Asset Value')
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <div class="col-md-6 col-lg-3">
+                <div class="card border-0">
+                    <div class="card-body p-0 d-flex align-items-center shadow-sm">
+                        <div class="bg-gradient-info p-4 mfe-3 rounded-left">
+                            <i class="bi bi-cash font-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-value text-info">{{ $formattedPotensiAset }}</div>
+                            <div class="text-muted text-uppercase font-weight-bold small">
+                             @lang('Asset Potential')
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             </div>
         @endcan

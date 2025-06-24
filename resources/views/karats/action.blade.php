@@ -16,13 +16,16 @@ data-toggle="tooltip"
  class="btn btn-outline-info btn-sm">
     <i class="bi bi-pencil"></i> &nbsp;@lang('Edit') Karat
 </a>
-</div>
+
 
 @if($product > 0)
 
 <button type="submit" class="btn btn-outline-danger btn-sm" data-toggle="tooltip" onclick="alert('ada {{$product}} produk menggunakan kategori karat tersebut, Hapus produk tersebut terlebih dahulu untuk dapat Edit dan Hapus kategori Karat');">
     <i class="bi bi-trash"></i> &nbsp;@lang('Delete')
 </button>
+
+</div>
+
 @else
 
 

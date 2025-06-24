@@ -24,13 +24,13 @@
                                     <div class="mt-2 py-2" x-show="! photoPreview">
                                         <img src="{{asset("images/logo.png")}}" class="w-40 h-40 m-auto rounded-xl ">
                                     </div>
-                                    <div class="mt-2 py-2" x-show="photoPreview" style="display: none;">
+                                    <!-- <div class="mt-2 py-2" x-show="photoPreview" style="display: none;">
                                         <span class="block w-40 h-40 rounded-xl m-auto" x-bind:style="'background-size: cover; background-repeat: no-repeat; background-position: center center; background-image: url(\'' + photoPreview + '\');'" style="background-size: cover; background-repeat: no-repeat; background-position: center center; background-image: url('null');">
                                         </span>
                                     </div>
                                     <button type="button" class="btn btn-secondary px-5" x-on:click.prevent="$refs.photo.click()">
                                     @lang('Select Image')
-                                    </button>
+                                    </button> -->
                                 </div>
                             </div>
                         </div>

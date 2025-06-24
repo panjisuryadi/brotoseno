@@ -2,7 +2,6 @@
 
 namespace Modules\Reports\Http\Controllers;
 
-use App\Models\Baki;
 use App\Models\Harga;
 use App\Models\SalesGold;
 use Illuminate\Http\Request;
@@ -110,9 +109,6 @@ class ReportsController extends Controller
             $hargaCoef = $hargaEmas * $coef;
             $hargaMargin = $hargaCoef * $persenMargin;
             $hargaJual = $hargaCoef + $hargaMargin;
-
-            // IDR = coef * berat * harga (IDR tanpa margin karat)
-            // $totalIDR = $totalIDR + ($coef * $weight * $hargaEmas);
 
             // IDR = coef * berat * harga jual (IDR dengan margin karat)
             $totalIDR = $totalIDR + ($coef * $weight * $hargaJual);

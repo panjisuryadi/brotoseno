@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Stok')
+@section('title', 'Penjualan Unit')
 
 @section('third_party_stylesheets')
 
@@ -9,7 +9,7 @@
 @section('breadcrumb')
     <ol class="breadcrumb border-0 m-0">
         <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-        <li class="breadcrumb-item active">Stok</li>
+        <li class="breadcrumb-item active">Penjualan Unit</li>
     </ol>
 @endsection
 
@@ -29,74 +29,19 @@
 
     <div class="container-fluid">
 
-        @can('show_total_stats')
-            <div class="row">
-                <div class="col-md-6 col-lg-3">
-                    <div class="card border-0">
-                        <div class="card-body p-0 d-flex align-items-center shadow-sm">
-                            <div class="bg-gradient-primary p-4 mfe-3 rounded-left">
-                                <i class="bi bi-speedometer2 font-2xl"></i>
-                            </div>
-                            <div>
-                                {{-- <div class="text-value text-primary">{{ format_currency($totalGoldSales) }}</div> --}}
-                                <div class="text-value text-primary">{{ number_format($stockWeight, 0, ',', '.') }} Gram</div>
-                                <div class="text-muted text-uppercase font-weight-bold small">
-                                    Berat Total
-                                </div>
-                                {{-- <p class="text-muted font-weight-bold small">{{ $todayDate->format("d/m/Y") }}</p> --}}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-3">
-                    <div class="card border-0">
-                        <div class="card-body p-0 d-flex align-items-center shadow-sm">
-                            <div class="bg-gradient-warning p-4 mfe-3 rounded-left">
-                                <i class="bi bi-box font-2xl"></i>
-                            </div>
-                            <div>
-                                <div class="text-value text-warning">{{ $stockQuantity }} Pcs</div>
-                                <div class="text-muted text-uppercase font-weight-bold small">
-                                    Kuantitas Total
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-3">
-                    <div class="card border-0">
-                        <div class="card-body p-0 d-flex align-items-center shadow-sm">
-                            <div class="bg-gradient-success p-4 mfe-3 rounded-left">
-                                <i class="bi bi-cash font-2xl"></i>
-                            </div>
-                            <div>
-                                <div class="text-value text-success">{{ $formattedIDR }}</div>
-                                <div class="text-muted text-uppercase font-weight-bold small">
-                                    IDR
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        @endcan
-
-        {{-- TABLE LAPORAN STOK --}}
+        {{-- TABLE LAPORAN PENJUALAN UNIT --}}
         <div class="row">
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
                         <div class="flex justify-between py-1 border-bottom">
                             <div>
-                                <h1 class="text-lg font-semibold">Laporan Stok</h1>
+                                <h1 class="text-lg font-semibold">Laporan Penjualan Unit</h1>
                             </div>
                             <div id="buttons"></div>
                         </div>
                         <div class="table-responsive mt-1">
-                            <table id="stockReportTable" style="width: 100%"
+                            <table id="salesUnitTable" style="width: 100%"
                                 class="table table-striped table-hover table-bordered table-responsive-sm">
                                 <thead>
                                     <tr>
@@ -104,6 +49,7 @@
                                         <th>Nama Karat</th>
                                         <th>Total Berat</th>
                                         <th>Total Produk</th>
+                                        <th>Sales</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -121,7 +67,7 @@
     <script src="{{ asset('js/jquery-mask-money.js') }}"></script>
 
     <script type="text/javascript">
-        $('#stockReportTable').DataTable({
+        $('#salesUnitTable').DataTable({
                 processing: true,
                 serverSide: true,
                 autoWidth: true,
@@ -149,7 +95,7 @@
                     "orderable": false,
                 }],
                 "sPaginationType": "simple_numbers",
-                ajax: '{{ route('stock-report-data.index') }}',
+                ajax: '{{ route('sales-unit-report-data.index') }}',
                 dom: 'Blrtip',
                 buttons: [
 
@@ -165,7 +111,7 @@
                         }
                     },
                     {
-                        data: 'name',
+                        data: 'karat_name',
                         name: 'karats.name'
                     },
                     {
@@ -178,6 +124,18 @@
                         name: 'total_produk',
                         searchable: false
                     },
+                    {
+                        data: 'total_penjualan',
+                        name: 'total_penjualan',
+                        searchable: false
+                    },
+                    // KAYANYA BELUM PERLU ACTION
+                    // { 
+                    //     data: 'action',
+                    //     name: 'action',
+                    //     orderable: false,
+                    //     searchable: false
+                    // }
                 ]
             })
             .buttons()

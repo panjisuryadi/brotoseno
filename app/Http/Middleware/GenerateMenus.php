@@ -1400,7 +1400,6 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link',
                 ]);
 
-            //////////start menu
             // REPORT - STOK
             $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Stock') . '', [
                 'route' => 'stock-report.index',
@@ -1415,6 +1414,20 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link',
                 ]);
 
+            //////////start menu
+            // REPORT - PENJUALAN UNIT
+            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Unit Sales') . '', [
+                'route' => 'sales-unit-report.index',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 91,
+                    'activematches' => 'settings*',
+                    'permission'    => ['access_settings'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link',
+                ]);
             /// end menu
 
 

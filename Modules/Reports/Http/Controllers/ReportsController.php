@@ -3,6 +3,7 @@
 namespace Modules\Reports\Http\Controllers;
 
 use App\Models\Baki;
+use App\Models\Harga;
 use App\Models\SalesGold;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -81,17 +82,64 @@ class ReportsController extends Controller
     {
         abort_if(Gate::denies('access_reports'), 403);
 
-        return view('reports::stock.index');
+        // berat dari products
+        // coef dari karats
+        // harga emas dari hargas
+        // harga jual dari: 
+        // - harga emas * coef karat = harga coef, 
+        // - harga coef * persen margin karat = harga margin
+        // - harga coef + harga margin = harga jual, SELESAI.
+
+        // harga emas sekarang
+        $hargaEmas = Harga::latest()->first()->harga;
+
+        // berisi coef dan berat emas
+        $coefWeightAndMargin = Karat::leftJoin('products', 'karats.id', '=', 'products.karat_id')
+            ->select('karats.coef', 'products.berat_emas', 'karats.persen')
+            ->get();
+
+        // inisialisasi totalIDR
+        $totalIDR = 0;
+
+        foreach ($coefWeightAndMargin as $cwm) {
+            $persenMargin = $cwm->persen; // mengambil persen margin dari tiap karat
+            $coef = $cwm->coef; // mengambil coef dari tiap karat
+            $weight = $cwm->berat_emas; // mengambil berat emas dari tiap produk
+
+            // perhitungan harga jual
+            $hargaCoef = $hargaEmas * $coef;
+            $hargaMargin = $hargaCoef * $persenMargin;
+            $hargaJual = $hargaCoef + $hargaMargin;
+
+            // IDR = coef * berat * harga (IDR tanpa margin karat)
+            // $totalIDR = $totalIDR + ($coef * $weight * $hargaEmas);
+
+            // IDR = coef * berat * harga jual (IDR dengan margin karat)
+            $totalIDR = $totalIDR + ($coef * $weight * $hargaJual);
+        }
+
+        // format IDR yang didapat agar lebih indah
+        $formattedIDR = 'Rp. ' . number_format($totalIDR, 0, ',', '.');
+
+        // total berat produk
+        $stockWeight = Karat::leftJoin('products', 'karats.id', '=', 'products.karat_id')
+            ->sum('products.berat_emas');
+
+        // total kuantitas produk
+        $stockQuantity = Karat::leftJoin('products', 'karats.id', '=', 'products.karat_id')
+            ->count('products.id');
+
+        return view('reports::stock.index', compact('stockWeight', 'stockQuantity', 'formattedIDR'));
     }
 
     // data untuk table Laporan Stok pada halaman stock/report
-    public function stockReportStock(Request $request)
+    public function stockReportData(Request $request)
     {
+        // jika ingin mengecek $stockData, lakukan di stockReport() di atas dengan cara mengcopy semua kodingan yang berhubungan
         $stockData = Karat::leftJoin('products', 'karats.id', '=', 'products.karat_id')
             ->select('karats.id', 'karats.name', DB::raw('SUM(products.berat_emas) as total_berat'), DB::raw('COUNT(products.id) as total_produk'))
             ->groupBy('karats.id', 'karats.name')
-            ->orderBy('total_produk', 'desc');
-            // jika ingin mengecek $stockData, lakukan di stockReport() di atas dengan cara mengcopy semua kodingan yang berhubungan
+            ->orderBy('total_produk', 'desc'); // diurutakan berdasarkan stock dari yang paling tinggi
 
         return DataTables::of($stockData)
             ->addIndexColumn() // menambahkan penomoran pada kolom pertama table
@@ -106,8 +154,16 @@ class ReportsController extends Controller
             ->make(true);
     }
 
+    // menampilkan laporan stok yang masih ada dan stok yang sudah terjual
+    public function salesUnitReport()
+    {
+        abort_if(Gate::denies('access_reports'), 403);
+
+        return view('reports::sales-unit.index');
+    }
+    
     // data untuk table Laporan Sales pada halaman stock/report
-    public function stockReportSales()
+    public function salesUnitReportData()
     {
         $salesGold = SalesGold::select('products', 'total')->get(); // ambil kolom products dan total dari salesGold
 
@@ -155,6 +211,9 @@ class ReportsController extends Controller
 
         return DataTables::of(collect($karatSummary))
             ->addIndexColumn()
+            ->editColumn('total_berat', function ($data) { // mengedit kolom 'total_berat' dengan mengedit data yang ditampilkan
+                return number_format($data['total_berat'], 0, ',', '.') . ' gram';
+            })
             ->editColumn('total_penjualan', function ($data) {
                 return 'Rp. ' . number_format($data['total_penjualan'], 0, ',', '.');
             })

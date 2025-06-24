@@ -98,8 +98,11 @@ class ReportsController extends Controller
             ->select('karats.coef', 'products.berat_emas', 'karats.persen')
             ->get();
 
-        // inisialisasi totalIDR
-        $totalIDR = 0;
+        // inisialisasi nilaiAset
+        $nilaiAset = 0;
+
+        // inisialisasi potensiAset
+        $potensiAset = 0;
 
         foreach ($coefWeightAndMargin as $cwm) {
             $persenMargin = $cwm->persen; // mengambil persen margin dari tiap karat
@@ -111,15 +114,18 @@ class ReportsController extends Controller
             $hargaMargin = $hargaCoef * $persenMargin;
             $hargaJual = $hargaCoef + $hargaMargin;
 
-            // IDR = coef * berat * harga (IDR tanpa margin karat)
-            // $totalIDR = $totalIDR + ($coef * $weight * $hargaEmas);
+            // nilaiAset = coef * berat * harga (IDR tanpa margin karat)
+            $nilaiAset = $nilaiAset + ($coef * $weight * $hargaEmas);
 
-            // IDR = coef * berat * harga jual (IDR dengan margin karat)
-            $totalIDR = $totalIDR + ($coef * $weight * $hargaJual);
+            // potensiAset = coef * berat * harga jual (IDR dengan margin karat)
+            $potensiAset = $potensiAset + ($coef * $weight * $hargaJual);
         }
 
-        // format IDR yang didapat agar lebih indah
-        $formattedIDR = 'Rp. ' . number_format($totalIDR, 0, ',', '.');
+        // format nilaiAset yang didapat agar lebih indah
+        $formattedNilaiAset = 'Rp. ' . number_format($nilaiAset, 0, ',', '.');
+
+        // format potensiAset yang didapat agar lebih indah
+        $formattedPotensiAset = 'Rp. ' . number_format($potensiAset, 0, ',', '.');
 
         // total berat produk
         $stockWeight = Karat::leftJoin('products', 'karats.id', '=', 'products.karat_id')
@@ -129,7 +135,14 @@ class ReportsController extends Controller
         $stockQuantity = Karat::leftJoin('products', 'karats.id', '=', 'products.karat_id')
             ->count('products.id');
 
-        return view('reports::stock.index', compact('stockWeight', 'stockQuantity', 'formattedIDR'));
+        $formattedStockWeight = number_format($stockWeight, 0, ',', '.') . ' Gram';
+
+        return view('reports::stock.index', compact(
+            'formattedStockWeight', 
+            'stockQuantity', 
+            'formattedNilaiAset',
+            'formattedPotensiAset'
+        ));
     }
 
     // data untuk table Laporan Stok pada halaman stock/report

@@ -281,21 +281,27 @@
         order: [[0, 'desc']]
     });
 
-//     $('#filterBtn').on('click', function () {
-//     table.ajax.reload();
-// });
+    // $('#filterBtn').on('click', function () {
+    //     table.ajax.reload();
+    // });
 
-$('#filterBtn').on('click', function () {
-    const bulan = $('#bulan').val();
-    const tahun = $('#tahun').val();
-    const query = `?bulan=${bulan}&tahun=${tahun}`;
-    window.location.href = location.pathname + query;
-});
+    $('#filterBtn').on('click', function () {
+        const bulan = $('#bulan').val();
+        const tahun = $('#tahun').val();
+        const query = `?bulan=${bulan}&tahun=${tahun}`;
+        window.location.href = location.pathname + query;
+    });
 
-document.addEventListener('DOMContentLoaded', function () {
-        const now = new Date();
-        document.getElementById('bulan').value = now.getMonth() + 1; // getMonth() = 0-11
-        document.getElementById('tahun').value = now.getFullYear();
+    document.addEventListener('DOMContentLoaded', function () {
+        if (!window.location.search.includes('bulan')) {
+            const now = new Date();
+            document.getElementById('bulan').value = now.getMonth() + 1;
+        }
+
+        if (!window.location.search.includes('tahun')) {
+            const now = new Date();
+            document.getElementById('tahun').value = now.getFullYear();
+        }
     });
 
 </script>

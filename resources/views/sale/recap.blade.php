@@ -119,7 +119,7 @@
                         <div class="col-md-3 col-sm-6 mb-2">
                             <label for="bulan" class="small">Bulan</label>
                             <select id="bulan" class="form-control form-control-sm">
-                                <option value="">Semua</option>
+                                {{-- <option value="">Semua</option> --}}
                                 @for ($i = 1; $i <= 12; $i++)
                                     <option value="{{ $i }}" {{ $bulan == $i ? 'selected' : '' }}>{{ \Carbon\Carbon::create()->month($i)->format('F') }}</option>
                                 @endfor
@@ -128,7 +128,7 @@
                         <div class="col-md-3 col-sm-6 mb-2">
                             <label for="tahun" class="small">Tahun</label>
                             <select id="tahun" class="form-control form-control-sm">
-                                <option value="">Semua</option>
+                                {{-- <option value="">Semua</option> --}}
                                 @for ($i = now()->year; $i >= 2020; $i--)
                                     <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>{{ $i }}</option>
                                 @endfor
@@ -277,7 +277,8 @@
             //     searchable: false,
             //     className: 'text-center'
             // }
-        ]
+        ],
+        order: [[0, 'desc']]
     });
 
 //     $('#filterBtn').on('click', function () {
@@ -290,6 +291,12 @@ $('#filterBtn').on('click', function () {
     const query = `?bulan=${bulan}&tahun=${tahun}`;
     window.location.href = location.pathname + query;
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+        const now = new Date();
+        document.getElementById('bulan').value = now.getMonth() + 1; // getMonth() = 0-11
+        document.getElementById('tahun').value = now.getFullYear();
+    });
 
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>

@@ -331,11 +331,11 @@ class JualController extends Controller
         $data = $data->latest()->get();
 
         $rekap = $data->groupBy(function ($item) {
-            return Carbon::parse($item->created_at)->format('Y-m-d');
+            return $item->created_at->format('Y-m-d'); // tanggal asli
         })->map(function ($items, $tanggal) {
             $total = $items->sum('total');
-
             $berat = 0;
+
             foreach ($items as $row) {
                 $produk = json_decode($row->products, true);
                 foreach ($produk as $id_produk) {
@@ -343,15 +343,22 @@ class JualController extends Controller
                 }
             }
 
+            // Ambil tanggal terbaru dari isi group
+            $created_terbaru = $items->sortByDesc('created_at')->first()->created_at;
+
             return [
                 'tanggal' => $tanggal,
+                'tanggal_sort' => Carbon::parse($created_terbaru), // pakai untuk sorting akurat
                 'berat_emas' => $berat,
                 'total' => $total,
             ];
-        })->sortByDesc('tanggal')->values();
+        })
+        ->sortByDesc('tanggal_sort') // urut berdasarkan waktu sebenarnya
+        ->values(); // convert ke collection numerik
+
 
         return DataTables::of($rekap)
-            ->editColumn('tanggal', fn($row) => Carbon::parse($row['tanggal'])->format('d/m/y'))
+            ->editColumn('tanggal', fn($row) => Carbon::parse($row['tanggal'])->format('d/m/Y'))
             ->editColumn('berat_emas', fn($row) => number_format($row['berat_emas'], 2) . ' gr')
             ->editColumn('total', fn($row) => 'Rp ' . number_format($row['total'], 0, ',', '.'))
             ->make(true);
@@ -375,8 +382,8 @@ class JualController extends Controller
             $product_categories = Category::all();
 
             // Ambil filter dari request
-            $bulan = $request->bulan;
-            $tahun = $request->tahun;
+            $bulan = $request->input('bulan', now()->month);
+            $tahun = $request->input('tahun', now()->year);
 
             // Ambil data SalesGold berdasarkan filter (jika ada)
             $salesGold = SalesGold::when($bulan, function ($query) use ($bulan) {

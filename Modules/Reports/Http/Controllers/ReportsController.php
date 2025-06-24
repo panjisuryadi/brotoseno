@@ -2,7 +2,6 @@
 
 namespace Modules\Reports\Http\Controllers;
 
-use App\Models\Baki;
 use App\Models\Harga;
 use App\Models\SalesGold;
 use Illuminate\Http\Request;

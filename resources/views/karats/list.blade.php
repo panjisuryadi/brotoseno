@@ -33,8 +33,8 @@
                         <a href="#" class="px-3 btn btn-danger" data-toggle="modal" data-target="#createModal">
                             Set Harga <i class="bi bi-plus"></i>
                         </a>
-                        
-                        
+
+
                         <div class="text-center ml-5">
                             <div class="fw-bold h3 text-danger" style="text-decoration: underline;">
                                 IDR {{ number_format($harga->harga) }}
@@ -43,7 +43,7 @@
                                 Updated at : {{ $harga->updated_at }}
                             </div>
                         </div>
-    
+
                     @endif
                 </div>
 
@@ -62,29 +62,26 @@
                                     </th>
                                      <th style="width: 13%!important;" class="text-center">
                                         Tipe
-                                    </th>  
+                                    </th>
 
                                      <th style="width: 9%!important;" class="text-center">
                                         Coef
-                                    </th>  
+                                    </th>
                                      <!-- <th style="width: 7%!important;" class="text-center">
                                         Ph
                                     </th>  -->
                                     <th style="width: 8%!important;" class="text-center">
                                         Harga
-                                    </th> 
+                                    </th>
                                     <th style="width: 8%!important;" class="text-center">
                                         Margin
                                     </th> 
-                                    <!-- <th style="width: 8%!important;" class="text-center">
+                                    <th style="width: 8%!important;" class="text-center">
                                         Harga Jual
                                     </th> 
+                                    
                                     <th style="width: 8%!important;" class="text-center">
-                                        Asli
-                                    </th>  -->
-                                
-                                    <th style="width: 8%!important;" class="text-center">
-                                        Harga Jual
+                                        Harga Rounded
                                     </th> 
                                     <th style="width: 10%!important;" class="text-center">
                                        {{__('Action')}}
@@ -185,10 +182,49 @@
             "sPaginationType": "simple_numbers",
             ajax: '{{ route("karats.index_data") }}',
             dom: 'Blfrtip',
+            // buttons: [
+            //     'excel',
+            //     'pdf',
+            //     'print'
+            // ],
             buttons: [
-                'excel',
-                'pdf',
-                'print'
+                {
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: [0, 1, 6]
+                    }
+                },
+                {
+                    extend: 'pdf',
+                    exportOptions: {
+                        columns: [0, 1, 6]
+                    },
+                    customize: function(doc) {
+                        // Rata tengah semua isi tabel
+                        doc.styles.tableHeader.alignment = 'center';
+                        doc.styles.tableBodyEven.alignment = 'center';
+                        doc.styles.tableBodyOdd.alignment = 'center';
+
+                        // Atur padding dan garis supaya lebih rapi
+                        doc.content[1].layout = {
+                            hLineWidth: function(i) { return 0.5; },
+                            vLineWidth: function(i) { return 0.5; },
+                            hLineColor: function(i) { return '#aaa'; },
+                            vLineColor: function(i) { return '#aaa'; },
+                            paddingLeft: function(i) { return 5; },
+                            paddingRight: function(i) { return 5; }
+                        };
+
+                        // Atur ukuran kolom secara proporsional (optional)
+                        doc.content[1].table.widths = ['10%', '45%', '45%'];
+                    }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: [0, 1, 6]
+                    }
+                }
             ],
             columns: [{
                     "data": 'id',

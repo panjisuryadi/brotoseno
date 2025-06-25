@@ -72,6 +72,7 @@ class HomeController extends Controller
         foreach ($todaySalesGold as $data) {
             $totalGoldSales = $totalGoldSales + $data->total;
         }
+        $formattedTotalGoldSales = 'Rp. ' . number_format($totalGoldSales, 0, ',', '.');
 
         // 2. TOTAL BERAT PENJUALAN HARI INI (card kuning)
         // 3. TOTAL KUANTITAS PENJUALAN HARI INI (card hijau)
@@ -102,7 +103,7 @@ class HomeController extends Controller
             'sales'     => $sales, 
             'status'     => $status,
             'lastActivity'     => $lastActivity,
-            'totalGoldSales' => $totalGoldSales,
+            'formattedTotalGoldSales' => $formattedTotalGoldSales,
             'totalGoldWeight' => $totalGoldWeight,
             'totalGoldQuantity' => $totalGoldQuantity,
             'totalCustomer' => $totalCustomer,

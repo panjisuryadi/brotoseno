@@ -29,7 +29,7 @@
 @section('breadcrumb')
 <ol class="breadcrumb border-0 m-0">
     <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-    <li class="breadcrumb-item active">Report</li>
+    <li class="breadcrumb-item active">Report Recap</li>
 </ol>
 @endsection
 @section('content')
@@ -46,9 +46,8 @@
                         <div>
                             <div class="text-value text-primary">{{ format_currency($totalGoldSales) }}</div>
                             <div class="text-muted text-uppercase font-weight-bold small">
-                           @lang('Sales')
-                        </div>
-                        {{-- <p class="text-muted font-weight-bold small">{{ $todayDate->format("d/m/Y") }}</p> --}}
+                                @lang('Sales')
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -114,31 +113,42 @@
                         </div>
                         <div id="buttons"></div>
                     </div>
-                    <form id="filterForm" class="form-inline mb-2" style="float: right;">
-                        <input type="date" name="startDate" id="startDate"
-                            class="form-control form-control-sm mx-1"
-                            placeholder="Dari" value="{{ request('startDate') }}">
 
-                        <input type="date" name="endDate" id="endDate"
-                            class="form-control form-control-sm mx-1"
-                            placeholder="Sampai" value="{{ request('endDate') }}">
+                    {{-- filter bulanan --}}
+                    <div class="row align-items-end mt-3">
+                        <div class="col-md-3 col-sm-6 mb-2">
+                            <label for="bulan" class="small">Bulan</label>
+                            <select id="bulan" class="form-control form-control-sm">
+                                {{-- <option value="">Semua</option> --}}
+                                @for ($i = 1; $i <= 12; $i++)
+                                    <option value="{{ $i }}" {{ $bulan == $i ? 'selected' : '' }}>{{ \Carbon\Carbon::create()->month($i)->format('F') }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-2">
+                            <label for="tahun" class="small">Tahun</label>
+                            <select id="tahun" class="form-control form-control-sm">
+                                {{-- <option value="">Semua</option> --}}
+                                @for ($i = now()->year; $i >= 2020; $i--)
+                                    <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>{{ $i }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-sm-6 mb-2">
+                            <button id="filterBtn" class="btn btn-sm btn-primary w-100 mt-2">Filter</button>
+                        </div>
+                    </div>
 
-                        <button type="submit" class="btn btn-sm mx-1 btn-primary">Filter</button>
-                    </form>
-                    {{-- <button type="button" id="resetFilter" class="btn btn-sm btn-secondary">Reset</button> --}}
                     <div class="clearfix"></div>
                     <div class="table-responsive mt-1">
                         <table id="datatable" style="width: 100%" class="table table-bordered table-hover table-responsive-sm">
                             <thead>
                                 <tr>
                                     <th style="width: 5%!important;">NO</th>
-                                    <th style="width: 15%!important;">Nomor Trx</th>
-                                    <th style="width: 15%!important;">Customer</th>
-                                    <!-- <th style="width: 15%!important;" class="text-center">Harga Beli</th> -->
-                                    <th style="width: 15%!important;" class="text-center">Berat</th>
-                                    <th style="width: 10%!important;" class="text-center">Total</th>
                                     <th style="width: 15%!important;" class="text-center">Date</th>
-                                    <th style="width: 15%!important;" class="text-center">#</th>
+                                    <th style="width: 15%!important;" class="text-center">Berat</th>
+                                    <th style="width: 10%!important;" class="text-center">IDR</th>
+                                    {{-- <th style="width: 15%!important;" class="text-center">#</th> --}}
 
                  <!-- <th style="width: 18%!important;" class="text-center">
                                         Action
@@ -165,34 +175,6 @@
 <script type="text/javascript">
     jQuery.noConflict();
 
-    function getotal(number){
-            $('#total_' + number).val(0);
-            let acc     = parseInt($('#acc_' + number).val());
-            console.log(acc);
-            let tag     = parseInt($('#tag_' + number).val());
-            let emas    = parseInt($('#emas_' + number).val());
-            let total   = acc + tag + emas;
-            $('#total_' + number).val(total);
-        }
-
-        function gencode(number){
-            console.log(number);
-            let rand    = Math.floor(Math.random() * 1000);
-            let group   = $('#group_' + number).find('option:selected').text();
-            group       = group.substring(0, 1);
-            let categoryCode = $('#product_category_' + number).find('option:selected').attr('code');
-
-            let karat   = $('#karat_' + number).find('option:selected').text();
-            karat       = karat.split('|')[0]?.trim();
-            let date    = new Date();
-            let formattedDate = ("0" + date.getDate()).slice(-2) + ("0" + (date.getMonth() + 1)).slice(-2) + date.getFullYear().toString().slice(-2);
-            let code    = categoryCode+karat+formattedDate+rand;
-            $("#code_"+number).val(code);
-        }
-
-        // (function($) {
-        //     $(document).ready(function () {
-
     let table = $('#datatable').DataTable({
         processing: true,
         serverSide: true,
@@ -201,143 +183,126 @@
         lengthChange: true,
         searching: true,
         "oLanguage": {
-            "sSearch": "<i class='bi bi-search'></i> {{ __("labels.table.search") }} : ",
-            "sLengthMenu": "_MENU_ &nbsp;&nbsp;Data Per {{ __("labels.table.page") }} ",
-            "sInfo": "{{ __("labels.table.showing") }} _START_ s/d _END_ {{ __("labels.table.from") }} <b>_TOTAL_ data</b>",
-            "sInfoFiltered": "(filter {{ __("labels.table.from") }} _MAX_ total data)",
-            "sZeroRecords": "{{ __("labels.table.not_found") }}",
-            "sEmptyTable": "{{ __("labels.table.empty") }}",
+            "sSearch": "<i class='bi bi-search'></i> Cari : ",
+            "sLengthMenu": "_MENU_ &nbsp;&nbsp;Data per halaman",
+            "sInfo": "Menampilkan _START_ - _END_ dari <b>_TOTAL_</b> data",
+            "sInfoFiltered": "(disaring dari _MAX_ total data)",
+            "sZeroRecords": "Data tidak ditemukan",
+            "sEmptyTable": "Tidak ada data tersedia",
             "sLoadingRecords": "Harap Tunggu...",
             "oPaginate": {
-                "sPrevious": "{{ __("labels.table.prev") }}",
-                "sNext": "{{ __("labels.table.next") }}"
+                "sPrevious": "Sebelumnya",
+                "sNext": "Berikutnya"
+            }
+        },
+        "aaSorting": [[ 1, "desc" ]],
+        "sPaginationType": "simple_numbers",
+
+        // ajax: '/sale/recap/data', // tanpa filter tanggal
+        ajax: {
+            url: '/sale/recap/data',
+            data: function(d) {
+                d.bulan = $('#bulan').val();
+                d.tahun = $('#tahun').val();
+            },
+            error: function (xhr, error, thrown) {
+                alert('Gagal memuat data dari server. Cek console untuk detail.');
+                console.error(xhr.responseText);
             }
         },
 
-        "aaSorting": [[ 0, "desc" ]],
-        "columnDefs": [
-        {
-            "targets": 'no-sort',
-            "orderable": false,
-        }
-        ],
-        "sPaginationType": "simple_numbers",
-        ajax: {
-            url: '/sale/data_report',
-            data: function (d) {
-                d.startDate = $('#startDate').val();
-                d.endDate = $('#endDate').val();
-                console.log(d);
-            }
-        },
+
         dom: 'Blfrtip',
         buttons: [
             {
-                    extend: 'excel',
-                    exportOptions: {
-                        columns: [ 0,1,2,3,4,5,6 ]
+                extend: 'excel',
+                exportOptions: { columns: [0, 1, 2, 3] }
+            },
+            {
+                extend: 'pdf',
+                title: `${$('#bulan option:selected').text()} ${$('#tahun option:selected').text()}`,
+                exportOptions: { columns: [0, 1, 2, 3] },
+                customize: function(doc) {
+                        // Rata tengah semua isi tabel
+                        doc.styles.tableHeader.alignment = 'center';
+                        doc.styles.tableBodyEven.alignment = 'center';
+                        doc.styles.tableBodyOdd.alignment = 'center';
+
+                        // Atur padding dan garis supaya lebih rapi
+                        doc.content[1].layout = {
+                            hLineWidth: function(i) { return 0.5; },
+                            vLineWidth: function(i) { return 0.5; },
+                            hLineColor: function(i) { return '#aaa'; },
+                            vLineColor: function(i) { return '#aaa'; },
+                            paddingLeft: function(i) { return 5; },
+                            paddingRight: function(i) { return 5; }
+                        };
+
+                        // Atur ukuran kolom secara proporsional (optional)
+                        doc.content[1].table.widths =['10%', '30%', '30%', '30%'];
                     }
-                },
-                {
-                    extend: 'pdf',
-                    exportOptions: {
-                        columns: [ 0,1,2,3,4,5,6 ]
-                    }
-                },
-                {
-                    extend: 'print',
-                    exportOptions: {
-                        columns: [ 0,1,2,3,4,5,6 ]
-                    }
-                }
-        ],
-        columns: [{
-            "data": 'id',
-            "sortable": false,
-            render: function(data, type, row, meta) {
-                return meta.row + meta.settings._iDisplayStart + 1;
+            },
+            {
+                extend: 'print',
+                exportOptions: { columns: [0, 1, 2, 3] }
             }
-        },
-        {
-            data: 'nomor',
-            name: 'nomor'
-        },
-        {
-            data: 'customer',
-            name: 'customer'
-        },
-        {
-            data: 'berat_emas',
-            name: 'berat_emas'
-        },
-        {
-            data: 'total',
-            name: 'total'
-        },
-        {
-            data: 'created_at',
-            name: 'created_at'
-        },
-        {
-            data: 'action',
-            name: 'action',
-            orderable: false,
-            searchable: false
-        }
-        ]
-    })
-    .buttons()
-    .container()
-    .appendTo("#buttons");
-
-    $('#startDate, #endDate').datepicker({
-        format: 'yyyy-mm-dd',
-        autoclose: true,
-        todayHighlight: true
-    });
-    console.log('script loaded');
-    $(document).ready(function () {
-            $('#startDate').val('');
-            $('#endDate').val('');
-            table.ajax.reload();
-        });
-    // $(document).on('click', '#resetFilter', function(e) {
-    //     console.log('reset clicked');
-    //     e.preventDefault();
-    // });
-
-    // Event onsubmit
-    $('#filterForm').on('submit', function(e) {
-        e.preventDefault();
-        const start = $('#startDate').val();
-        const end = $('#endDate').val();
-
-        if (start && end && start > end) {
-            alert('Tanggal awal tidak boleh lebih besar dari tanggal akhir.');
-            return;
-        }
-
-        table.ajax.reload();
+        ],
+        columns: [
+            {
+                data: null,
+                sortable: false,
+                render: function(data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                }
+            },
+            {
+                data: 'tanggal',
+                name: 'tanggal',
+                className: 'text-center'
+            },
+            {
+                data: 'berat_emas',
+                name: 'berat_emas',
+                className: 'text-center'
+            },
+            {
+                data: 'total',
+                name: 'total',
+                className: 'text-center'
+            },
+            // {
+            //     data: 'action',
+            //     name: 'action',
+            //     orderable: false,
+            //     searchable: false,
+            //     className: 'text-center'
+            // }
+        ],
+        order: [[0, 'desc']]
     });
 
-    // $('#filterForm').on('submit', function(e) {
-    //     e.preventDefault();
-    //     const start = $('#startDate').val();
-    //     const end = $('#endDate').val();
-
-    //     if (start && end && start > end) {
-    //         alert('Tanggal awal tidak boleh lebih besar dari tanggal akhir.');
-    //         return;
-    //     }
-
+    // $('#filterBtn').on('click', function () {
     //     table.ajax.reload();
     // });
 
+    $('#filterBtn').on('click', function () {
+        const bulan = $('#bulan').val();
+        const tahun = $('#tahun').val();
+        const query = `?bulan=${bulan}&tahun=${tahun}`;
+        window.location.href = location.pathname + query;
+    });
 
-// });
-// })(jQuery);
+    document.addEventListener('DOMContentLoaded', function () {
+        if (!window.location.search.includes('bulan')) {
+            const now = new Date();
+            document.getElementById('bulan').value = now.getMonth() + 1;
+        }
 
-
+        if (!window.location.search.includes('tahun')) {
+            const now = new Date();
+            document.getElementById('tahun').value = now.getFullYear();
+        }
+    });
 
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>

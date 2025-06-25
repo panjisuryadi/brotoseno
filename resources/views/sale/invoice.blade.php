@@ -52,7 +52,7 @@
         }
 
 
-        
+
         .header {
             text-align: center; /* Center the content */
             width: 100%;
@@ -191,7 +191,7 @@
             width: 50%;
             text-align: right;
         }
-       
+
     </style>
 </head>
 
@@ -219,7 +219,7 @@
         <div class="header">
             <!-- Left side: Logo -->
             <img src="{{ $imageSrc }}" alt="Logo">
-            
+
             <!-- Centered: Toko Emas Cahaya -->
             <h3>{{ $product['toko'] }}</h3>
             <p>{{ $product['alamat'] }}</p>
@@ -309,14 +309,14 @@
                     <p style="margin: 0;"><strong>Grand Total:</strong> Rp {{ number_format($product['harga'], 0, ',', '.') }}</p>
                 </td>
             </tr>
-            
+
         </table>
 
         <p style="font-size:12px;"><u>{{$product['info']}}</u></p>
         <!-- <div class="summary-footer-container">
             <div class="footer-text">
                 <p>Hormat Kami,</p>
-                <p>Toko Emas Cahaya</p>
+                <p>Toko Emas Lovin  Cahaya</p>
             </div>
 
             <div class="total-section">

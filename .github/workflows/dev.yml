@@ -21,6 +21,7 @@ jobs:
          port: ${{ secrets.SSH_PORT }}
          script: |
           cd /home/dev.cahaya.hokkie.id/public_html
+          git fetch origin dev
           git stash
           git pull origin dev
           sudo update-alternatives --set php /usr/bin/php8.0

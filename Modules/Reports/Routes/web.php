@@ -20,11 +20,11 @@ Route::group(['middleware' => 'auth'], function () {
     //Payments Report
     Route::get('/payments-report', 'ReportsController@paymentsReport')
         ->name('payments-report.index');
-      
+
     //Payments Report
     Route::get('/piutang-report', 'ReportsController@piutangsReport')
         ->name('piutang-report.index');
-  //Payments Report
+    //Payments Report
     Route::get('/hutang-report', 'ReportsController@hutangReport')
         ->name('hutang-report.index');
 
@@ -40,4 +40,18 @@ Route::group(['middleware' => 'auth'], function () {
     //Purchases Return Report
     Route::get('/purchases-return-report', 'ReportsController@purchasesReturnReport')
         ->name('purchases-return-report.index');
+
+    // Stock Report Page
+    Route::get('/stock/report', 'ReportsController@stockReport')
+        ->name('stock-report.index');
+    // Stock Report Data
+    Route::get('/stock/report/data', 'ReportsController@stockReportData')
+        ->name('stock-report-data.index');
+
+    // Sales Unit Report Page
+    Route::get('/sales-unit/report', 'ReportsController@salesUnitReport')
+        ->name('sales-unit-report.index');
+    // Sales Unit Report Data
+    Route::get('/sales-unit/report/data', 'ReportsController@salesUnitReportData')
+        ->name('sales-unit-report-data.index');
 });

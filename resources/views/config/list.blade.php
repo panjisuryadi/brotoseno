@@ -133,7 +133,7 @@ body {
 
                         <div class="footer">
                             <p>Hormat Kami,</p>
-                            <p>Toko Emas Cahaya</p>
+                            <p>Toko Emas Lovin Cahaya</p>
                             <table class="invoice-table">
                                 <thead>
                                     <tr>
@@ -178,7 +178,7 @@ body {
                         <label for="">Info</label>
                         <textarea name="info" id="info" class="form-control">{{ $info }}</textarea>
                     </div>
-                    
+
                     <br>
                     <button class="btn btn-sm btn-success">Submit</button>
                 </form>

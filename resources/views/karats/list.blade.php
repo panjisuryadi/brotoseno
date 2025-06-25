@@ -78,7 +78,11 @@
                                     </th> 
                                     <!-- <th style="width: 8%!important;" class="text-center">
                                         Harga Jual
+                                    </th> 
+                                    <th style="width: 8%!important;" class="text-center">
+                                        Asli
                                     </th>  -->
+                                
                                     <th style="width: 8%!important;" class="text-center">
                                         Harga Jual
                                     </th> 
@@ -220,6 +224,10 @@
                 // {
                 //     data: 'rekomendasi',
                 //     name: 'rekomendasi'
+                // },
+                // {
+                //     data: 'asli',
+                //     name: 'asli'
                 // },
                 {
                     data: 'rounded',

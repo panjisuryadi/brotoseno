@@ -376,6 +376,12 @@ class KaratController extends Controller
                                             <h3 class="text-sm font-bold text-gray-800"> ' .number_format(($data->coef*$data->harga)+(($data->coef*$data->persen*$data->harga)/100)) . '</h3>
                                     </div>';
                             })
+
+                        ->editColumn('asli', function($data){
+                            return '<div class="items-center text-center">
+                                            <h3 class="text-sm font-bold text-gray-800"> ' .number_format(($data->coef*$data->harga)) . '</h3>
+                                    </div>';
+                            })
                       ->editColumn('ph', function($data){
                             $output = '';
                           
@@ -394,7 +400,8 @@ class KaratController extends Controller
 
                         })
                         ->addColumn('rounded', function($data){
-                            $price  = ($data->coef*$data->harga)+(($data->coef*$data->persen*$data->harga)/100);
+                            $har    = ceil($data->coef*$data->harga/1000)*1000;
+                            $price  = $har+(($data->coef*$data->persen*$data->harga)/100);
                             $rounded = ceil($price / 1000) * 1000;
                           
                             return '<div class="items-center font-semibold text-center">
@@ -402,7 +409,7 @@ class KaratController extends Controller
                              </div>';
 
                         })
-                        ->rawColumns(['karat', 'rekomendasi', 'rounded', 'action','coef','type','ph', 'harga'])
+                        ->rawColumns(['karat', 'rekomendasi', 'asli', 'rounded', 'action','coef','type','ph', 'harga'])
                         ->make(true);
     }
 

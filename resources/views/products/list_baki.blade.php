@@ -320,7 +320,7 @@
             className: 'text-center',
             render: function(data, type, row, meta) {
                 // return `<button class="btn btn-sm btn-success btn-add-to-preview" data-row='${JSON.stringify(row)}'>Move</button>`;
-                return `<a href="./update/{{$id}}/${row.id}" class="btn btn-sm btn-success btn-add-to-preview" data-row='${JSON.stringify(row)}' onclick="confirm('Yakin Pindah Baki');">Move</a>`;
+                return `<a href="./update/{{$id}}/${row.id}" class="btn btn-sm btn-success btn-add-to-preview" data-row='${JSON.stringify(row)}' onclick="return confirm('Yakin Pindah Baki');">Move</a>`;
             }
         },
 

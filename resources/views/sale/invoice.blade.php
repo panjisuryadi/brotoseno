@@ -221,7 +221,7 @@
             <img src="{{ $imageSrc }}" alt="Logo">
             
             <!-- Centered: Toko Emas Cahaya -->
-            <h3>Toko Emas Cahaya {{ $product['print'] }}</h3>
+            <h3>{{ $product['toko'] }}</h3>
             <p>{{ $product['alamat'] }}</p>
             <p>{{ $product['telp'] }}</p>
         </div>
@@ -288,13 +288,24 @@
                 <!-- Left cell: Footer text -->
                 <td style="width: 50%; vertical-align: top; font-size: 11px; padding-right: 10px;">
                     <p style="margin: 0;">Hormat Kami,</p>
-                    <p style="margin: 0;">Toko Emas Cahaya</p>
+                    <p style="margin: 0;">{{$product['toko']}}</p>
                 </td>
                 <!-- Right cell: Totals -->
                 <td style="width: 50%; vertical-align: top; font-size: 11px; text-align: right; padding-left: 10px;">
                     <p style="margin: 0;"><strong>Harga:</strong> Rp {{ number_format($product['harga']+$product['diskon']-$product['ongkos'], 0, ',', '.') }}</p>
+                    @if($product['diskon'] == 0)
+
+                    @else
                     <p style="margin: 0;"><strong>Diskon:</strong> Rp {{ number_format($product['diskon'], 0, ',', '.') }}</p>
+
+                    @endif
+
+                    @if($product['ongkos'] == 0)
+
+                    @else
                     <p style="margin: 0;"><strong>Ongkos:</strong> Rp {{ number_format($product['ongkos'], 0, ',', '.') }}</p>
+
+                    @endif
                     <p style="margin: 0;"><strong>Grand Total:</strong> Rp {{ number_format($product['harga'], 0, ',', '.') }}</p>
                 </td>
             </tr>

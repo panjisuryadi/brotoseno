@@ -13,23 +13,16 @@
 </button> -->
 
 <button class="btn btn-outline-danger btn-sm" onclick="openPasswordModal2(event, '{{ $data->id }}')">
-    <i class="bi bi-trash"></i>
+    <i class="bi bi-trash">Lebur</i>
 </button>
 
-<form id="destroy{{ $data->id }}" class="d-none" action="{{ route('products.delete', $data->id) }}" method="POST">
+<form id="destroy{{ $data->id }}" class="d-none" action="{{ route('products.update_lebur', $data->id) }}" method="POST">
     @csrf
-    @method('delete')
+    @method('get')
 </form>
 @endcan
 
-<div class="text-center">
-<a href="{{ route('products_all.edit', $data->id) }}"
-id="Edit"
-data-toggle="tooltip"
- class="btn btn-outline-info btn-sm">
-    <i class="bi bi-pencil"></i>
-</a>
-</div>
+
 
 <!-- <button id="delete" class="btn btn-outline-warning btn-sm" onclick="
     event.preventDefault();

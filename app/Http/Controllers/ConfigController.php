@@ -93,6 +93,7 @@ class ConfigController extends Controller
         $config = Config::where('name', 'nota')->first();
         $value   = $config->value;
         $val    = json_decode($value, true);
+        $toko = $val['toko'] ?? '';
         $alamat = $val['alamat'];
         $telp = $val['telp'];
         $info = $val['info'];
@@ -104,6 +105,7 @@ class ConfigController extends Controller
                 'module_path',
                 'module_icon',
                 'module_model',
+                'toko',
                 'alamat',
                 'telp',
                 'info',
@@ -111,7 +113,29 @@ class ConfigController extends Controller
         );
     }
 
+    public function cc() {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+
+        $cc = Config::where('name', 'cc')->first();
+        return view(
+            'config.cc', // Path to your create view file
+            compact(
+                'module_title',
+                'module_name',
+                'module_path',
+                'module_icon',
+                'module_model',
+                'cc',
+            )
+        );
+    }
+
     public function insert(Request $request){
+        $value['toko'] = $request->toko;
         $value['alamat'] = $request->alamat;
         $value['telp'] = $request->telp;
         $value['info'] = $request->info;
@@ -124,6 +148,7 @@ class ConfigController extends Controller
     }
 
     public function update(Request $request){
+        $value['toko'] = $request->toko;
         $value['alamat'] = $request->alamat;
         $value['telp'] = $request->telp;
         $value['info'] = $request->info;
@@ -140,7 +165,7 @@ class ConfigController extends Controller
         $config->value = $request->cc;
         $config->save();
         
-        return redirect()->action([WebcamController::class, 'list']);
+        return redirect()->action([ConfigController::class, 'cc']);
     }
 
 }

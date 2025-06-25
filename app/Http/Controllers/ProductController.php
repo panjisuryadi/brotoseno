@@ -335,8 +335,19 @@ class ProductController extends Controller
         $products->save();
         // INSERT HISTORY
         $stat[1] = 'O';
-        $stat[8] = 'R';
         $stat[2] = 'S';
+        $stat[3] = 'P';
+        $stat[4] = 'B';
+        $stat[5] = 'C';
+        $stat[6] = 'M';
+        $stat[7] = 'K';
+        $stat[8] = 'R';
+        $stat[9] = '2';
+        $stat[10] = 'L';
+        $stat[11] = 'D';
+        $stat[12] = 'W';
+        $stat[13] = 'F';
+        $stat[14] = 'N';
         $stat[15] = 'H';
         // $stat[1] = 'L';
         $product_history = ProductHistories::create([
@@ -350,6 +361,42 @@ class ProductController extends Controller
         return redirect()->action([ProductController::class, 'list_all']);
     }
 
+    public function update_lebur(Request $request){
+        $id = $request->id;
+        $product = $request->product;
+        // UPDATE STATUS PRODUCT
+        $products   = Product::where('id', $id)->firstOrFail();
+        $products->status_id   = $request->status;
+        $products->status   = $request->status;
+        $products->save();
+        // INSERT HISTORY
+        $stat[1] = 'O';
+        $stat[2] = 'S';
+        $stat[3] = 'P';
+        $stat[4] = 'B';
+        $stat[5] = 'C';
+        $stat[6] = 'M';
+        $stat[7] = 'K';
+        $stat[8] = 'R';
+        $stat[9] = '2';
+        $stat[10] = 'L';
+        $stat[11] = 'D';
+        $stat[12] = 'W';
+        $stat[13] = 'F';
+        $stat[14] = 'N';
+        $stat[15] = 'H';
+        // $stat[1] = 'L';
+        $product_history = ProductHistories::create([
+            'product_id'    => $id,
+            'status'        => $stat[$request->status],
+            'keterangan'    => 'update dari '.$product,
+            'harga'         => $request->harga ?? 0,
+            'tanggal'       => date('Y-m-d'),
+        ]);
+
+        return redirect()->action([ProductController::class, 'list_lebur']);
+    }
+
     public function update_status(Request $request)
     {   
         // echo json_encode($_POST);
@@ -358,12 +405,28 @@ class ProductController extends Controller
         $product = $request->product;
         // UPDATE STATUS PRODUCT
         $products   = Product::where('id', $id)->firstOrFail();
-        $products->status   = $request->status;
+        $products->status_id   = $request->status;
+        if($request->status == 15){ // lebur
+
+        }else{
+            $products->status   = $request->status;
+        }
         $products->save();
         // INSERT HISTORY
         $stat[1] = 'O';
-        $stat[8] = 'R';
         $stat[2] = 'S';
+        $stat[3] = 'P';
+        $stat[4] = 'B';
+        $stat[5] = 'C';
+        $stat[6] = 'M';
+        $stat[7] = 'K';
+        $stat[8] = 'R';
+        $stat[9] = '2';
+        $stat[10] = 'L';
+        $stat[11] = 'D';
+        $stat[12] = 'W';
+        $stat[13] = 'F';
+        $stat[14] = 'N';
         $stat[15] = 'H';
         // $stat[1] = 'L';
         $product_history = ProductHistories::create([
@@ -458,7 +521,6 @@ class ProductController extends Controller
         $product_categories = Category::all();  // Assuming Supplier model is set up
         $groups = Group::all();  // Assuming Supplier model is set up
         $models = ProdukModel::all();  // Assuming Supplier model is set up
-        $dataKarat = Karat::whereNull('parent_id')->get();
         $hari_ini = new DateTime();
         $hari_ini = $hari_ini->format('Y-m-d');
         $isLogamMulia   = true;
@@ -471,9 +533,9 @@ class ProductController extends Controller
         $module_path = $this->module_path;
         $module_icon = $this->module_icon;
         $module_model = $this->module_model;
-        $dataKarat = Karat::whereNull('parent_id')->get();
+        $dataKarat = Karat::where('status', 'A')->whereNull('parent_id')->get();
 
-        $baki   = Baki::latest()->get();
+        $baki   = Baki::where('status', 'A')->latest()->get();
         return view(
             'products.list_nota', // Path to your create view file
             compact(
@@ -885,6 +947,17 @@ class ProductController extends Controller
                 );
             })
 
+            ->addColumn('lebur', function ($data) {
+                $module_name = $this->module_name;
+                $module_model = $this->module_model;
+                $id = $data->status_id;
+                
+                return view(
+                    'product::products.partials.delete_lebur',
+                    compact('module_name', 'data', 'module_model')
+                );
+            })
+
             ->editColumn('product_name', function ($data) {
                 $tb = '<div class="flex items-center gap-x-2">
                         <div>
@@ -934,7 +1007,7 @@ class ProductController extends Controller
                 $tb = '<div class="items-center gap-x-2">
                                 <div class="text-sm text-center text-gray-500">
                                 <b>' . @$data->karat->label . ' </b><br>
-                                Rp .' . @rupiah($data->product_price) . ' <br>
+                                ' . @($data->berat_emas) . ' gr<br>
                                 </div>
                                 </div>';
                 return $tb;

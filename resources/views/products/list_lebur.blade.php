@@ -37,6 +37,7 @@
                             <thead>
                                 <tr>
                                     <th style="width: 5%!important;">NO</th>
+                                    <th style="width: 20%!important;">Image</th>
                                     <th>{{ Label_case('product') }}</th>
                                     <th style="width: 14%!important;" class="text-center">{{ Label_case('Karat / Harga') }}</th>
                                     <th style="width: 14%!important;" class="text-center">Berat (gr)</th>
@@ -56,8 +57,14 @@
 
 @endsection
 <x-library.datatable />
+@section('third_party_scripts')
+<script src="{{ asset('js/dropzone.js') }}"></script>
+@endsection
+
 @push('page_scripts')
 <script src="{{  asset('js/jquery.min.js') }}"></script>
+<!-- Bootstrap 5 Bundle (includes Popper) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JTLz/..." crossorigin="anonymous"></script>
 
 <script type="text/javascript">
     jQuery.noConflict();
@@ -114,7 +121,7 @@
         ],
         "sPaginationType": "simple_numbers",
         // ajax: '{{ route("$module_name.index_data") }}',
-        ajax: '/products_index_data/6',
+        ajax: '/products_index_data/15',
         dom: 'Blfrtip',
         buttons: [
             {
@@ -143,10 +150,10 @@
                 return meta.row + meta.settings._iDisplayStart + 1;
             }
         },
-        // {
-        //     data: 'product_image',
-        //     name: 'product_image'
-        // }, 
+        {
+            data: 'product_image',
+            name: 'product_image'
+        }, 
         {
             data: 'product_name',
             name: 'product_name'
@@ -171,9 +178,15 @@
         //     data: 'status',
         //     name: 'status'
         // },
+        // {
+        //     data: 'action',
+        //     name: 'action',
+        //     orderable: false,
+        //     searchable: false
+        // },
         {
-            data: 'action',
-            name: 'action',
+            data: 'lebur',
+            name: 'lebur',
             orderable: false,
             searchable: false
         }

@@ -93,6 +93,7 @@
                         <span class="fw-bold fs-5">Total:</span>
                         <span id="total-nominal" class="fw-bold fs-4 text-success">Rp 0</span>
                     </div>
+                    
                     <button type="button" onclick="copy_div();" class="btn btn-success w-100" id="btn-checkout" form="sale" data-toggle="modal" data-target="#confirmProductModal">Checkout</button>
                 </div>
 
@@ -198,6 +199,11 @@
             <span class="fw-bold fs-5">Total:</span>
             <span id="total" class="fw-bold fs-4 text-success">Rp 0</span>
         </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="fw-bold fs-5">Total Pembayaran:</span>
+            <span id="total-pembayaran" class="fw-bold fs-4 text-info">Rp 0</span>
+        </div>
       </div>
 
       <div class="modal-footer">
@@ -254,13 +260,18 @@
 <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AHR5oKn06PWzGk+E9Y1kCfmhktbZ5d9+8wCjUY8H7Sk/9kccB+ApPBALSczF+" crossorigin="anonymous"></script> -->
     <script> 
 
+    function getIntVal(id) {
+        let val = $("#" + id).val();
+        return val ? parseInt(val) || 0 : 0;
+    }
+
     function check_total(){
         let isCcChecked         = $('#cc').prop('checked');
-        let nominal_cash        = parseInt($('#nominal_cash').val());
-        let nominal_edc         = parseInt($('#nominal_edc').val());
-        let nominal_transfer    = parseInt($('#nominal_transfer').val());
-        let nominal_qr          = parseInt($('#nominal_qr').val());
-        let nominal_cc          = parseInt($('#nominal_cc').val());
+        let nominal_cash        = getIntVal('nominal_cash');
+        let nominal_edc         = getIntVal('nominal_edc');
+        let nominal_transfer    = getIntVal('nominal_transfer');
+        let nominal_qr          = getIntVal('nominal_qr');
+        let nominal_cc          = getIntVal('nominal_cc');
 
         if(isCcChecked){
             let persenCc            = $("#persen_cc").val();
@@ -276,15 +287,21 @@
             $('#nominal_cc').val(sisa+(sisa*persenCc/100));
         }else{
             $('#nominal_cc').val(0);
+            $('#muncul_cc').val(0);
         }
 
-        let muncul_cc           = parseInt($('#muncul_cc').val());
+        let muncul_cc           = getIntVal('muncul_cc');
 
         let kabeh   = nominal_cash+nominal_edc+nominal_transfer+nominal_qr+muncul_cc;
-        console.log(kabeh); // 1239
         let total   = $("#total").html(); // Rp 1.405.000
         let totalInt = parseInt(total.replace(/[^0-9]/g, '')); // "1405000" → 1405000
-        console.log(totalInt);
+        let total_pembayaran    = nominal_cash+nominal_edc+nominal_transfer+nominal_qr+muncul_cc;
+        const formatted = new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(total_pembayaran);
+        $("#total-pembayaran").html(formatted);
         if(totalInt == kabeh){
             $("#submit_form").show();
         }else{
@@ -325,13 +342,15 @@
             // $(".hidden_rekening").hide();
             $('#nominal_qr').val(0);
         }
+
+        let nominal_cash        = getIntVal("nominal_cash");
+        let nominal_edc         = getIntVal("nominal_edc");
+        let nominal_transfer    = getIntVal("nominal_transfer");
+        let nominal_qr          = getIntVal("nominal_qr");
+        let total               = $("#total-nominal").html();
+        const nilai = parseInt(total.replace(/[^\d]/g, ''), 10);
+        
         if(isCcChecked){
-            let nominal_cash        = parseInt($("#nominal_cash").val());
-            let nominal_edc         = parseInt($("#nominal_edc").val());
-            let nominal_transfer    = parseInt($("#nominal_transfer").val());
-            let nominal_qr          = parseInt($("#nominal_qr").val());
-            let total               = $("#total-nominal").html();
-            const nilai = parseInt(total.replace(/[^\d]/g, ''), 10);
             // console.log(nilai);
 
             let semua   = nominal_cash+nominal_edc+nominal_transfer+nominal_qr;
@@ -349,6 +368,21 @@
         $('#nominal_edc').prop('disabled', !isEdcChecked);
         $('#nominal_transfer').prop('disabled', !isTransferChecked);
         $('#nominal_qr').prop('disabled', !isQrChecked);
+        let muncul_cc          = getIntVal("muncul_cc");
+
+        let total_pembayaran    = nominal_cash+nominal_edc+nominal_transfer+nominal_qr+muncul_cc;
+        console.log(nominal_cash);
+        console.log(nominal_edc);
+        console.log(nominal_transfer);
+        console.log(nominal_qr);
+        console.log(muncul_cc);
+        console.log(total_pembayaran);
+        const formatted = new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(total_pembayaran);
+        $("#total-pembayaran").html(formatted);
         // $('#nominal_cc').prop('disabled', !isCcChecked);
         
         // console.log(totalInt); // 1405000
@@ -415,8 +449,34 @@
         const nilai = parseInt(total.replace(/[^\d]/g, ''), 10);
         // console.log(value); // 2681000
 
-        $("#nominal_cash").val(nilai);
+        let nominal_cash        = getIntVal('nominal_cash');
+        let nominal_edc         = getIntVal('nominal_edc');
+        let nominal_transfer    = getIntVal('nominal_transfer');
+        let nominal_qr          = getIntVal('nominal_qr');
+        let nominal_cc          = getIntVal('muncul_cc');
+        let kabeh   = nominal_cash+nominal_edc+nominal_transfer+nominal_qr+nominal_cc;
+        const formatted = new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(kabeh);
+        if(nominal_cash == 0){
+            $("#nominal_cash").val(nilai);
+        }else{
+            $("#nominal_cash").val(nominal_cash);
+        }    
 
+        $("#total-pembayaran").html(formatted);
+
+        let total_new   = $("#total").html(); // Rp 1.405.000
+        let totalInt = parseInt(total_new.replace(/[^0-9]/g, '')); // "1405000" → 1405000
+        let total_pembayaran    = nominal_cash+nominal_edc+nominal_transfer+nominal_qr+muncul_cc;
+        
+        if(totalInt == kabeh){
+            $("#submit_form").show();
+        }else{
+            $("#submit_form").hide();
+        }
     }
 
     function copy_div_old(){

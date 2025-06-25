@@ -375,6 +375,7 @@ class JualController extends Controller
         $config = Config::where('name', 'nota')->first();
         $value   = $config->value;
         $val    = json_decode($value, true);
+        $toko = $val['toko'];
         $alamat = $val['alamat'];
         $telp = $val['telp'];
         $info = $val['info'];
@@ -430,7 +431,7 @@ class JualController extends Controller
                 $nomor  = '0'.$nomor;
             }
         }
-
+        $nomor  = 'INV-LUV-'.date('ymd').rand(100, 999);
         if($lanjut){
             $cash       = $request->hidden_cash;
             $edc        = $request->hidden_edc;
@@ -556,6 +557,8 @@ class JualController extends Controller
                     $salesNomor  = '0'.$salesNomor;
                 }
             }
+            $salesNomor = 'INV-LUV-'.date('ymd').rand(100, 999);
+            $salesNomor = $nomor;
             if($lanjut){
                 $salesItem  = SalesItem::create([
                     'sales_gold_id'     => $id,
@@ -569,6 +572,9 @@ class JualController extends Controller
                     'total_real'     => $total_real,
                 ]);
                 $sales_id   = $salesItem->id;
+            }else{
+                $salesNomor = SalesItem::where('product', $p)->orderBy('created_at', 'desc')->first();
+                $salesNomor = $salesNomor->nomor;
             }
 
             // for ($i=0; $i < 8; $i++) { 
@@ -588,6 +594,7 @@ class JualController extends Controller
             $array['products'][$number]['nomor'] = $salesNomor;
             $array['products'][$number]['sales_id'] = $salesNomor;
             // $array['products'][$number]['sales_id'] = $sales_id;
+            $array['products'][$number]['toko'] = $toko;
             $array['products'][$number]['alamat'] = $alamat;
             $array['products'][$number]['telp'] = $telp;
             $array['products'][$number]['info'] = $info;
@@ -724,7 +731,9 @@ class JualController extends Controller
                 $persen = isset($data->karat->persen) ? $data->karat->persen : 0;
                 $harga  = isset($data->harga) ? $data->harga : 0;
                 $berat  = isset($data->berat_emas) ? $data->berat_emas : 0;
-                $price  = ($coef*$harga*$berat)+($coef*$harga*$berat*$persen/100);
+                $har    = ceil($coef*$harga*1000)/1000;
+                $har    = $har*$berat;
+                $price  = ($har)+($har*$persen/100);
                 $price  = ceil($price/1000);
                 $price  = $price*1000;
                 $tb = '<div class="items-center gap-x-2">

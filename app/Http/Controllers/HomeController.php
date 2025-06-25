@@ -17,6 +17,7 @@ use Modules\Sale\Entities\SalePayment;
 use Modules\SalesReturn\Entities\SaleReturn;
 use Modules\SalesReturn\Entities\SaleReturnPayment;
 use App\Models\ActivityLog;
+use App\Models\SalesGold;
 use Modules\Adjustment\Entities\AdjustmentSetting;
 class HomeController extends Controller
 {
@@ -47,32 +48,69 @@ class HomeController extends Controller
                 'user_logins.created_at',
                 'users.name', 'user_logins.updated_at'])
         ->limit(4)->get();
-        $sales = Sale::completed()->sum('total_amount');
-        $sale_returns = SaleReturn::completed()->sum('total_amount');
-        $purchase_returns = PurchaseReturn::completed()->sum('total_amount');
-        $product_costs = 0;
+        $sales = Sale::completed()->sum('total_amount'); 
+        $status = $request->status ?? '';
+        // $sale_returns = SaleReturn::completed()->sum('total_amount'); // tidak dipakai sepertinya!
+        // $purchase_returns = PurchaseReturn::completed()->sum('total_amount');
+        // $product_costs = 0;
+        // foreach (Sale::completed()->with('saleDetails')->get() as $sale) {
+        //     foreach ($sale->saleDetails??[] as $saleDetail) {
+        //         $product_costs += $saleDetail->product->product_cost ?? 0;
+        //     }
+        // }
+        // $revenue = ($sales - $sale_returns) / 100;
+        // $profit = $revenue - $product_costs;
+        // $sales = Sale::completed()->sum('total_amount');
 
-        foreach (Sale::completed()->with('saleDetails')->get() as $sale) {
-            foreach ($sale->saleDetails??[] as $saleDetail) {
-                $product_costs += $saleDetail->product->product_cost ?? 0;
+        ///// start data pada card
+        $todayDate = Carbon::today(); // hari ini
+        $todaySalesGold = SalesGold::whereDate('created_at', $todayDate)->get(); // data penjualan hari ini
+
+        // 1. HASIL PENJUALAN HARI INI (card ungu)
+        $totalGoldSales = 0;
+        // loop data hari ini dan kalkulasikan semua total ke dalam $totalGoldSales
+        foreach ($todaySalesGold as $data) {
+            $totalGoldSales = $totalGoldSales + $data->total;
+        }
+        $formattedTotalGoldSales = 'Rp. ' . number_format($totalGoldSales, 0, ',', '.');
+
+        // 2. TOTAL BERAT PENJUALAN HARI INI (card kuning)
+        // 3. TOTAL KUANTITAS PENJUALAN HARI INI (card hijau)
+        $totalGoldWeight = 0;
+        $totalGoldQuantity = 0;
+
+        foreach ($todaySalesGold as $data) {
+            $arrayProducts = json_decode($data->products, true); // mengambil products menjadi array product_id
+            foreach ($arrayProducts as $product_id) {
+                $allProducts[] =  $product_id; // mengambil semua product_id yang ada
+                $totalGoldQuantity = count($allProducts); // menghitung total semua product / emas (berdasarkan product_id)
+                $goldWeight = Product::where('id', $product_id)->first()->berat_emas; // mengambil berat emas dari setiap product
+                $totalGoldWeight = $totalGoldWeight + $goldWeight; // kalkulasi semua berat emas
             }
         }
-
-        $revenue = ($sales - $sale_returns) / 100;
-        $profit = $revenue - $product_costs;
-        $sales = Sale::completed()->sum('total_amount');
-        $status = $request->status ?? '';
+        
+        // 4. JUMLAH PELANGGAN HARI INI (card biru)
+        $totalCustomer = SalesGold::whereDate('created_at', $todayDate)->count();
+        // total sementara 17 juni 2025 = Rp. 11.252.326
+        // total berat emas sementara = 8,44
+        // total item sementara = 5
+        // jumlah pelanggan sementara = 4
+        /// end data pada card
 
         return view('home', [
             'paging'     => $paging,
             'userlogin'     => $userlogin,
-            'sales'     => $sales,
+            'sales'     => $sales, 
             'status'     => $status,
             'lastActivity'     => $lastActivity,
-            'revenue'          => $revenue,
-            'sale_returns'     => $sale_returns / 100,
-            'purchase_returns' => $purchase_returns / 100,
-            'profit'           => $profit
+            'formattedTotalGoldSales' => $formattedTotalGoldSales,
+            'totalGoldWeight' => $totalGoldWeight,
+            'totalGoldQuantity' => $totalGoldQuantity,
+            'totalCustomer' => $totalCustomer,
+            // 'revenue'          => $revenue, // tidak dipakai sepertinya!
+            // 'sale_returns'     => $sale_returns / 100,
+            // 'purchase_returns' => $purchase_returns / 100,
+            // 'profit'           => $profit
         ]);
     }
 

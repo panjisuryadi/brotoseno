@@ -19,7 +19,7 @@ Route::get('language/{language}', 'LanguageController@switch')->name('language.s
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/home', 'HomeController@index')
-        ->name('home');  
+        ->name('home');
     Route::get('/home/distribusi', 'HomeController@distribusi')
         ->name('home.distribusi');
     Route::get('/home/buys-backnota', 'HomeController@buysbacknota')
@@ -105,7 +105,13 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/sale/data_report', 'JualController@data_report')
         ->name('sale.data_report');
-    
+
+    Route::get('/sale/report/recap', 'JualController@recap')
+    ->name('sale.recap');
+
+    Route::get('/sale/recap/data', 'JualController@data_recap')
+    ->name('sale.data_recap');
+
     Route::post('/sale/print', 'JualController@print')
         ->name('sale.print');
 
@@ -113,16 +119,16 @@ Route::group(['middleware' => 'auth'], function () {
         ->name('dashboard.index');
 
     Route::get('/pettycash', 'PettyCashController@list')
-        ->name('pettycash.index');  
+        ->name('pettycash.index');
 
     Route::get('/webcam', 'WebcamController@list')
         ->name('webcam.index');
-        
+
     Route::get('/webcam/update/{value}', 'WebcamController@update')
         ->name('webcam.update');
-        
+
     Route::get('/pettycash/detail/{id}', 'PettyCashController@detail')
-        ->name('pettycash.detail');  
+        ->name('pettycash.detail');
 
     Route::post('/pettycash/insert', 'PettyCashController@insert')
         ->name('pettycash.insert');
@@ -135,10 +141,10 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/pettycash/index_data', 'PettyCashController@index_data')
         ->name('pettycash.index_data');
-        
+
     Route::get('/pettycash/detail_data/{id}', 'PettyCashController@detail_data')
         ->name('pettycash.detail_data');
-    
+
     Route::get('/config/index_data', 'ConfigController@index_data')
         ->name('config.index_data');
 
@@ -207,7 +213,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/products_notas', 'ProductController@list')
         ->name('products.list');
-    
+
     Route::get('/products_emas', 'ProductController@list_emas')
         ->name('products.emas');
 
@@ -297,7 +303,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/discounts/index_discounts', 'KaratController@index_diskon')
         ->name('karats.index_diskon');
-    
+
     Route::patch('/discounts/update_diskon/{id}', 'KaratController@update_diskon')
         ->name('karat.update_diskon');
 
@@ -339,10 +345,10 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/penerimaan-barangs/product/{id}', 'GoodReceiptController@products')
         ->name('penerimaan.product');
-    
+
     Route::post('/penerimaan-barangs/product', 'GoodReceiptController@product_update')
         ->name('penerimaan.product_update');
-    
+
     Route::post('/penerimaan-barangs', 'GoodReceiptController@insert')
         ->name('penerimaan.insert');
 

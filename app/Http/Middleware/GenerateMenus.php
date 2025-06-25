@@ -135,7 +135,7 @@ class GenerateMenus
             //         'class' => 'c-sidebar-nav-link py-3',
             //     ]);
 
-            
+
 
 
             //menuemas
@@ -1320,7 +1320,9 @@ class GenerateMenus
             // ]);
 
 
-            $jual = $menu->add('<i class="c-sidebar-nav-icon bi bi-bag"></i> Sales', [
+
+
+            $jual = $menu->add('<i class="c-sidebar-nav-icon bi bi-bag"></i> Report', [
                 'class' => 'c-sidebar-nav-dropdown',
             ])
                 ->data([
@@ -1355,7 +1357,9 @@ class GenerateMenus
                 'class' => 'c-sidebar-nav-dropdown-toggle',
                 'href'  => '#',
             ]);
-            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Report') . '', [
+
+            // REPORT - PENJUALAN
+            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Sales') . '', [
                 'route' => 'sale.report',
                 'class' => 'nav-item',
             ])
@@ -1367,6 +1371,79 @@ class GenerateMenus
                 ->link->attr([
                     'class' => 'c-sidebar-nav-link',
                 ]);
+
+            // REPORT - REKAP PENJUALAN
+            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . 'Rekap Penjualan'. '', [
+                'route' => 'sale.recap',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 91,
+                    'activematches' => 'settings*',
+                    'permission'    => ['access_settings'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link',
+                ]);
+
+            // REPORT - HUTANG
+            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Debt') . '', [
+                'route' => 'goodsreceipt.debts',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 91,
+                    'activematches' => 'settings*',
+                    'permission'    => ['access_settings'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link',
+                ]);
+
+            // REPORT - PEMBELIAN
+            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Purchase') . '', [
+                'route' => 'goodsreceipt.index',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 91,
+                    'activematches' => 'settings*',
+                    'permission'    => ['access_settings'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link',
+                ]);
+
+            // REPORT - STOK
+            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Stock') . '', [
+                'route' => 'stock-report.index',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 91,
+                    'activematches' => 'settings*',
+                    'permission'    => ['access_settings'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link',
+                ]);
+
+            //////////start menu
+            // REPORT - PENJUALAN UNIT
+            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Unit Sales') . '', [
+                'route' => 'sales-unit-report.index',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 91,
+                    'activematches' => 'settings*',
+                    'permission'    => ['access_settings'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link',
+                ]);
+            /// end menu
+
 
             // EMAS - PEMBELIAN
             // $Penjualan = $jual->add('<i class="c-sidebar-nav-icon mb-1 bi bi-bag"></i>' . __('Laporan') . '', [
@@ -2577,7 +2654,7 @@ class GenerateMenus
             //         ->link->attr([
             //             'class' => 'c-sidebar-nav-link',
             //         ]);
-    
+
 
             $setting->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('System Settings') . '', [
                 'route' => 'settings.index',

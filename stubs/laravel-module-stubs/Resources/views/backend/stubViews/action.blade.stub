@@ -1,0 +1,33 @@
+<div class="text-center btn-group">
+ @can('show_'.$module_name.'')
+    <a href="{{ route('backend.{{moduleNameLower}}.show', $data) }}"
+    id="Show"
+    data-toggle="tooltip"
+     class="btn btn-outline-dark btn-sm">
+        <i class="bi bi-eye"></i> &nbsp;@lang('Show')
+    </a>
+@endcan
+ @can('edit_'.$module_name.'')
+    <a href="{{ route('backend.{{moduleNameLower}}.edit', $data) }}"
+    id="Edit"
+    data-toggle="tooltip"
+     class="btn btn-outline-info btn-sm">
+        <i class="bi bi-pencil"></i> &nbsp;@lang('Edit')
+    </a>
+@endcan
+
+    @can('delete_'.$module_name.'')
+    <button id="delete" class="btn btn-outline-danger btn-sm" onclick="
+        event.preventDefault();
+        if (confirm('Are you sure? It will delete the data permanently!')) {
+        document.getElementById('destroy{{ $data }}').submit()
+        }
+        ">
+        <i class="bi bi-trash"></i>&nbsp;@lang('Delete')
+        <form id="destroy{{ $data }}" class="d-none" action="{{ route('backend.{{moduleNameLower}}.destroy', $data) }}" method="POST">
+            @csrf
+            @method('delete')
+        </form>
+    </button>
+@endcan 
+</div>

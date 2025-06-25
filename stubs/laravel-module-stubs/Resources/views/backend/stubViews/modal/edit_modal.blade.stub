@@ -1,0 +1,77 @@
+<div class="px-3">
+    <x-library.alert />
+    {{ html()->modelForm($$module_name_singular, 'PATCH', route("backend.$module_name.update", $$module_name_singular))
+            ->id('FormEdit')->class('form')->open() }}
+    <div class="flex flex-row grid grid-cols-2 gap-4">
+        @include ("$module_path.{{moduleNameLower}}.modal.form")
+    </div>
+    {{ html()->form()->close() }}
+</div>
+
+<script>
+jQuery.noConflict();
+(function($) {
+    function autoRefresh() {
+        var table = $('#datatable').DataTable();
+        table.ajax.reload();
+    }
+
+    function Update() {
+        $.ajax({
+            url: $('#FormEdit').attr('action'),
+            type: "PATCH", // Pastikan metode yang benar digunakan
+            cache: false,
+            data: $('#FormEdit').serialize(),
+            dataType: 'json',
+            success: function(data) {
+                console.log(data.error);
+                if ($.isEmptyObject(data.error)) {
+                    $('#ResponseInput').html(data.success);
+                    $("#sukses").removeClass('d-none').fadeIn('fast').delay(3000).fadeOut('slow');
+                    $("#ResponseInput").fadeIn('fast').delay(3000).fadeOut('slow');
+                    
+                    // Auto refresh table setelah sukses
+                    autoRefresh();
+
+                    // Menutup modal setelah 1 detik
+                    setTimeout(function() {
+                        $('#ModalGue').modal('hide');
+                    }, 1000);
+                } else {
+                    printErrorMsg(data.error);
+                }
+            },
+            error: function(xhr) {
+                // Menangani kesalahan jika ada
+                console.error(xhr.responseText);
+                $('#ResponseInput').html("Terjadi kesalahan saat memproses permintaan.");
+            }
+        });
+    }
+
+    function printErrorMsg(msg) {
+        $.each(msg, function(key, value) {
+            $('#' + key).addClass("is-invalid");
+            $('.' + key + '_err').text(value);
+        });
+    }
+
+    $(document).ready(function() {
+        var Tombol = "<button type='button' class='btn btn-danger px-5' data-dismiss='modal'>{{ __('Close') }}</button>";
+        Tombol += "<button type='button' class='px-5 btn btn-primary' id='SimpanUpdate'>{{ __('Update') }}</button>";
+        $('#ModalFooter').html(Tombol);
+
+        $("#FormEdit").find('input[type=text],textarea,select').filter(':visible:first').focus();
+
+        $('#SimpanUpdate').click(function(e) {
+            e.preventDefault();
+            Update();
+        });
+
+        $('#FormEdit').submit(function(e) {
+            e.preventDefault();
+            Update();
+        });
+    });
+})(jQuery);
+</script>

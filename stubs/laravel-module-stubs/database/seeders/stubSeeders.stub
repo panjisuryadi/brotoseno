@@ -1,0 +1,68 @@
+<?php
+
+namespace {{namespace}}\{{moduleName}}\database\seeders;
+//use Modules\{{moduleName}}\database\seeders\{{moduleName}}DatabaseSeeder;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
+use Modules\{{moduleName}}\Models\{{moduleName}};
+
+
+use Carbon\Carbon;
+class {{moduleName}}DatabaseSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+
+    {
+
+    //php artisan module:seed {{moduleName}} --class={{moduleName}}DatabaseSeeder
+       // Disable foreign key checks!
+       // DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+       Schema::disableForeignKeyConstraints();
+
+       $faker = \Faker\Factory::create('id_ID');
+
+        /*
+         * {{moduleNamePlural}} Seed
+         * ------------------
+         */
+
+        // DB::table('{{moduleNameLowerPlural}}')->truncate();
+        // echo "Truncate: {{moduleNameLowerPlural}} \n";
+
+        //   $pages = [
+        //     [
+        //         'name'              => 'Garuda Vision',
+        //         'slug'              => 'garuda-vision',
+        //         'status'            =>  1,
+        //         'description'       => $faker->paragraph,
+        //         'image'             => 'bnr1.png',
+        //         'status'            => 1,
+        //         'created_at'        => Carbon::now(),
+        //         'updated_at'        => Carbon::now(),
+        //     ]
+
+
+ 
+        // ];
+
+        // foreach ($pages as $page_data) {
+        //     $page = {{moduleName}}::create($page_data);
+
+        // }
+
+        Schema::enableForeignKeyConstraints();
+        //DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        {{moduleName}}::factory()->count(5)->create();
+        $rows = {{moduleName}}::all();
+        echo " Insert: {{moduleNameLowerPlural}} \n\n";
+
+    }
+}

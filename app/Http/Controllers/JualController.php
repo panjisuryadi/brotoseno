@@ -28,6 +28,7 @@ use Modules\Sale\Entities\SaleManual;
 use Modules\Sale\Http\Requests\StorePosSaleRequest;
 use PDF;
 use Auth;
+use Carbon\Carbon;
 use Modules\Adjustment\Entities\AdjustmentSetting;
 use Modules\Product\Models\ProductStatus;
 use Yajra\DataTables\DataTables;
@@ -84,7 +85,12 @@ class JualController extends Controller
     }
 
     public function data_report(Request $request)
-    {   
+    {
+
+        // echo json_encode($_POST);
+        // exit();
+
+
         $id     = $request->id;
 
         $module_title = $this->module_title;
@@ -95,12 +101,26 @@ class JualController extends Controller
         $module_name_singular = Str::singular($module_name);
 
         $module_action = 'List';
-        $$module_name = SalesGold::with('pelanggan')->latest()->get();
+        // $$module_name = SalesGold::with('pelanggan')->latest()->get();
         // $$module_name = SalesGold::latest()->get();
-        
-        $data = $$module_name;
+        // dd($$module_name);
+
+        // $data = $$module_name;
         // echo $data;
         // exit();
+
+        $query = SalesGold::with('pelanggan');
+
+        if (!empty($request->startDate) && !empty($request->endDate)) {
+            $start = Carbon::parse($request->startDate)->startOfDay();
+            $end = Carbon::parse($request->endDate)->endOfDay();
+            $query->whereBetween('created_at', [$start, $end]);
+        }
+
+        $data = $query->latest()->get();
+        // dd($data);
+
+
 
         return Datatables::of($data)
             ->addColumn('action', function ($data) {
@@ -143,7 +163,31 @@ class JualController extends Controller
             ->editColumn('total', function ($data) {
                 return number_format($data->total);
             })
-            
+
+            // ->editColumn('berat_emas', function ($data) {
+            //     return $data->berat_emas ?? '-';
+            // })
+
+            ->editColumn('berat_emas', function ($data) {
+                $totalBerat = 0;
+
+                // Pastikan products adalah JSON string atau array
+                $productIds = is_string($data->products)
+                    ? json_decode($data->products, true)
+                    : $data->products;
+
+                if (is_array($productIds)) {
+                    $products = Product::whereIn('id', $productIds)->get();
+
+                    foreach ($products as $product) {
+                        $totalBerat += $product->berat_emas;
+                    }
+                }
+
+                return $totalBerat > 0 ? number_format($totalBerat, 2) . ' gr' : '-';
+            })
+
+
             ->rawColumns([
                 'created_at', 'product_image', 'keterangan', 'code', 'weight', 'status', 'tracking',
                 'product_name', 'karat', 'berat_emas', 'cabang', 'action'
@@ -151,25 +195,250 @@ class JualController extends Controller
             ->make(true);
         }
 
-    public function laporan() {
+    public function laporan(Request $request){
+
+        // dd($request->all());
         if(AdjustmentSetting::exists()){
             toast('Stock Opname sedang Aktif!', 'error');
             return redirect()->back();
         }
+
+        if ($request->resetFilter) {
+            $startDate = Carbon::today()->toDateString();
+            $endDate = Carbon::today()->toDateString();
+        } else {
+            $startDate = $request->startDate ?? Carbon::today()->toDateString();
+            $endDate = $request->endDate ?? Carbon::today()->toDateString();
+        }
+
+        if ($startDate > $endDate) {
+            toast('Tanggal awal tidak boleh lebih besar dari tanggal akhir!', 'error');
+            return redirect()->back();
+        }
+
+
         Cart::instance('sale')->destroy();
-        $karat  = Karat::latest()->get();
-        $category  = Category::latest()->get();
-        $group  = Group::latest()->get();
-        $models  = ProdukModel::latest()->get();
-        $customers = Customer::all();
-        $product_categories = Category::all();
+
+        if ($request->startDate && $request->endDate && !$request->resetFilter) {
+            $karat  = Karat::whereBetween('created_at', [$startDate, $endDate])->latest()->get();
+            $category  = Category::whereBetween('created_at', [$startDate, $endDate])->latest()->get();
+            $group  = Group::whereBetween('created_at', [$startDate, $endDate])->latest()->get();
+            $models  = ProdukModel::whereBetween('created_at', [$startDate, $endDate])->latest()->get();
+            $customers = Customer::whereBetween('created_at', [$startDate, $endDate])->get();
+            $product_categories = Category::whereBetween('created_at', [$startDate, $endDate])->get();
+        } else {
+            $karat  = Karat::latest()->get();
+            $category  = Category::latest()->get();
+            $group  = Group::latest()->get();
+            $models  = ProdukModel::latest()->get();
+            $customers = Customer::all();
+            $product_categories = Category::all();
+        }
+
+
+        // dd(Product::all());
+
         $module_title   = $this->module_title;
+
+        // ///// start data pada card
+        // $todayDate = Carbon::today(); // hari ini
+        // $todaySalesGold = SalesGold::whereDate('created_at', $todayDate)->get(); // data penjualan hari ini
+
+
+        // dd($karat);
+
+        if($request->resetFilter) {
+            $startDate = Carbon::today()->toDateString();
+            $endDate = Carbon::today()->toDateString();
+        }
+
+        // if ($startDate !== Carbon::today()->toDateString()  && $endDate !== Carbon::today()->toDateString()) {
+        //     dd($startDate, $endDate);
+        // }
+
+        // dd($startDate, $endDate);
+
+        $todaySalesGold = SalesGold::whereDate('created_at', '>=', $startDate)
+        ->whereDate('created_at', '<=', $endDate)
+        ->get();
+
+        // 1. HASIL PENJUALAN HARI INI (card ungu)
+        $totalGoldSales = 0;
+        // loop data hari ini dan kalkulasikan semua total ke dalam $totalGoldSales
+        foreach ($todaySalesGold as $data) {
+            $totalGoldSales = $totalGoldSales + $data->total;
+        }
+
+        // 2. TOTAL BERAT PENJUALAN HARI INI (card kuning)
+        // 3. TOTAL KUANTITAS PENJUALAN HARI INI (card hijau)
+        $totalGoldWeight = 0;
+        $totalGoldQuantity = 0;
+        $allProducts = [];
+
+        foreach ($todaySalesGold as $data) {
+            $arrayProducts = json_decode($data->products, true); // mengambil products menjadi array product_id
+            foreach ($arrayProducts as $product_id) {
+                $allProducts[] =  $product_id; // mengambil semua product_id yang ada
+                $goldWeight = Product::where('id', $product_id)->first()->berat_emas; // mengambil berat emas dari setiap product
+                $totalGoldWeight = $totalGoldWeight + $goldWeight; // kalkulasi semua berat emas
+            }
+        }
+
+        // dd(Product::where('id', $product_id)->first()->berat_emas);
+        $totalGoldQuantity = count($allProducts); // menghitung total semua product / emas (berdasarkan product_id)
+        // 4. JUMLAH PELANGGAN HARI INI (card biru)
+        // $totalCustomer = SalesGold::whereDate('created_at', $todayDate)->count();
+        // total sementara 17 juni 2025 = Rp. 11.252.326
+        // total berat emas sementara = 8,44
+        // total item sementara = 5
+        // jumlah pelanggan sementara = 4
+        /// end data pada card
+
+        $totalCustomer = SalesGold::whereBetween('created_at', [$startDate, $endDate])
+        ->distinct('id')
+        ->count('id');
+
+        // dd(1);
         return view(
             'sale.report', compact(
-                'module_title', 'product_categories', 'customers', 'karat', 'category', 'group', 'models'
+                'module_title',
+                'product_categories',
+                'customers',
+                'karat',
+                'category',
+                'group',
+                'models',
+                'totalGoldSales',
+                'totalGoldWeight',
+                'totalGoldQuantity',
+                'totalCustomer',
+                // 'todayDate',
             )
         );
     }
+
+
+
+    public function data_recap(Request $request)
+    {
+        $data = SalesGold::query();
+
+        if ($request->filled('bulan') && $request->filled('tahun')) {
+            $data->whereMonth('created_at', $request->bulan)
+                ->whereYear('created_at', $request->tahun);
+        }
+
+        $data = $data->latest()->get();
+
+        $rekap = $data->groupBy(function ($item) {
+            return $item->created_at->format('Y-m-d'); // tanggal asli
+        })->map(function ($items, $tanggal) {
+            $total = $items->sum('total');
+            $berat = 0;
+
+            foreach ($items as $row) {
+                $produk = json_decode($row->products, true);
+                foreach ($produk as $id_produk) {
+                    $berat += Product::find($id_produk)?->berat_emas ?? 0;
+                }
+            }
+
+            // Ambil tanggal terbaru dari isi group
+            $created_terbaru = $items->sortByDesc('created_at')->first()->created_at;
+
+            return [
+                'tanggal' => $tanggal,
+                'tanggal_sort' => Carbon::parse($created_terbaru), // pakai untuk sorting akurat
+                'berat_emas' => $berat,
+                'total' => $total,
+            ];
+        })
+        ->sortByDesc('tanggal_sort') // urut berdasarkan waktu sebenarnya
+        ->values(); // convert ke collection numerik
+
+
+        return DataTables::of($rekap)
+            ->editColumn('tanggal', fn($row) => Carbon::parse($row['tanggal'])->format('d/m/Y'))
+            ->editColumn('berat_emas', fn($row) => number_format($row['berat_emas'], 2) . ' gr')
+            ->editColumn('total', fn($row) => 'Rp ' . number_format($row['total'], 0, ',', '.'))
+            ->make(true);
+    }
+
+
+    public function recap(Request $request)
+        {
+            if (AdjustmentSetting::exists()) {
+                toast('Stock Opname sedang Aktif!', 'error');
+                return redirect()->back();
+            }
+
+            Cart::instance('sale')->destroy();
+
+            $karat = Karat::latest()->get();
+            $category = Category::latest()->get();
+            $group = Group::latest()->get();
+            $models = ProdukModel::latest()->get();
+            $customers = Customer::all();
+            $product_categories = Category::all();
+
+            // Ambil filter dari request
+            $bulan = $request->input('bulan', now()->month);
+            $tahun = $request->input('tahun', now()->year);
+
+            // Ambil data SalesGold berdasarkan filter (jika ada)
+            $salesGold = SalesGold::when($bulan, function ($query) use ($bulan) {
+                    return $query->whereMonth('created_at', $bulan);
+                })
+                ->when($tahun, function ($query) use ($tahun) {
+                    return $query->whereYear('created_at', $tahun);
+                })
+                ->get();
+
+            // Total nilai penjualan
+            $totalGoldSales = $salesGold->sum('total');
+
+            // Hitung berat dan jumlah produk
+            $totalGoldWeight = 0;
+            $allProducts = [];
+
+            foreach ($salesGold as $data) {
+                $arrayProducts = json_decode($data->products, true);
+                foreach ($arrayProducts as $product_id) {
+                    $allProducts[] = $product_id;
+                    $berat = Product::find($product_id)?->berat_emas ?? 0;
+                    $totalGoldWeight += $berat;
+                }
+            }
+
+            $totalGoldQuantity = count($allProducts);
+            $totalCustomer = $salesGold->count();
+
+            $module_title = $this->module_title;
+
+            return view('sale.recap', compact(
+                'module_title',
+                'karat',
+                'category',
+                'group',
+                'models',
+                'customers',
+                'product_categories',
+                'totalGoldSales',
+                'totalGoldWeight',
+                'totalGoldQuantity',
+                'totalCustomer',
+                'bulan',
+                'tahun'
+            ));
+        }
+
+
+
+
+
+
+
+
 
     public function test_pdf(){
         $data = [
@@ -197,7 +466,7 @@ class JualController extends Controller
             return redirect()->back();
         }
         $nama_cus   = '';
-        $address    = '';        
+        $address    = '';
         $array      = array();
 
         $config = Config::where('name', 'nota')->first();
@@ -242,7 +511,7 @@ class JualController extends Controller
             $diskon     = $s->diskon;
             $harga      = $s->total;
             $salesNomor = $s->nomor;
-            
+
             $array['products'][$number]['title'] = $title;
             $array['products'][$number]['img'] = $images;
             $array['products'][$number]['name'] = $name;
@@ -278,17 +547,17 @@ class JualController extends Controller
             // $array['products'][$number]['info'] = $info;
             // $array['products'][$number]['customer'] =$nama_cus;
             // $array['products'][$number]['address'] =$address;
-            
+
             $number++;
         }
-        
-        
 
-        
+
+
+
         // exit();
-        
-        
-        
+
+
+
 
         // echo json_encode($array);
         // exit();
@@ -303,7 +572,7 @@ class JualController extends Controller
         // $pdf = PDF::loadView('sale.invoice', $array)
         //       ->setPaper('a5', 'landscape')  // Set paper size to A5 and orientation to landscape
         //       ->setOptions(['isHtml5ParserEnabled' => true, 'isPhpEnabled' => true]);  // Enable HTML5 and PHP if needed
-    
+
         return $pdf->stream('invoice.pdf');
 
 
@@ -324,8 +593,8 @@ class JualController extends Controller
         $info = $val['info'];
         $lanjut = true;
         $print  = '';
-        $products   = array();        
-        $services   = array();        
+        $products   = array();
+        $services   = array();
         $total      = 0;
         $number     = 0;
         $nama_cus   = '';
@@ -369,7 +638,7 @@ class JualController extends Controller
         // exit();
         $nomor  = $nomor->nomor;
         $nomor  = (int)$nomor+1;
-        for ($i=0; $i < 8; $i++) { 
+        for ($i=0; $i < 8; $i++) {
             if(strlen($nomor) !== $i){
                 $nomor  = '0'.$nomor;
             }
@@ -424,7 +693,7 @@ class JualController extends Controller
                         'desc'  => $desc,
                         'total' => $harga
                     ]);
-    
+
                     $product_history = ProductHistories::create([
                         'product_id'    => $p,
                         'status'        => 'S',
@@ -442,7 +711,7 @@ class JualController extends Controller
                 $gram   = $product->berat_emas;
                 $karat_id   = $product->karat_id;
                 $harga  = $request->harga[$number];
-                // GET COEF 
+                // GET COEF
                 $karat  = Karat::where('id', $karat_id)->first();
                 $coef   = $karat->coef;
                 $margin = $karat->margin;
@@ -451,9 +720,9 @@ class JualController extends Controller
                 // $price  = ($coef*$harga*$berat)+($coef*$harga*$berat*$persen/100);
                 // $price  = ceil($price/1000);
                 // $price  = $price*1000;
-                
+
                 $total_real = ($coef*$set_harga*$gram)+($coef*$harga*$gram*$margin/100)-$request->diskon[$number]+$request->ongkos[$number];
-                
+
 
                 $product->status_id = 2;
                 $product->status = 2;
@@ -485,7 +754,7 @@ class JualController extends Controller
             $salesNomor = (int)$salesNomor+1+$kurangi;
             // echo $salesNomor;
             // exit();
-            for ($i=0; $i < 9; $i++) { 
+            for ($i=0; $i < 9; $i++) {
                 if(strlen($salesNomor) !== $i){
                     $salesNomor  = '0'.$salesNomor;
                 }
@@ -505,7 +774,7 @@ class JualController extends Controller
                 $sales_id   = $salesItem->id;
             }
 
-            // for ($i=0; $i < 8; $i++) { 
+            // for ($i=0; $i < 8; $i++) {
             //     if(strlen($sales_id) !== $i){
             //         $sales_id  = '0'.$sales_id;
             //     }
@@ -551,7 +820,7 @@ class JualController extends Controller
         // $pdf = PDF::loadView('sale.invoice', $array)
         //       ->setPaper('a5', 'landscape')  // Set paper size to A5 and orientation to landscape
         //       ->setOptions(['isHtml5ParserEnabled' => true, 'isPhpEnabled' => true]);  // Enable HTML5 and PHP if needed
-    
+
 
 
         // $pdf = PDF::loadView('sale.invoice', $array)->setPaper('a5', 'landscape');
@@ -559,7 +828,7 @@ class JualController extends Controller
     }
 
     public function index_data(Request $request)
-    {   
+    {
         $id     = $request->id;
 
         $module_title = $this->module_title;
@@ -585,12 +854,12 @@ class JualController extends Controller
         });
         $$module_name->where('status_id', 1)->get();
 
-        $harga = Harga::latest()->first();  
+        $harga = Harga::latest()->first();
         if($harga == null){
             $harga  = 0;
         }else{
             $harga = $harga->harga;
-        }     
+        }
         $$module_name = $$module_name->latest()->get();
         $$module_name->each(function ($item) use ($harga) {
             $item->harga = $harga; // Add the harga attribute to the model
@@ -681,7 +950,7 @@ class JualController extends Controller
             ->addColumn('rounded', function ($data) {
                 // $price  = ((($data->karat->coef*$data->harga)+($data->karat->coef*$data->harga*$data->karat->persen/100))*$data->berat_emas);
                 // $rounded = ceil($price / 1000) * 1000;
-                
+
                 // return '<div class="items-center font-semibold text-center">
                 //     ' .rupiah($rounded) . '
                 //     </div>';
@@ -731,7 +1000,7 @@ class JualController extends Controller
     }
 
     public function index_data_baki(Request $request)
-    {   
+    {
         $id     = $request->id;
 
         $module_title = $this->module_title;
@@ -752,12 +1021,12 @@ class JualController extends Controller
         // $final_sql  = $$module_name->toSql();
         // dd($final_sql);
         $module_name = $module_name->latest()->get();
-        $harga = Harga::latest()->first();  
+        $harga = Harga::latest()->first();
         if($harga == null){
             $harga  = 0;
         }else{
             $harga = $harga->harga;
-        }     
+        }
         $module_name->each(function ($item) use ($harga) {
             $item->harga = $harga; // Add the harga attribute to the model
         });
@@ -866,7 +1135,7 @@ class JualController extends Controller
     }
 
     public function index_data_custom(Request $request)
-    {   
+    {
         $id     = $request->id;
 
         $module_title = $this->module_title;
@@ -881,17 +1150,17 @@ class JualController extends Controller
         if ($request->get('status')) {
             $$module_name = $$module_name->where('status_id', $request->get('status'));
         }
-        
+
         $$module_name = $$module_name->where('status_id', '!=', 2);
         $$module_name->where('baki_id', $id)->get();
         // $$module_name->where('status_id', 1)->get();
 
-        $harga = Harga::latest()->first();  
+        $harga = Harga::latest()->first();
         if($harga == null){
             $harga  = 0;
         }else{
             $harga = $harga->harga;
-        }     
+        }
         $$module_name = $$module_name->latest()->get();
         $$module_name->each(function ($item) use ($harga) {
             $item->harga = $harga; // Add the harga attribute to the model

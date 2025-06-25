@@ -34,16 +34,99 @@
 @endsection
 @section('content')
 <div class="container-fluid">
+
+    @can('show_total_stats')
+        <div class="row">
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0">
+                    <div class="card-body p-0 d-flex align-items-center shadow-sm">
+                        <div class="bg-gradient-primary p-4 mfe-3 rounded-left">
+                            <i class="bi bi-cash font-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-value text-primary">{{ format_currency($totalGoldSales) }}</div>
+                            <div class="text-muted text-uppercase font-weight-bold small">
+                           @lang('Sales')
+                        </div>
+                        {{-- <p class="text-muted font-weight-bold small">{{ $todayDate->format("d/m/Y") }}</p> --}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0">
+                    <div class="card-body p-0 d-flex align-items-center shadow-sm">
+                        <div class="bg-gradient-warning p-4 mfe-3 rounded-left">
+                            <i class="bi bi-speedometer2 font-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-value text-warning">{{ $totalGoldWeight }} Gram</div>
+                            <div class="text-muted text-uppercase font-weight-bold small">
+                          @lang('Sales Weight')
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0">
+                    <div class="card-body p-0 d-flex align-items-center shadow-sm">
+                        <div class="bg-gradient-success p-4 mfe-3 rounded-left">
+                            <i class="bi bi-arrow-return-right font-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-value text-success">{{ $totalGoldQuantity }} Pcs</div>
+                            <div class="text-muted text-uppercase font-weight-bold small">
+                            @lang('Sales Quantity')
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0">
+                    <div class="card-body p-0 d-flex align-items-center shadow-sm">
+                        <div class="bg-gradient-info p-4 mfe-3 rounded-left">
+                            <i class="bi bi-people font-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-value text-info">{{ $totalCustomer }} Orang</div>
+                            <div class="text-muted text-uppercase font-weight-bold small">
+                             @lang('Total Customer')
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endcan
+
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
                     <div class="flex justify-between pb-3 border-bottom">
-                        <div> 
+                        <div>
                             <i class="bi bi-plus"></i> &nbsp; <span class="text-lg font-semibold"> List Sales</span>
                         </div>
                         <div id="buttons"></div>
                     </div>
+                    <form id="filterForm" class="form-inline mb-2" style="float: right;">
+                        <input type="date" name="startDate" id="startDate"
+                            class="form-control form-control-sm mx-1"
+                            placeholder="Dari" value="{{ request('startDate') }}">
+
+                        <input type="date" name="endDate" id="endDate"
+                            class="form-control form-control-sm mx-1"
+                            placeholder="Sampai" value="{{ request('endDate') }}">
+
+                        <button type="submit" class="btn btn-sm mx-1 btn-primary">Filter</button>
+                    </form>
+                    {{-- <button type="button" id="resetFilter" class="btn btn-sm btn-secondary">Reset</button> --}}
+                    <div class="clearfix"></div>
                     <div class="table-responsive mt-1">
                         <table id="datatable" style="width: 100%" class="table table-bordered table-hover table-responsive-sm">
                             <thead>
@@ -52,10 +135,11 @@
                                     <th style="width: 15%!important;">Nomor Trx</th>
                                     <th style="width: 15%!important;">Customer</th>
                                     <!-- <th style="width: 15%!important;" class="text-center">Harga Beli</th> -->
+                                    <th style="width: 15%!important;" class="text-center">Berat</th>
                                     <th style="width: 10%!important;" class="text-center">Total</th>
                                     <th style="width: 15%!important;" class="text-center">Date</th>
                                     <th style="width: 15%!important;" class="text-center">#</th>
-                                    
+
                  <!-- <th style="width: 18%!important;" class="text-center">
                                         Action
                                     </th> -->
@@ -105,7 +189,11 @@
             let code    = categoryCode+karat+formattedDate+rand;
             $("#code_"+number).val(code);
         }
-    $('#datatable').DataTable({
+
+        // (function($) {
+        //     $(document).ready(function () {
+
+    let table = $('#datatable').DataTable({
         processing: true,
         serverSide: true,
         autoWidth: true,
@@ -134,7 +222,14 @@
         }
         ],
         "sPaginationType": "simple_numbers",
-        ajax: '/sale/data_report',
+        ajax: {
+            url: '/sale/data_report',
+            data: function (d) {
+                d.startDate = $('#startDate').val();
+                d.endDate = $('#endDate').val();
+                console.log(d);
+            }
+        },
         dom: 'Blfrtip',
         buttons: [
             {
@@ -166,15 +261,15 @@
         {
             data: 'nomor',
             name: 'nomor'
-        }, 
+        },
         {
             data: 'customer',
             name: 'customer'
         },
-        // {
-        //     data: 'karat',
-        //     name: 'karat'
-        // },
+        {
+            data: 'berat_emas',
+            name: 'berat_emas'
+        },
         {
             data: 'total',
             name: 'total'
@@ -195,11 +290,60 @@
     .container()
     .appendTo("#buttons");
 
+    $('#startDate, #endDate').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true,
+        todayHighlight: true
+    });
+    console.log('script loaded');
+    $(document).ready(function () {
+            $('#startDate').val('');
+            $('#endDate').val('');
+            table.ajax.reload();
+        });
+    // $(document).on('click', '#resetFilter', function(e) {
+    //     console.log('reset clicked');
+    //     e.preventDefault();
+    // });
+
+    // Event onsubmit
+    $('#filterForm').on('submit', function(e) {
+        e.preventDefault();
+        const start = $('#startDate').val();
+        const end = $('#endDate').val();
+
+        if (start && end && start > end) {
+            alert('Tanggal awal tidak boleh lebih besar dari tanggal akhir.');
+            return;
+        }
+
+        table.ajax.reload();
+    });
+
+    // $('#filterForm').on('submit', function(e) {
+    //     e.preventDefault();
+    //     const start = $('#startDate').val();
+    //     const end = $('#endDate').val();
+
+    //     if (start && end && start > end) {
+    //         alert('Tanggal awal tidak boleh lebih besar dari tanggal akhir.');
+    //         return;
+    //     }
+
+    //     table.ajax.reload();
+    // });
+
+
+// });
+// })(jQuery);
+
+
 
 </script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
 <script type="text/javascript">
 
 jQuery.noConflict();
@@ -227,7 +371,7 @@ $(document).on('click', '#Tambah,#QrCode,#Show, #Edit', function(e){
             $('.modal-dialog').removeClass('modal-xl');
             $('.modal-dialog').removeClass('modal-sm');
             $('#ModalHeader').html('<i class="bi bi-grid-fill"></i> &nbsp;Cetak QR Code');
-        } 
+        }
 
          if($(this).attr('id') == 'Show')
         {
@@ -236,7 +380,7 @@ $(document).on('click', '#Tambah,#QrCode,#Show, #Edit', function(e){
             $('.modal-dialog').removeClass('modal-sm');
             $('#ModalHeader').html('<i class="bi bi-grid-fill"></i> &nbsp;Detail');
         }
-        
+
         $('#ModalContent').load($(this).attr('href'));
         // var myModalEl = document.getElementById('ModalGue');
         // var modal = new bootstrap.Modal(myModalEl);

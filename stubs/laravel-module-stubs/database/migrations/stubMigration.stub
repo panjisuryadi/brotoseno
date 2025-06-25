@@ -1,0 +1,57 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+use App\Models\Permission;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+
+
+
+        // if (Schema::hasTable('{{moduleNameLower}}')) {
+        //     Schema::drop('{{moduleNameLower}}');
+        // }
+        
+
+        Schema::create('{{moduleNameLower}}', function (Blueprint $table) {
+            $table->id();
+            //$table->unsignedBigInteger('user_id');
+            $table->string('title');
+            $table->string('slug')->nullable();
+            $table->text('description')->nullable();
+            $table->string('image')->nullable(true);
+            $table->tinyInteger('status')->default(1);
+            //$table->foreign('user_id')->references('id')->on('users')->restrictOnDelete();
+            
+             //$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->timestamps();
+
+        });
+        // Create Permissions
+        Permission::firstOrCreate(['name' => 'view_{{moduleNameLower}}','group_name' => '{{moduleNameLower}}']);
+        Permission::firstOrCreate(['name' => 'create_{{moduleNameLower}}','group_name' => '{{moduleNameLower}}']);
+        Permission::firstOrCreate(['name' => 'edit_{{moduleNameLower}}','group_name' => '{{moduleNameLower}}']);
+        Permission::firstOrCreate(['name' => 'delete_{{moduleNameLower}}','group_name' => '{{moduleNameLower}}']);
+    
+
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('{{moduleNameLower}}');
+    }
+};

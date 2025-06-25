@@ -16,7 +16,7 @@
                         <input class="form-control" type="text"
                         name="{{ $field_name }}"
                         id="{{ $field_name }}"
-                        value="{{$detail->code }}">
+                        value="{{$detail->code }}"  readonly >
                                 <span class="invalid feedback" role="alert">
                                     <span class="text-danger error-text {{ $field_name }}_err"></span>
                                 </span>

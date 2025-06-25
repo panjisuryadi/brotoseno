@@ -16,6 +16,7 @@ class CustomersDataTable extends DataTable
     public function dataTable($query) {
         return datatables()
             ->eloquent($query)
+            ->addIndexColumn()
             ->addColumn('action', function ($data) {
                 return view('people::customers.partials.actions', compact('data'));
             });
@@ -48,6 +49,12 @@ class CustomersDataTable extends DataTable
 
     protected function getColumns() {
         return [
+            Column::make('DT_RowIndex')
+                ->title('#')
+                ->className('text-center align-middle')
+                ->orderable(false)
+                ->searchable(false),
+
             Column::make('customer_name')
                 ->title (__('Customer Name'))
                 ->className('text-center align-middle'),

@@ -1,4 +1,4 @@
-<a href="#" data-toggle="modal" data-target="#createModal" onclick="detail_print('{{$data->id}}');" class="btn btn-outline-primary btn-sm">
+<a href="#" data-toggle="modal" data-target="#createModal" onclick="detail_print('{{$data['id']}}');" class="btn btn-outline-primary btn-sm">
     <i class="bi bi-printer"></i>&nbsp;Print
 </a>    
 

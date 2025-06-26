@@ -61,7 +61,7 @@ body {
 @section('breadcrumb')
 <ol class="breadcrumb border-0 m-0">
     <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-    <li class="breadcrumb-item active">{{$module_title}}</li>
+    <li class="breadcrumb-item active">CC</li>
 </ol>
 @endsection
 @section('content')
@@ -72,21 +72,16 @@ body {
             <div class="card">
                 <div class="card-body">
                     <Strong>
-                    Webcam Aktif = {{$webcam->value}}
+                    Persen/Fee Credit Card
                     </Strong>
-                    <div class="row mt-5">
-                        <div class="col-3">
-                            <a href="./webcam/update/0" class="btn btn-info">Webcam 0</a>
-                        </div>
-                        <div class="col-3">
-                            <a href="./webcam/update/1" class="btn btn-info">Webcam 1</a>
-                        </div>
-                        <div class="col-3">
-                            <a href="./webcam/update/2" class="btn btn-info">Webcam 2</a>
-                        </div>
-                        <div class="col-3">
-                            <a href="./webcam/update/3" class="btn btn-info">Webcam 3</a>
-                        </div>
+                    <div class="row mt-3">
+                        <form class="form-inline m-3" action="./cc" method="post">
+                            @csrf
+                            <div class="form-group">
+                                <input type="text" name="cc" id="cc" value="{{$cc->value}}" class="form-control">
+                                <button type="submit" class="btn btn-success">Submit</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

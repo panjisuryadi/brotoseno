@@ -18,6 +18,11 @@ class SalesGold extends Model
         'cash',
         'edc',
         'transfer',
+        'qr',
+        'cc',
+        'cc_up',
+        'bank_id',
+        'rekening_id',
     ];
 
     public function pelanggan()

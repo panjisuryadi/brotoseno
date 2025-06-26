@@ -536,7 +536,7 @@ class GoodReceiptController extends Controller
             'user_id'                    => 1,
             // 'user_id'                    => $input['pic_id'],
             'total_berat_kotor'          => $input['total_berat_kotor'],
-            'total_bayar'                => $input['yang_harus_dibayar'],
+            'total_bayar'                => str_replace(',', '.', $input['yang_harus_dibayar']),
             'total_qty'                  => $input['total_qty'],
             'berat_timbangan'            => !empty($input['berat_timbangan']) ? $input['berat_timbangan'] : 0,
             'selisih'                    => $input['selisih'] ?? null,

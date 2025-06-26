@@ -261,6 +261,10 @@
                 //     data: 'rekomendasi',
                 //     name: 'rekomendasi'
                 // },
+                // {
+                //     data: 'asli',
+                //     name: 'asli'
+                // },
                 {
                     data: 'rounded',
                     name: 'rounded'

@@ -154,11 +154,17 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/config', 'ConfigController@list')
         ->name('config.index');
 
+    Route::get('/config/cc', 'ConfigController@cc')
+        ->name('config.cc');
+
     Route::post('/config/insert', 'ConfigController@insert')
         ->name('config.insert');
 
     Route::post('/config/update', 'ConfigController@update')
         ->name('config.update');
+
+    Route::post('/config/cc', 'ConfigController@update_cc')
+        ->name('config.cc');
 
     Route::post('/config', 'ConfigController@create')
         ->name('config.create');
@@ -273,6 +279,9 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/products/baki', 'ProductController@index_baki')
         ->name('products.baki');
+
+    Route::get('/products/update_lebur', 'ProductController@update_lebur')
+        ->name('products.update_lebur');
 
     Route::get('/products_reparasi', 'ProductController@list_reparasi')
         ->name('products.reparasis');

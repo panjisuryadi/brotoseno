@@ -417,7 +417,12 @@
         $("#hidden_muncul_cc").val(muncul_cc);
         $("#hidden_bank").val(bank);
         $("#hidden_rekening").val(rekening);
-        $("#sale").submit();
+
+        $("#sale").attr("target", "_blank").submit();
+        setTimeout(function() {
+            location.reload();
+        }, 5000);
+        // $("#sale").submit();
         // return true;
     }
 

@@ -127,9 +127,69 @@ class JualController extends Controller
         $data = $query->latest()->get();
         // dd($data);
 
+        ///// WORKING AREA
+        $hargaEmas = Harga::latest()->first()->harga;
+        
+        $sales = SalesGold::with('pelanggan')->get();
 
+        $results = [];
 
-        return Datatables::of($data)
+        foreach ($sales as $sale) {
+            $productIds = json_decode($sale->products);
+
+            if (!is_array($productIds)) continue;
+            
+            $products = Product::whereIn('id', $productIds)
+                ->with('category')
+                ->with('karats')
+                ->get();
+            
+            foreach ($products as $product) {
+
+                // MEMBUAT HARGA JUAL PRODUK
+                $coef = $product->karats->coef;
+                $persenMargin = $product->karats->persen;
+                $hargaCoef = $hargaEmas * $coef;
+                $hargaMargin = $hargaCoef * $persenMargin;
+                $hargaJual = $hargaCoef + $hargaMargin;
+
+                $formattedHargaJual = 'Rp. ' . number_format($hargaJual, 0, ',', '.');
+                $formattedTotal = 'Rp. ' . number_format($sale->total, 0, ',', '.');
+                $formattedRata2 = 'Rp. ' . number_format($hargaJual / $product->berat_emas, 0, ',', '.');
+
+                $results[] = [
+                    'id' => $sale->id,
+                    'nomor_transaksi' => $sale->nomor,
+                    'jam' => $sale->created_at->format('H:i'),
+                    'customer_name' => $sale->pelanggan->customer_name ?? '-',
+                    'category_code' => $product->category->category_code ?? '-',
+                    'product_name' => $product->product_name,
+                    'berat_emas' => $product->berat_emas,
+                    'h_atr' => '-',
+                    // 'h_jual' => $formattedHargaJual, //masih error
+                    'h_jual' => '-',
+                    'ongkos' => '-',
+                    'total' => $formattedTotal,
+                    'dp' => '-',
+                    'cash' => '-',
+                    'transfer' => '-',
+                    'credit' => '-',
+                    'debet' => '-',
+                    'tukar' => '-',
+                    'tkr_krg' => '-',
+                    'btl_jual' => '-',
+                    // 'rata_rata' => $formattedRata2, //masih error
+                    'rata_rata' => '-',
+                    'keterangan' => '-',
+                ];
+            }
+        }
+
+        // dd($results);
+        /// END WORKING AREA
+
+        return Datatables::of($results)
+        // COMMENT DULU
             ->addColumn('action', function ($data) {
                 $module_name = $this->module_name;
                 $module_model = $this->module_model;
@@ -138,6 +198,12 @@ class JualController extends Controller
                     compact('module_name', 'data', 'module_model')
                 );
             })
+
+            ///// WORKING AREA
+            ->editColumn('product_name', function ($data) {
+                return $data['category_code'] . ' | ' . $data['product_name'];
+            })
+            /// END WORKING AREA
 
             // ->editColumn('product_name', function ($data) {
             //     $tb = '<div class="flex items-center gap-x-2">
@@ -159,40 +225,44 @@ class JualController extends Controller
             //     return '<img src="'.$url.'" border="0" width="50" class="img-thumbnail" align="center"/>';
             // })
 
-            ->editColumn('customer', function ($data) {
-                return $data->pelanggan->customer_name ?? '-';
-            })
+            // COMMENT DULU
+            // ->editColumn('customer', function ($data) {
+            //     return $data->pelanggan->customer_name ?? '-';
+            // })
 
-            ->editColumn('created_at', function ($data) {
-                return tgljam($data->created_at);
-            })
+            // COMMENT DULU
+            // ->editColumn('created_at', function ($data) {
+            //     return tgljam($data->created_at);
+            // })
 
-            ->editColumn('total', function ($data) {
-                return number_format($data->total);
-            })
+            // COMMENT DULU
+            // ->editColumn('total', function ($data) {
+            //     return number_format($data->total);
+            // })
 
             // ->editColumn('berat_emas', function ($data) {
             //     return $data->berat_emas ?? '-';
             // })
 
-            ->editColumn('berat_emas', function ($data) {
-                $totalBerat = 0;
+            // COMMENT DULU
+            // ->editColumn('berat_emas', function ($data) {
+            //     $totalBerat = 0;
 
-                // Pastikan products adalah JSON string atau array
-                $productIds = is_string($data->products)
-                    ? json_decode($data->products, true)
-                    : $data->products;
+            //     // Pastikan products adalah JSON string atau array
+            //     $productIds = is_string($data->products)
+            //         ? json_decode($data->products, true)
+            //         : $data->products;
 
-                if (is_array($productIds)) {
-                    $products = Product::whereIn('id', $productIds)->get();
+            //     if (is_array($productIds)) {
+            //         $products = Product::whereIn('id', $productIds)->get();
 
-                    foreach ($products as $product) {
-                        $totalBerat += $product->berat_emas;
-                    }
-                }
+            //         foreach ($products as $product) {
+            //             $totalBerat += $product->berat_emas;
+            //         }
+            //     }
 
-                return $totalBerat > 0 ? number_format($totalBerat, 2) . ' gr' : '-';
-            })
+            //     return $totalBerat > 0 ? number_format($totalBerat, 2) . ' gr' : '-';
+            // })
 
 
             ->rawColumns([
@@ -248,22 +318,10 @@ class JualController extends Controller
         $module_title   = $this->module_title;
 
         // ///// start data pada card
-        // $todayDate = Carbon::today(); // hari ini
-        // $todaySalesGold = SalesGold::whereDate('created_at', $todayDate)->get(); // data penjualan hari ini
-
-
-        // dd($karat);
-
         if($request->resetFilter) {
             $startDate = Carbon::today()->toDateString();
             $endDate = Carbon::today()->toDateString();
         }
-
-        // if ($startDate !== Carbon::today()->toDateString()  && $endDate !== Carbon::today()->toDateString()) {
-        //     dd($startDate, $endDate);
-        // }
-
-        // dd($startDate, $endDate);
 
         $todaySalesGold = SalesGold::whereDate('created_at', '>=', $startDate)
         ->whereDate('created_at', '<=', $endDate)
@@ -291,21 +349,66 @@ class JualController extends Controller
             }
         }
 
-        // dd(Product::where('id', $product_id)->first()->berat_emas);
         $totalGoldQuantity = count($allProducts); // menghitung total semua product / emas (berdasarkan product_id)
-        // 4. JUMLAH PELANGGAN HARI INI (card biru)
-        // $totalCustomer = SalesGold::whereDate('created_at', $todayDate)->count();
-        // total sementara 17 juni 2025 = Rp. 11.252.326
-        // total berat emas sementara = 8,44
-        // total item sementara = 5
-        // jumlah pelanggan sementara = 4
-        /// end data pada card
 
+        // 4. JUMLAH PELANGGAN HARI INI (card biru)
         $totalCustomer = SalesGold::whereBetween('created_at', [$startDate, $endDate])
         ->distinct('id')
         ->count('id');
 
-        // dd(1);
+        ///// WORKING AREA
+        $hargaEmas = Harga::latest()->first()->harga;
+        
+        $sales = SalesGold::with('pelanggan')->get();
+
+        $results = [];
+
+        foreach ($sales as $sale) {
+            $productIds = json_decode($sale->products);
+
+            if (!is_array($productIds)) continue;
+            
+            $products = Product::whereIn('id', $productIds)
+                ->with('category')
+                ->with('karats')
+                ->get();
+            
+            foreach ($products as $product) {
+
+                $coef = $product->karats->coef;
+                $persenMargin = $product->karats->persen;
+                $hargaCoef = $hargaEmas * $coef;
+                $hargaMargin = $hargaCoef * $persenMargin;
+                $hargaJual = $hargaCoef + $hargaMargin;
+
+                $results[] = [
+                    'nomor_transaksi' => $sale->nomor,
+                    'jam' => $sale->created_at->format('H:i'),
+                    'customer_name' => $sale->pelanggan->customer_name ?? '-',
+                    'category_code' => $product->category->category_code ?? '-',
+                    'product_name' => $product->product_name,
+                    'berat_emas' => $product->berat_emas,
+                    'h_atr' => '-',
+                    'h_jual' => $hargaJual,
+                    'ongkos' => '-',
+                    'total' => $sale->total,
+                    'dp' => '-',
+                    'cash' => '-',
+                    'transfer' => '-',
+                    'credit' => '-',
+                    'debet' => '-',
+                    'tukar' => '-',
+                    'tkr_krg' => '-',
+                    'btl_jual' => '-',
+                    'rata_rata' => $hargaJual / $product->berat_emas,
+                    'keterangan' => '-',
+                ];
+            }
+        }
+
+        // dd($results);
+        /// END WORKING AREA
+
         return view(
             'sale.report', compact(
                 'module_title',
@@ -319,7 +422,6 @@ class JualController extends Controller
                 'totalGoldWeight',
                 'totalGoldQuantity',
                 'totalCustomer',
-                // 'todayDate',
             )
         );
     }

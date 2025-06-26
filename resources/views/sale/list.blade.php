@@ -459,23 +459,28 @@
         let nominal_transfer    = getIntVal('nominal_transfer');
         let nominal_qr          = getIntVal('nominal_qr');
         let nominal_cc          = getIntVal('muncul_cc');
-        let kabeh   = nominal_cash+nominal_edc+nominal_transfer+nominal_qr+nominal_cc;
-        const formatted = new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0
-        }).format(kabeh);
+        
         if(nominal_cash == 0){
             $("#nominal_cash").val(nilai);
         }else{
             $("#nominal_cash").val(nominal_cash);
         }    
 
+        let nominal_cash2       = getIntVal('nominal_cash');
+
+        let kabeh   = nominal_cash2+nominal_edc+nominal_transfer+nominal_qr+nominal_cc;
+
+        const formatted = new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(kabeh);
+
         $("#total-pembayaran").html(formatted);
 
         let total_new   = $("#total").html(); // Rp 1.405.000
         let totalInt = parseInt(total_new.replace(/[^0-9]/g, '')); // "1405000" → 1405000
-        let total_pembayaran    = nominal_cash+nominal_edc+nominal_transfer+nominal_qr+muncul_cc;
+        let total_pembayaran    = nominal_cash2+nominal_edc+nominal_transfer+nominal_qr+muncul_cc;
         
         if(totalInt == kabeh){
             $("#submit_form").show();

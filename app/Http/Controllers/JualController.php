@@ -124,14 +124,10 @@ class JualController extends Controller
             $query->whereBetween('created_at', [$start, $end]);
         }
 
-        $data = $query->latest()->get();
-        // dd($data);
-
-        ///// WORKING AREA
+        $sales = $query->latest()->get();
+        
         $hargaEmas = Harga::latest()->first()->harga;
         
-        $sales = SalesGold::with('pelanggan')->get();
-
         $results = [];
 
         foreach ($sales as $sale) {
@@ -146,47 +142,55 @@ class JualController extends Controller
             
             foreach ($products as $product) {
 
-                // MEMBUAT HARGA JUAL PRODUK
+                // KOMPONEN UNTUK HARGA JUA:
                 $coef = $product->karats->coef;
                 $persenMargin = $product->karats->persen;
-                $hargaCoef = $hargaEmas * $coef;
-                $hargaMargin = $hargaCoef * $persenMargin;
-                $hargaJual = $hargaCoef + $hargaMargin;
+                $beratEmas = $product->berat_emas;
+                
+                // MEMBUAT HARGA JUAL PRODUK 
+                $hargaCoef = $coef * $hargaEmas;
+                $hargaJual = $hargaCoef + ($hargaCoef * ($persenMargin / 100));
+                $hargaTotalProduk = ceil($hargaJual * $beratEmas / 1000) * 1000;
 
-                $formattedHargaJual = 'Rp. ' . number_format($hargaJual, 0, ',', '.');
+                // format angka rupiah
+                $formattedCash = 'Rp. ' . number_format($sale->cash, 0, ',', '.');
+                $formattedTransfer = 'Rp. ' . number_format($sale->transfer, 0, ',', '.');
+                $formattedEdc = 'Rp. ' . number_format($sale->edc, 0, ',', '.');
+                $formattedQr = 'Rp. ' . number_format($sale->qr, 0, ',', '.');
                 $formattedTotal = 'Rp. ' . number_format($sale->total, 0, ',', '.');
-                $formattedRata2 = 'Rp. ' . number_format($hargaJual / $product->berat_emas, 0, ',', '.');
+                $formattedHargaTotalProduk = 'Rp. ' . number_format($hargaTotalProduk, 0, ',', '.');
+                $formattedRata2 = 'Rp. ' . number_format($hargaTotalProduk / $beratEmas, 0, ',', '.');
+
+                // format berat emas
+                $formattedBeratEmas = round($product->berat_emas, 2);
 
                 $results[] = [
                     'id' => $sale->id,
                     'nomor_transaksi' => $sale->nomor,
                     'jam' => $sale->created_at->format('H:i'),
+                    'sales' => '-',
                     'customer_name' => $sale->pelanggan->customer_name ?? '-',
                     'category_code' => $product->category->category_code ?? '-',
                     'product_name' => $product->product_name,
-                    'berat_emas' => $product->berat_emas,
-                    'h_atr' => '-',
-                    // 'h_jual' => $formattedHargaJual, //masih error
-                    'h_jual' => '-',
+                    'berat_emas' => $formattedBeratEmas,
+                    'karat' => $product->karats->name,
+                    // 'h_atr' => '-',
+                    'h_jual' => $formattedHargaTotalProduk,
                     'ongkos' => '-',
                     'total' => $formattedTotal,
-                    'dp' => '-',
-                    'cash' => '-',
-                    'transfer' => '-',
-                    'credit' => '-',
-                    'debet' => '-',
-                    'tukar' => '-',
-                    'tkr_krg' => '-',
-                    'btl_jual' => '-',
-                    // 'rata_rata' => $formattedRata2, //masih error
-                    'rata_rata' => '-',
+                    // 'dp' => '-',
+                    'cash' => $sale->cash ? $formattedCash : '-',
+                    'transfer' => $sale->transfer ? $formattedTransfer : '-',
+                    'edc' => $sale->edc ? $formattedEdc : '-',
+                    'qr' => $sale->qr ? $formattedQr : '-',
+                    // 'tukar' => '-',
+                    // 'tkr_krg' => '-',
+                    // 'btl_jual' => '-',
+                    'rata_rata' => $formattedRata2,
                     'keterangan' => '-',
                 ];
             }
         }
-
-        // dd($results);
-        /// END WORKING AREA
 
         return Datatables::of($results)
         // COMMENT DULU
@@ -198,12 +202,6 @@ class JualController extends Controller
                     compact('module_name', 'data', 'module_model')
                 );
             })
-
-            ///// WORKING AREA
-            ->editColumn('product_name', function ($data) {
-                return $data['category_code'] . ' | ' . $data['product_name'];
-            })
-            /// END WORKING AREA
 
             // ->editColumn('product_name', function ($data) {
             //     $tb = '<div class="flex items-center gap-x-2">
@@ -273,7 +271,7 @@ class JualController extends Controller
         }
 
     public function laporan(Request $request){
-
+        
         // dd($request->all());
         if(AdjustmentSetting::exists()){
             toast('Stock Opname sedang Aktif!', 'error');
@@ -355,59 +353,6 @@ class JualController extends Controller
         $totalCustomer = SalesGold::whereBetween('created_at', [$startDate, $endDate])
         ->distinct('id')
         ->count('id');
-
-        ///// WORKING AREA
-        $hargaEmas = Harga::latest()->first()->harga;
-        
-        $sales = SalesGold::with('pelanggan')->get();
-
-        $results = [];
-
-        foreach ($sales as $sale) {
-            $productIds = json_decode($sale->products);
-
-            if (!is_array($productIds)) continue;
-            
-            $products = Product::whereIn('id', $productIds)
-                ->with('category')
-                ->with('karats')
-                ->get();
-            
-            foreach ($products as $product) {
-
-                $coef = $product->karats->coef;
-                $persenMargin = $product->karats->persen;
-                $hargaCoef = $hargaEmas * $coef;
-                $hargaMargin = $hargaCoef * $persenMargin;
-                $hargaJual = $hargaCoef + $hargaMargin;
-
-                $results[] = [
-                    'nomor_transaksi' => $sale->nomor,
-                    'jam' => $sale->created_at->format('H:i'),
-                    'customer_name' => $sale->pelanggan->customer_name ?? '-',
-                    'category_code' => $product->category->category_code ?? '-',
-                    'product_name' => $product->product_name,
-                    'berat_emas' => $product->berat_emas,
-                    'h_atr' => '-',
-                    'h_jual' => $hargaJual,
-                    'ongkos' => '-',
-                    'total' => $sale->total,
-                    'dp' => '-',
-                    'cash' => '-',
-                    'transfer' => '-',
-                    'credit' => '-',
-                    'debet' => '-',
-                    'tukar' => '-',
-                    'tkr_krg' => '-',
-                    'btl_jual' => '-',
-                    'rata_rata' => $hargaJual / $product->berat_emas,
-                    'keterangan' => '-',
-                ];
-            }
-        }
-
-        // dd($results);
-        /// END WORKING AREA
 
         return view(
             'sale.report', compact(

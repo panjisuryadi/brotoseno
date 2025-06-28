@@ -134,7 +134,7 @@ class ReportsController extends Controller
         $stockQuantity = Karat::leftJoin('products', 'karats.id', '=', 'products.karat_id')
             ->count('products.id');
 
-        $formattedStockWeight = number_format($stockWeight, 0, ',', '.') . ' Gram';
+        $formattedStockWeight = number_format(round($stockWeight, 1), 1, '.', ',') . ' Gram';
 
         return view('reports::stock.index', compact(
             'formattedStockWeight', 

@@ -137,42 +137,31 @@
                             <table id="datatable" style="width: 100%"
                                 class="table table-bordered table-hover table-responsive-sm">
                                 <thead>
-                                    {{-- REAL ROW --}}
-                                    {{-- <tr>
-                                        <th style="width: 5%!important;">NO</th>
-                                        <th style="width: 15%!important;">Nomor Trx</th>
-                                        <th style="width: 15%!important;">Customer</th>
-                                        <!-- <th style="width: 15%!important;" class="text-center">Harga Beli</th> -->
-                                        <th style="width: 15%!important;" class="text-center">Berat</th>
-                                        <th style="width: 10%!important;" class="text-center">Total</th>
-                                        <th style="width: 15%!important;" class="text-center">Date</th>
-                                        <th style="width: 15%!important;" class="text-center">#</th>
-
-                                        <!-- <th style="width: 18%!important;" class="text-center">
-                                            Action
-                                        </th> -->
-                                    </tr> --}}
-
-                                    {{-- TESTING ROW --}}
                                     <tr>
                                         <th style="width: 5%!important;">NO</th>
                                         <th style="width: 10%!important;">Nomor Trx</th>
                                         <th style="width: 10%!important;">Jam</th>
                                         <th style="width: 10%!important;">Sales</th>
-                                        <th style="width: 10%!important;">Brg</th>
-                                        <th style="width: 10%!important;">Berat</th>
-                                        <th style="width: 10%!important;">H.atr</th>
+                                        <th style="width: 10%!important;">Customer</th>
+                                        <th style="width: 10%!important;">Kategori</th>
+                                        <th style="width: 10%!important;">Barang</th>
+                                        <th style="width: 10%!important;">Berat (gram)</th>
+                                        <th style="width: 10%!important;">Karat</th>
+                                        {{-- off kan dulu --}}
+                                        {{-- <th style="width: 10%!important;">H.atr</th> --}}
                                         <th style="width: 10%!important;">H.jual</th>
                                         <th style="width: 10%!important;">Ongkos</th>
                                         <th style="width: 10%!important;">Total</th>
-                                        <th style="width: 10%!important;">Dp</th>
+                                        {{-- off kan dulu --}}
+                                        {{-- <th style="width: 10%!important;">Dp</th> --}}
                                         <th style="width: 10%!important;">Cash</th>
                                         <th style="width: 10%!important;">Transfer</th>
-                                        <th style="width: 10%!important;">Credit</th>
-                                        <th style="width: 10%!important;">Debet</th>
-                                        <th style="width: 10%!important;">Tukar</th>
+                                        <th style="width: 10%!important;">Edc</th>
+                                        <th style="width: 10%!important;">Qr</th>
+                                        {{-- off kan dulu --}}
+                                        {{-- <th style="width: 10%!important;">Tukar</th>
                                         <th style="width: 10%!important;">Tkr krg</th>
-                                        <th style="width: 10%!important;">Btl jual</th>
+                                        <th style="width: 10%!important;">Btl jual</th> --}}
                                         <th style="width: 10%!important;">Rata 2</th>
                                         <th style="width: 10%!important;">Keterangan</th>
                                         <th style="width: 10%!important;">#</th>
@@ -266,19 +255,23 @@
                 buttons: [{
                         extend: 'excel',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6]
+                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
                         }
                     },
                     {
-                        extend: 'pdf',
+                        extend: 'pdfHtml5',
+                        orientation: 'landscape',
+                        customize: function(doc) {
+                            doc.defaultStyle.fontSize = 8;
+                        },
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6]
-                        }
+                            columns: ':lt(18)'
+                        },
                     },
                     {
                         extend: 'print',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6]
+                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
                         }
                     }
                 ],
@@ -298,8 +291,16 @@
                         name: 'jam'
                     },
                     {
+                        data: 'sales',
+                        name: 'sales'
+                    },
+                    {
                         data: 'customer_name',
                         name: 'customer_name'
+                    },
+                    {
+                        data: 'category_code',
+                        name: 'category_code'
                     },
                     {
                         data: 'product_name',
@@ -310,9 +311,14 @@
                         name: 'berat_emas'
                     },
                     {
-                        data: 'h_atr',
-                        name: 'h_atr'
+                        data: 'karat',
+                        name: 'karat'
                     },
+                    // off kan dulu
+                    // {
+                    //     data: 'h_atr',
+                    //     name: 'h_atr'
+                    // },
                     {
                         data: 'h_jual',
                         name: 'h_jual'
@@ -325,10 +331,11 @@
                         data: 'total',
                         name: 'total'
                     },
-                    {
-                        data: 'dp',
-                        name: 'dp'
-                    },
+                    // off kan dulu
+                    // {
+                    //     data: 'dp',
+                    //     name: 'dp'
+                    // },
                     {
                         data: 'cash',
                         name: 'cash'
@@ -338,25 +345,26 @@
                         name: 'transfer'
                     },
                     {
-                        data: 'credit',
-                        name: 'credit'
+                        data: 'edc',
+                        name: 'edc'
                     },
                     {
-                        data: 'debet',
-                        name: 'debet'
+                        data: 'qr',
+                        name: 'qr'
                     },
-                    {
-                        data: 'tukar',
-                        name: 'tukar'
-                    },
-                    {
-                        data: 'tkr_krg',
-                        name: 'tkr_krg'
-                    },
-                    {
-                        data: 'btl_jual',
-                        name: 'btl_jual'
-                    },
+                    // off kan dulu
+                    // {
+                    //     data: 'tukar',
+                    //     name: 'tukar'
+                    // },
+                    // {
+                    //     data: 'tkr_krg',
+                    //     name: 'tkr_krg'
+                    // },
+                    // {
+                    //     data: 'btl_jual',
+                    //     name: 'btl_jual'
+                    // },
                     {
                         data: 'rata_rata',
                         name: 'rata_rata'
@@ -429,179 +437,6 @@
         // })(jQuery);
     </script>
 
-    {{-- REAL DATATABLES REPORT SALE --}}
-    {{-- <script type="text/javascript">
-        jQuery.noConflict();
-
-        function getotal(number) {
-            $('#total_' + number).val(0);
-            let acc = parseInt($('#acc_' + number).val());
-            console.log(acc);
-            let tag = parseInt($('#tag_' + number).val());
-            let emas = parseInt($('#emas_' + number).val());
-            let total = acc + tag + emas;
-            $('#total_' + number).val(total);
-        }
-
-        function gencode(number) {
-            console.log(number);
-            let rand = Math.floor(Math.random() * 1000);
-            let group = $('#group_' + number).find('option:selected').text();
-            group = group.substring(0, 1);
-            let categoryCode = $('#product_category_' + number).find('option:selected').attr('code');
-
-            let karat = $('#karat_' + number).find('option:selected').text();
-            karat = karat.split('|')[0]?.trim();
-            let date = new Date();
-            let formattedDate = ("0" + date.getDate()).slice(-2) + ("0" + (date.getMonth() + 1)).slice(-2) + date
-                .getFullYear().toString().slice(-2);
-            let code = categoryCode + karat + formattedDate + rand;
-            $("#code_" + number).val(code);
-        }
-
-        let table = $('#datatable').DataTable({
-                processing: true,
-                serverSide: true,
-                autoWidth: true,
-                responsive: true,
-                lengthChange: true,
-                searching: true,
-                "oLanguage": {
-                    "sSearch": "<i class='bi bi-search'></i> {{ __('labels.table.search') }} : ",
-                    "sLengthMenu": "_MENU_ &nbsp;&nbsp;Data Per {{ __('labels.table.page') }} ",
-                    "sInfo": "{{ __('labels.table.showing') }} _START_ s/d _END_ {{ __('labels.table.from') }} <b>_TOTAL_ data</b>",
-                    "sInfoFiltered": "(filter {{ __('labels.table.from') }} _MAX_ total data)",
-                    "sZeroRecords": "{{ __('labels.table.not_found') }}",
-                    "sEmptyTable": "{{ __('labels.table.empty') }}",
-                    "sLoadingRecords": "Harap Tunggu...",
-                    "oPaginate": {
-                        "sPrevious": "{{ __('labels.table.prev') }}",
-                        "sNext": "{{ __('labels.table.next') }}"
-                    }
-                },
-
-                "aaSorting": [
-                    [0, "desc"]
-                ],
-                "columnDefs": [{
-                    "targets": 'no-sort',
-                    "orderable": false,
-                }],
-                "sPaginationType": "simple_numbers",
-                ajax: {
-                    url: '/sale/data_report',
-                    data: function(d) {
-                        d.startDate = $('#startDate').val();
-                        d.endDate = $('#endDate').val();
-                        console.log(d);
-                    }
-                },
-                dom: 'Blfrtip',
-                buttons: [{
-                        extend: 'excel',
-                        exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6]
-                        }
-                    },
-                    {
-                        extend: 'pdf',
-                        exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6]
-                        }
-                    },
-                    {
-                        extend: 'print',
-                        exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6]
-                        }
-                    }
-                ],
-                columns: [{
-                        "data": 'id',
-                        "sortable": false,
-                        render: function(data, type, row, meta) {
-                            return meta.row + meta.settings._iDisplayStart + 1;
-                        }
-                    },
-                    {
-                        data: 'nomor',
-                        name: 'nomor'
-                    },
-                    {
-                        data: 'customer',
-                        name: 'customer'
-                    },
-                    {
-                        data: 'berat_emas',
-                        name: 'berat_emas'
-                    },
-                    {
-                        data: 'total',
-                        name: 'total'
-                    },
-                    {
-                        data: 'created_at',
-                        name: 'created_at'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    }
-                ]
-            })
-            .buttons()
-            .container()
-            .appendTo("#buttons");
-
-        $('#startDate, #endDate').datepicker({
-            format: 'yyyy-mm-dd',
-            autoclose: true,
-            todayHighlight: true
-        });
-        console.log('script loaded');
-        $(document).ready(function() {
-            $('#startDate').val('');
-            $('#endDate').val('');
-            table.ajax.reload();
-        });
-        // $(document).on('click', '#resetFilter', function(e) {
-        //     console.log('reset clicked');
-        //     e.preventDefault();
-        // });
-
-        // Event onsubmit
-        $('#filterForm').on('submit', function(e) {
-            e.preventDefault();
-            const start = $('#startDate').val();
-            const end = $('#endDate').val();
-
-            if (start && end && start > end) {
-                alert('Tanggal awal tidak boleh lebih besar dari tanggal akhir.');
-                return;
-            }
-
-            table.ajax.reload();
-        });
-
-        // $('#filterForm').on('submit', function(e) {
-        //     e.preventDefault();
-        //     const start = $('#startDate').val();
-        //     const end = $('#endDate').val();
-
-        //     if (start && end && start > end) {
-        //         alert('Tanggal awal tidak boleh lebih besar dari tanggal akhir.');
-        //         return;
-        //     }
-
-        //     table.ajax.reload();
-        // });
-
-
-        // });
-        // })(jQuery);
-    </script> --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>

@@ -134,6 +134,31 @@ class ConfigController extends Controller
         );
     }
 
+    public function buyback() {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+
+        $buyback = Config::where('name', 'buyback')->first();
+        $dec    = json_decode($buyback->value, true);
+        $potongan   = $dec['potongan'];
+        $tambahan   = $dec['tambahan'];
+        return view(
+            'config.buyback', // Path to your create view file
+            compact(
+                'module_title',
+                'module_name',
+                'module_path',
+                'module_icon',
+                'module_model',
+                'potongan',
+                'tambahan',
+            )
+        );
+    }
+
     public function insert(Request $request){
         $value['toko'] = $request->toko;
         $value['alamat'] = $request->alamat;
@@ -166,6 +191,16 @@ class ConfigController extends Controller
         $config->save();
         
         return redirect()->action([ConfigController::class, 'cc']);
+    }
+
+    public function update_buyback(Request $request){
+        $value['potongan'] = $request->potongan;
+        $value['tambahan'] = $request->tambahan;
+        $config = Config::where('name', 'buyback')->firstOrFail();
+        $config->value = json_encode($value);
+        $config->save();
+        
+        return redirect()->action([ConfigController::class, 'buyback']);
     }
 
 }

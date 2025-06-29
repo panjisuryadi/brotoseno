@@ -157,6 +157,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/config/cc', 'ConfigController@cc')
         ->name('config.cc');
 
+    Route::get('/config/buyback', 'ConfigController@buyback')
+        ->name('config.buyback');
+
     Route::post('/config/insert', 'ConfigController@insert')
         ->name('config.insert');
 
@@ -165,6 +168,9 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::post('/config/cc', 'ConfigController@update_cc')
         ->name('config.cc');
+
+    Route::post('/config/buyback', 'ConfigController@update_buyback')
+        ->name('config.buyback');
 
     Route::post('/config', 'ConfigController@create')
         ->name('config.create');

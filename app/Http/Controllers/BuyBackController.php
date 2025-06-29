@@ -19,6 +19,7 @@ use Modules\GoodsReceipt\Models\GoodsReceiptItem;
 use Modules\Stok\Models\StockOffice;
 use App\Models\Harga;
 use App\Models\BuyBack;
+use App\Models\Config;
 use App\Models\PettyCash;
 use App\Models\PettyCashData;
 use Modules\Product\Entities\Product;
@@ -78,6 +79,8 @@ class BuybackController extends Controller
         // echo json_encode($_POST);
         // exit();
         $product = $request->product;
+        $potongan   = $request->potongan ?? 0;
+        $tambahan   = $request->tambahan ?? 0;
         // $products = Product::where('id', $product)->first();
         // echo json_encode($products);
         // exit();
@@ -88,6 +91,8 @@ class BuybackController extends Controller
             'kondisi'   => $request->kondisi,
             'payment'   => $request->payment,
             'harga'   => $request->harga,
+            'tambahan'   => $tambahan,
+            'potongan'   => $potongan,
             'tanggal'   => date('Y-m-d'),
         ]);
 
@@ -101,6 +106,7 @@ class BuybackController extends Controller
         $gram   = $product->berat_emas;
         $harga  = $request->harga;
         $product->status_id = 3; // pending
+        $product->status = 3; // pending
         $product->save();
 
         $id_product = $product->id;
@@ -109,7 +115,7 @@ class BuybackController extends Controller
         $product_history = ProductHistories::create([
             'product_id'    => $id_product,
             'status'        => 'B',
-            'keterangan'    => $request->payment.' | '.$request->kondisi,
+            'keterangan'    => $request->payment.' | '.$request->kondisi.' | Potongan : '.number_format($potongan).' | Tambahan : '.number_format($tambahan),
             'harga'         => $request->harga,
             'tanggal'       => date('Y-m-d'),
         ]);
@@ -169,10 +175,14 @@ class BuybackController extends Controller
                        return '<div class="items-center text-center">' .($data->tanggal) . '</div>';
                         }) 
                         ->editColumn('harga', function($data){
-                            $output = '';
-                                
-                           return number_format($data->harga);
-                            }) 
+                            return number_format($data->harga);
+                        })
+                        ->editColumn('potongan', function($data){
+                            return number_format($data->potongan);
+                        }) 
+                        ->editColumn('tambahan', function($data){
+                            return number_format($data->tambahan);
+                        }) 
                       ->editColumn('product', function($data){
                             $output = '';
                           
@@ -209,7 +219,11 @@ class BuybackController extends Controller
         $module_path = $this->module_path;
         $module_icon = $this->module_icon;
         $module_model = $this->module_model;
-        $dataKarat = Karat::whereNull('parent_id')->get();
+        $dataKarat  = Karat::whereNull('parent_id')->get();
+        $config     = Config::where('name', 'buyback')->first();
+        $configs    = json_decode($config->value, true);
+        $potongan   = $configs['potongan'];
+        $tambahan   = $configs['tambahan'];
         return view(
             'buyback.list', // Path to your create view file
             compact(
@@ -220,6 +234,8 @@ class BuybackController extends Controller
                 'module_model',
                 'dataKarat',
                 'harga',
+                'potongan',
+                'tambahan',
             )
         );
     }
@@ -242,7 +258,8 @@ class BuybackController extends Controller
                     'jenis' => $product->product_name,
                     'berat' => $product->berat_emas,
                     'desc' => $desc,
-                    'harga' => 'Rp '.number_format($total)
+                    'harga' => 'Rp '.number_format($total),
+                    'price' => $total
                 ]);
             }
         }

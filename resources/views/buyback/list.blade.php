@@ -49,13 +49,13 @@
                         <table id="datatable" class="table table-bordered table-hover table-responsive-sm">
                             <thead>
                                 <tr>
-                                    <th style="width: 10%!important;" class="text-center">
+                                    <th style="width: 5%!important;" class="text-center">
                                         NO
                                     </th>
-                                    <th style="width: 30%!important;" class="text-center">
+                                    <th style="width: 20%!important;" class="text-center">
                                         Product
                                     </th>
-                                    <th style="width: 15%!important;" class="text-center">
+                                    <th style="width: 13%!important;" class="text-center">
                                         Nota
                                     </th>
                                      <th style="width: 20%!important;" class="text-center">
@@ -63,11 +63,17 @@
                                     </th>  
                                      <th style="width: 10%!important;" class="text-center">
                                         Harga
+                                    </th> 
+                                    <th style="width: 10%!important;" class="text-center">
+                                        Potongan
+                                    </th> 
+                                    <th style="width: 10%!important;" class="text-center">
+                                        Tambahan
                                     </th>  
                                     <th style="width: 15%!important;" class="text-center">
                                         Tanggal
                                     </th> 
-                                    <th style="width: 15%!important;" class="text-center">
+                                    <th style="width: 7%!important;" class="text-center">
                                         #
                                     </th> 
                                 </tr>
@@ -90,34 +96,51 @@
                 </button>
             </div>
             <div class="modal-body p-4">
-                <form action="/buyback_insert" method="post">
+                <form action="/buyback_insert" target="_blank" method="post">
                     @csrf
                     <!-- <div class="form-group">
                         <label for="">Code Product</label>
                         <input type="text" class="form-control" name="product" required>
                     </div> -->
                     <div class="row">
-                        <div class="col-3">
+                        <div class="col-2">
                             <div class="form-group">
                                 <label for="">No Nota</label>
                                 <input type="hidden" name="product" id="product">
                                 <input type="text" class="form-control" name="nota" id="nota" onkeyup="view_nota();" required>
                             </div>
                         </div>
-                        <div class="col-3">
+                        <div class="col-2">
                             <div class="form-group">
                                 <label for="">Kondisi</label>
                                 <input type="text" class="form-control" name="kondisi" id="kondisi" required readonly>
                             </div>
                         </div>
-                        <div class="col-3">
+
+                        <div class="col-2">
                             <div class="form-group">
-                                <label for="">Harga</label>
-                                <input type="number" class="form-control" name="harga" id="harga" required readonly>
+                                <label for="" id="label_potongan">Max Harga Potongan : </label>
+                                <input type="number" class="form-control" potongan="{{$potongan}}" name="potongan" id="potongan" onkeyup="change_harga();" required value="0">
                             </div>
                         </div>
 
-                        <div class="col-3">
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label for="" id="label_tambahan">Max Harga Tambahan : </label>
+                                <input type="number" class="form-control" tambahan="{{$tambahan}}" name="tambahan" id="tambahan" onkeyup="change_harga();" required value="0">
+                            </div>
+                        </div>
+
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label for="">Harga : </label>
+                                <input type="hidden" name="harga_awal" id="harga_awal">
+                                <input type="hidden" name="harga" id="harga">
+                                <input type="text" class="form-control" name="harga_label" id="harga_label" value="0" readonly>
+                            </div>
+                        </div>
+
+                        <div class="col-2">
                             <div class="form-group">
                                 <label for="">Payment</label>
                                 <select name="payment" id="payment" class="form-control">
@@ -154,7 +177,7 @@
                     </div>
                     
                     <br>
-                    <button class="btn btn-sm btn-success">Submit</button>
+                    <button class="btn btn-sm btn-success" id="btn_submit" onclick="return confirmAndReload();" style="display: none;">Submit</button>
                 </form>
             </div>
         </div>
@@ -230,6 +253,14 @@
                 // }
                 // ,
                 {
+                    data: 'potongan',
+                    name: 'potongan'
+                },
+                {
+                    data: 'tambahan',
+                    name: 'tambahan'
+                },
+                {
                     data: 'tanggal',
                     name: 'tanggal'
                 },
@@ -245,18 +276,80 @@
         .appendTo("#buttons");
     </script>
 
-    <script type="text/javascript">
+<script type="text/javascript">
 jQuery.noConflict();
-
 </script>
 <script src="./js/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
+
+function confirmAndReload() {
+    if (confirm('Lanjutkan Buyback ?')) {
+        // Reload after 5 seconds (5000 ms)
+        setTimeout(() => {
+            location.reload();
+        }, 5000);
+
+        return true; // continue with form submit or action
+    }
+
+    return false; // cancel action if user pressed Cancel
+}
+
+function change_harga(){
+    let awal        = $("#harga_awal").val();
+    let potongan    = $("#potongan");
+    let tambahan    = $("#tambahan");
+    let tambahanPercent = parseFloat($('#tambahan').attr('tambahan')) || 0;
+    let maxTambahan = awal * tambahanPercent / 100;
+    let potonganPercent = parseFloat($('#potongan').attr('potongan')) || 0;
+    let maxPotongan = awal * potonganPercent / 100;
+
+    console.log(awal);
+    console.log(maxTambahan);
+    console.log(maxPotongan);
+    let harga   = parseInt(awal);
+    let label   = 0;
+    if(potongan.val() > maxPotongan){
+        potongan.val(maxPotongan);
+    }
+    if(tambahan.val() > maxTambahan){
+        tambahan.val(maxTambahan);
+    }
+    if(potongan.val() == 0){
+        tambahan.prop('disabled', false);
+        tambahan.prop('readonly', false);
+    }else{
+        tambahan.val(0);
+        harga   = awal-potongan.val();
+        tambahan.prop('disabled', true);
+        tambahan.prop('readonly', true);
+    }
+
+    if(tambahan.val() == 0){
+        potongan.prop('disabled', false);
+        potongan.prop('readonly', false);
+    }else{
+        potongan.val(0);
+        harga   = parseInt(harga)+parseInt(tambahan.val());
+        potongan.prop('disabled', true);
+        potongan.prop('readonly', true);
+    }
+
+    let rupiah  = 'Rp ' + harga.toLocaleString('id-ID');
+    $("#harga").val(harga);
+    $("#harga_label").val(rupiah);
+}
+
 function view_nota(){
+    $("#btn_submit").hide();
     let nota = $('#nota').val();
-    $('#harga').prop('readonly', true);
-    $('#kondisi').prop('readonly', true);
     let length = nota.length;
-    console.log(length);
+    $('#potongan').val(0);
+    $('#tambahan').val(0);
+    $('#kondisi').prop('readonly', true);
+    
     if (length > 9){
         $('#t_image').html();
         $('#t_kode').html();
@@ -265,28 +358,44 @@ function view_nota(){
         $('#t_berat').html();
         $('#t_harga').html();
         $.ajax({
-            url: './buyback_nota/'+nota, // The URL for your route
+            url: '/buyback_nota/'+nota, // The URL for your route
             type: 'GET', // Request method
             dataType: 'json', // Expecting JSON response
             success: function(response) {
-                console.log(response);
                 // On success, handle the response
                 if(response) {
-                    $('#harga').prop('readonly', false);
-                    $('#kondisi').prop('readonly', false);
-                    
-                    $('#product').val(response.product);
-                    // $('#name').val(response.name);
-                    // $('#desc').val(response.desc);
-                    // $('#total').val(response.total);
+                    if(response.harga !== ''){
+                        let price   = parseInt(response.price);
+                        let rupiah  = 'Rp ' + price.toLocaleString('id-ID');
+                        let tambahanPercent = parseFloat($('#tambahan').attr('tambahan')) || 0;
+                        let maxTambahan = price * tambahanPercent / 100;
+                        let potonganPercent = parseFloat($('#potongan').attr('potongan')) || 0;
+                        let maxPotongan = price * potonganPercent / 100;
+                        let rupiahMaxPotongan  = 'Rp ' + maxPotongan.toLocaleString('id-ID');
+                        let rupiahMaxTambahan  = 'Rp ' + maxTambahan.toLocaleString('id-ID');
 
-                    $('#t_image').attr('src', './storage/uploads/'+response.image);
-                    $('#t_kode').html(response.kode);
-                    $('#t_jenis').html(response.jenis);
-                    $('#t_desc').html(response.desc);
-                    $('#t_berat').html(response.berat);
-                    $('#t_harga').html(response.harga);
-                    
+                        $('#potongan').attr('max', maxPotongan);
+                        $('#label_potongan').html('Potongan '+potonganPercent+'% : '+ rupiahMaxPotongan);
+                        $('#tambahan').attr('max', maxTambahan);
+                        $('#label_tambahan').html('Tambahan '+tambahanPercent+'% : '+ rupiahMaxTambahan);
+
+                        $('#kondisi').prop('readonly', false);
+                        
+                        $('#product').val(response.product);
+
+                        $('#harga').val(price);
+                        $('#t_image').attr('src', '/storage/uploads/'+response.image);
+                        $('#t_kode').html(response.kode);
+                        $('#t_jenis').html(response.jenis);
+                        $('#t_desc').html(response.desc);
+                        $('#t_berat').html(response.berat);
+                        $('#t_harga').html(rupiah);
+                        $('#harga_label').val(rupiah);
+                        $('#harga_awal').val(price);
+                        $('#btn_submit').show();
+                    }else{
+                        alert('Nota not valid');
+                    }
                 } else {
                     // $("#result").html("<p>No data found.</p>");
                 }

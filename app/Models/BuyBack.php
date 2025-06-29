@@ -15,6 +15,8 @@ class Buyback extends Model
         'product_id',
         'status',
         'harga',
+        'tambahan',
+        'potongan',
         'payment',
         'kondisi',
         'tanggal',

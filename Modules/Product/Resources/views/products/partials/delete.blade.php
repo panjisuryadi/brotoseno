@@ -23,8 +23,8 @@
 @endcan
 
 <div class="text-center">
-<a href="{{ route('products_all.edit', $data->id) }}"
-id="Edit"
+<a href="#" data-toggle="modal" data-target="#lihatModal_{{$data->id}}"
+
 data-toggle="tooltip"
  class="btn btn-outline-info btn-sm">
     <i class="bi bi-pencil"></i>
@@ -43,6 +43,133 @@ data-toggle="tooltip"
         @method('delete')
     </form>
 </button> -->
+
+<div class="modal fade" id="lihatModal_{{$data->id}}" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-lg font-bold" id="addModalLabel">Detail Product</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="px-0 py-2">
+                            <div class="col-span-2 px-2">
+                                <div class="flex flex-row grid grid-cols-2 gap-1">
+                                    <div class="form-group">
+                                        <?php
+                                            $image = $data->images;
+                                            $imagePath = empty($image)?url('images/fallback_product_image.png'):asset(imageUrl().$image);
+                                        ?>
+                                        <img src="{{ $imagePath }}" order="0" width="175" class="img-thumbnail"/>
+                                    </div>
+                                                
+                                    <div class="form-group">
+                                        <label for="product_category">Product Category</label>
+                                        <input type="text" class="form-control" value="{{$data->category->category_name}}" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="product_category">Product Model</label>
+                                        <input type="text" class="form-control" value="{{$data->model->name}}" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="product_category">Product Karat</label>
+                                        <?php
+                                        $kar    = $data->karat->name ?? '';
+                                        $kod    = $data->karat->kode ?? ''; 
+                                        $ka     = $kar.' | '.$kod;
+                                        ?>
+                                        <input type="text" class="form-control" value="{{$ka}}" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="product_category">Product Group</label>
+                                        <input type="text" class="form-control" value="{{$data->group->name}}" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="product_category">Product Code</label>
+                                        <input type="text" class="form-control" value="{{$data->product_code}}" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="product_category">Berat</label>
+                                        <input type="text" class="form-control" value="{{$data->berat_emas}} gr" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="product_category">Baki</label>
+                                        <input type="text" class="form-control" value="{{$data->baki->name ?? '-'}}" readonly>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="px-0 py-2">
+                            @php
+                                $sold   = 0;
+                                $buyback= 0;
+                                $stat['O'] = 'Ready';
+                                $stat['S'] = 'Sold';
+                                $stat['P'] = 'Pending';
+                                $stat['B'] = 'Buyback';
+                                $stat['C'] = 'Cuci';
+                                $stat['M'] = 'Lebur';
+                                $stat['K'] = 'Rongsok';
+                                $stat['R'] = 'Reparasi';
+                                $stat[2] = 'Second';
+                                $stat['L'] = 'Hilang';
+                                $stat[11] = 'Draft';
+                                $stat[12] = 'Dalam Perjalanan';
+                                $stat[13] = 'Ready Office';
+                                $stat[14] = 'DP';
+                                $stat[15] = 'Removed';
+                                $stat['H'] = 'Hancur Lebur';
+                                $stat['L'] = 'Barang Luar';
+                            @endphp
+                            @foreach($history as $h)
+                                @if($h->status == 'S')
+                                    @php $sold++; @endphp
+                                @elseif($h->status == 'B')
+                                    @php $buyback++; @endphp
+                                @endif
+                            @endforeach
+                            <h2>Sold : {{$sold}} | Buyback : {{$buyback}}</h2>
+                            <div style="max-height: 400px; overflow-y: auto;">
+                                <table class="table" class="table mt-2">
+                                    <thead>
+                                        <tr>
+                                            <th>Status</th>
+                                            <th>Keterangan</th>
+                                            <th>Tanggal</th>
+                                            <th>Harga</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                        @foreach($history as $h)
+                                        <tr>
+                                            <td>{{$stat[$h->status]}}</td>
+                                            <td>{{$h->keterangan}}</td>
+                                            <td>{{$h->tanggal}}</td>
+                                            <td>{{number_format($h->harga)}}</td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
+                
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
   <div class="modal-dialog">

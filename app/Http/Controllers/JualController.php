@@ -142,7 +142,7 @@ class JualController extends Controller
             
             foreach ($products as $product) {
 
-                // KOMPONEN UNTUK HARGA JUA:
+                // KOMPONEN UNTUK HARGA JUAL:
                 $coef = $product->karats->coef;
                 $persenMargin = $product->karats->persen;
                 $beratEmas = $product->berat_emas;
@@ -301,6 +301,8 @@ class JualController extends Controller
             $models  = ProdukModel::whereBetween('created_at', [$startDate, $endDate])->latest()->get();
             $customers = Customer::whereBetween('created_at', [$startDate, $endDate])->get();
             $product_categories = Category::whereBetween('created_at', [$startDate, $endDate])->get();
+            // JUMLAH PELANGGAN BERDASARKAN RENTANG WAKTU (card biru)
+            $totalCustomer = SalesGold::whereBetween('created_at', [$startDate, $endDate])->count();
         } else {
             $karat  = Karat::latest()->get();
             $category  = Category::latest()->get();
@@ -308,6 +310,8 @@ class JualController extends Controller
             $models  = ProdukModel::latest()->get();
             $customers = Customer::all();
             $product_categories = Category::all();
+            // JUMLAH PELANGGAN HARI INI (card biru)
+            $totalCustomer = SalesGold::whereDate('created_at', Carbon::today())->count();
         }
 
 
@@ -316,11 +320,6 @@ class JualController extends Controller
         $module_title   = $this->module_title;
 
         // ///// start data pada card
-        if($request->resetFilter) {
-            $startDate = Carbon::today()->toDateString();
-            $endDate = Carbon::today()->toDateString();
-        }
-
         $todaySalesGold = SalesGold::whereDate('created_at', '>=', $startDate)
         ->whereDate('created_at', '<=', $endDate)
         ->get();
@@ -331,6 +330,9 @@ class JualController extends Controller
         foreach ($todaySalesGold as $data) {
             $totalGoldSales = $totalGoldSales + $data->total;
         }
+
+        // format totalGoldSales
+        $formattedTotalGoldSales = 'Rp. ' . number_format($totalGoldSales, 0, ',', '.');
 
         // 2. TOTAL BERAT PENJUALAN HARI INI (card kuning)
         // 3. TOTAL KUANTITAS PENJUALAN HARI INI (card hijau)
@@ -349,11 +351,6 @@ class JualController extends Controller
 
         $totalGoldQuantity = count($allProducts); // menghitung total semua product / emas (berdasarkan product_id)
 
-        // 4. JUMLAH PELANGGAN HARI INI (card biru)
-        $totalCustomer = SalesGold::whereBetween('created_at', [$startDate, $endDate])
-        ->distinct('id')
-        ->count('id');
-
         return view(
             'sale.report', compact(
                 'module_title',
@@ -363,7 +360,7 @@ class JualController extends Controller
                 'category',
                 'group',
                 'models',
-                'totalGoldSales',
+                'formattedTotalGoldSales',
                 'totalGoldWeight',
                 'totalGoldQuantity',
                 'totalCustomer',

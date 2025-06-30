@@ -58,7 +58,7 @@ class ProductController extends Controller
         // $this->module_icon = 'fas fa-sitemap';
         // $this->module_model = "Modules\Product\Models\Product";
     }
-    
+
     public function insert(Request $request)
     {
         $i = 0;
@@ -178,7 +178,7 @@ class ProductController extends Controller
         if(!empty($gam)){
             $gambar = $gam;
         }
-        
+
         $i = 0;
         $group  = Group::where('id', $request->new_product_group_id)->first();
         $group_name = $group->name;
@@ -255,7 +255,7 @@ class ProductController extends Controller
     }
 
     public function update_pending(Request $request)
-    {   
+    {
         // echo json_encode($_POST);
         // exit();
         $stat[1] = 'O';
@@ -288,7 +288,7 @@ class ProductController extends Controller
         }
         // $products->save();
         // INSERT HISTORY
-        
+
         // GANTI CODE IF READY
         if($request->status == 1){
             if(substr($product_code, 0, 2) == 'BL'){
@@ -313,7 +313,7 @@ class ProductController extends Controller
     }
 
     public function update_all(Request $request)
-    {   
+    {
         // echo json_encode($_POST);
         // exit();
         $id = $request->id;
@@ -340,7 +340,7 @@ class ProductController extends Controller
     }
 
     public function update_status(Request $request)
-    {   
+    {
         // echo json_encode($_POST);
         // exit();
         $id = $request->id;
@@ -364,7 +364,7 @@ class ProductController extends Controller
         ]);
 
         return redirect()->action([ProductController::class, 'list_'.$product]);
-    }   
+    }
 
     public function list_luar(Request $request)
     {
@@ -588,7 +588,7 @@ class ProductController extends Controller
         $products->status_id   = 1;
         $products->save();
         // INSERT HISTORY
-       
+
         // $stat[1] = 'L';
         $product_history = ProductHistories::create([
             'product_id'    => $id,
@@ -692,7 +692,7 @@ class ProductController extends Controller
     }
 
     public function index_baki(Request $request)
-    {   
+    {
         $id     = $request->id;
 
         $module_title = $this->module_title;
@@ -707,18 +707,18 @@ class ProductController extends Controller
         if ($request->get('status')) {
             $$module_name = $$module_name->where('status_id', 1);
         }
-        
+
         $$module_name->where('status', $id)->get();
-        $harga = Harga::latest()->first();  
+        $harga = Harga::latest()->first();
         if($harga == null){
             $harga  = 0;
         }else{
             $harga = $harga->harga;
-        }     
+        }
         // $harga  = 1000000;
         $$module_name = $$module_name->latest()->get();
         $$module_name->each(function ($item) use ($harga) {
-            $item->harga = $harga; 
+            $item->harga = $harga;
         });
         $data = $$module_name;
 
@@ -812,7 +812,7 @@ class ProductController extends Controller
     }
 
     public function index_datas(Request $request)
-    {   
+    {
         $id     = $request->id;
 
         $module_title = $this->module_title;
@@ -832,16 +832,16 @@ class ProductController extends Controller
         }else{
             $$module_name->where('status_id', $id)->get();
         }
-        $harga = Harga::latest()->first();  
+        $harga = Harga::latest()->first();
         if($harga == null){
             $harga  = 0;
         }else{
             $harga = $harga->harga;
-        }     
+        }
         // $harga  = 1000000;
         $$module_name = $$module_name->latest()->get();
         $$module_name->each(function ($item) use ($harga) {
-            $item->harga = $harga; 
+            $item->harga = $harga;
         });
         $data = $$module_name;
         // echo json_encode($data);
@@ -1063,7 +1063,7 @@ class ProductController extends Controller
     }
 
     public function data_pending(Request $request)
-    {   
+    {
         $id     = $request->id;
 
         $module_title = $this->module_title;
@@ -1077,12 +1077,12 @@ class ProductController extends Controller
         $$module_name = $module_model::with('category', 'product_item');
         $$module_name = $$module_name->where('status_id', 3);
         // $$module_name->where('status', 3)->get();
-        $harga = Harga::latest()->first();  
+        $harga = Harga::latest()->first();
         if($harga == null){
             $harga  = 0;
         }else{
             $harga = $harga->harga;
-        }     
+        }
         // $harga  = 1000000;
         $$module_name = $$module_name->latest()->get();
         $$module_name->each(function ($item) use ($harga) {
@@ -1171,7 +1171,7 @@ class ProductController extends Controller
     }
 
     public function dataluar(Request $request)
-    {   
+    {
         $id     = $request->id;
 
         $module_title = $this->module_title;
@@ -1194,12 +1194,12 @@ class ProductController extends Controller
         }
         $$module_name->where('product_price', '>', 0)->get();
 
-        $harga = Harga::latest()->first();  
+        $harga = Harga::latest()->first();
         if($harga == null){
             $harga  = 0;
         }else{
             $harga = $harga->harga;
-        }     
+        }
         // $harga  = 1000000;
         $$module_name = $$module_name->latest()->get();
         $$module_name->each(function ($item) use ($harga) {
@@ -1281,7 +1281,7 @@ class ProductController extends Controller
     }
 
     public function datanota(Request $request)
-    {   
+    {
         $id     = $request->id;
 
         $module_title = $this->module_title;
@@ -1303,12 +1303,12 @@ class ProductController extends Controller
             $$module_name->where('is_nota', false)->get();
         }
         $$module_name->where('product_price', '=', 0)->get();
-        $harga = Harga::latest()->first();  
+        $harga = Harga::latest()->first();
         if($harga == null){
             $harga  = 0;
         }else{
             $harga = $harga->harga;
-        }     
+        }
         // $harga  = 1000000;
         $$module_name = $$module_name->latest()->get();
         $$module_name->each(function ($item) use ($harga) {
@@ -1374,6 +1374,9 @@ class ProductController extends Controller
                 );
             })
 
+            ->editColumn('baki', function ($data) {
+                return $data->baki->name ?? '-';
+            })
             ->editColumn('code', function ($data) {
                 return $data->product_code;
             })
@@ -1406,7 +1409,7 @@ class ProductController extends Controller
     }
 
     public function data_pembelian(Request $request)
-    {   
+    {
         $id     = $request->id;
 
         $module_title = $this->module_title;
@@ -1428,12 +1431,12 @@ class ProductController extends Controller
             $$module_name->where('is_nota', false)->get();
         }
         $$module_name->where('product_price', '=', 0)->get();
-        $harga = Harga::latest()->first();  
+        $harga = Harga::latest()->first();
         if($harga == null){
             $harga  = 0;
         }else{
             $harga = $harga->harga;
-        }     
+        }
         // $harga  = 1000000;
         $$module_name = $$module_name->latest()->get();
         $$module_name->each(function ($item) use ($harga) {
@@ -1476,7 +1479,7 @@ class ProductController extends Controller
         }
     }
 
-    
+
         public function index_data(Request $request)
     {
         $module_title = $this->module_title;

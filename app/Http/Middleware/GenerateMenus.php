@@ -2655,7 +2655,7 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link',
                 ]);
 
-            $setting->add('<i class="c-sidebar-nav-icon bi bi-config"></i> ' . __('Buyback Persen') . '', [
+            $setting->add('<i class="c-sidebar-nav-icon bi bi-config"></i> ' . __('Potongan Buyback') . '', [
                 'route' => 'config.buyback',
                 'class' => 'nav-item',
             ])

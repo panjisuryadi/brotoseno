@@ -1400,7 +1400,7 @@ class ProductController extends Controller
         $module_name_singular = Str::singular($module_name);
 
         $module_action = 'List';
-        $$module_name = $module_model::with('category', 'product_item', 'baki');
+        $$module_name = $module_model::with('category', 'product_item', 'baki', 'model', 'group');
         if ($request->get('status')) {
             $$module_name = $$module_name->where('status_id', $request->get('status'));
         }
@@ -1424,7 +1424,7 @@ class ProductController extends Controller
         });
         $data = $$module_name;
         // echo $data;
-
+        // exit();
         return Datatables::of($$module_name)
             ->addColumn('action', function ($data) {
                 $module_name = $this->module_name;
@@ -1438,9 +1438,10 @@ class ProductController extends Controller
             ->addColumn('delete', function ($data) {
                 $module_name = $this->module_name;
                 $module_model = $this->module_model;
+                $history    = ProductHistories::where('product_id', $data->id)->get();
                 return view(
                     'product::products.partials.delete',
-                    compact('module_name', 'data', 'module_model')
+                    compact('module_name', 'data', 'history', 'module_model')
                 );
             })
 
@@ -1452,7 +1453,7 @@ class ProductController extends Controller
 
                             <h3 class="small font-medium text-gray-600 dark:text-white "> ' . $data->product_name . '</h3>
                              <div class="text-xs font-normal text-blue-500 font-semibold">
-                            ' . @$data->cabang->name . '</div>
+                            ' . @$data->product_code . '</div>
 
 
                         </div>
@@ -1488,15 +1489,18 @@ class ProductController extends Controller
             ->editColumn('code', function ($data) {
                 return $data->product_code;
             })
+
             ->editColumn('keterangan', function ($data) {
                 return $data->product_history->keterangan ?? '';
+            })
+            ->editColumn('baki', function ($data) {
+                return $data->baki->name ?? '';
             })
 
             ->editColumn('karat', function ($data) {
                 $tb = '<div class="items-center gap-x-2">
                                 <div class="text-sm text-center text-gray-500">
                                 <b>' . @$data->karat->label . ' </b><br>
-                                Rp .' . @rupiah($data->product_price) . ' <br>
                                 </div>
                                 </div>';
                 return $tb;

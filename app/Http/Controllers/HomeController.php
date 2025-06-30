@@ -72,6 +72,8 @@ class HomeController extends Controller
         foreach ($todaySalesGold as $data) {
             $totalGoldSales = $totalGoldSales + $data->total;
         }
+
+        // format totalGoldSales
         $formattedTotalGoldSales = 'Rp. ' . number_format($totalGoldSales, 0, ',', '.');
 
         // 2. TOTAL BERAT PENJUALAN HARI INI (card kuning)
@@ -91,10 +93,6 @@ class HomeController extends Controller
         
         // 4. JUMLAH PELANGGAN HARI INI (card biru)
         $totalCustomer = SalesGold::whereDate('created_at', $todayDate)->count();
-        // total sementara 17 juni 2025 = Rp. 11.252.326
-        // total berat emas sementara = 8,44
-        // total item sementara = 5
-        // jumlah pelanggan sementara = 4
         /// end data pada card
 
         return view('home', [

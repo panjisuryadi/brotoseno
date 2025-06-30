@@ -402,10 +402,8 @@
             data: 'qr',
             name: 'qr'
         },
+        
         {
-            data: 'baki',
-            name: 'baki'
-        },{
             data: 'keterangan',
             name: 'keterangan'
         },

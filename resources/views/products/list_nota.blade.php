@@ -44,7 +44,7 @@
                         </a>
                     </div>
                     <div class="flex justify-between pb-3 border-bottom">
-                        <div> 
+                        <div>
                             <i class="bi bi-plus"></i> &nbsp; <span class="text-lg font-semibold"> List Produk Satuan</span>
                         </div>
                         <div id="buttons"></div>
@@ -56,6 +56,7 @@
                                     <th style="width: 5%!important;">NO</th>
                                     <th style="width: 15%!important;">Image</th>
                                     <th style="width: 15%!important;">Product</th>
+                                    <th style="width: 10%!important;">Baki</th>
                                     <!-- <th style="width: 15%!important;" class="text-center">Harga Beli</th> -->
                                     <th style="width: 10%!important;" class="text-center">Berat</th>
                                     <th style="width: 15%!important;" class="text-center">Code</th>
@@ -63,7 +64,7 @@
                                     <th style="width: 15%!important;" class="text-center">Keterangan</th>
                                     <th style="width: 15%!important;" class="text-center">Date</th>
                                     <th style="width: 15%!important;" class="text-center">#</th>
-                                    
+
                  <!-- <th style="width: 18%!important;" class="text-center">
                                         Action
                                     </th> -->
@@ -125,7 +126,7 @@
                                                 </span>
                                             @endif
                                         </div>
-                                        
+
                                         <!-- </div> -->
                                         <div class="form-group">
                                             <?php
@@ -196,7 +197,7 @@
                                                 <option value="{{ $group->id }}">{{ $group->name }}</option>
                                                 @endforeach
                                             </select>
-                                        </div> 
+                                        </div>
 
                                         <div class="form-group">
                                             <?php
@@ -269,7 +270,7 @@
                                     </div>
 
                                     {{-- ///batas --}}
-                                    
+
                                 </div>
                                 <button class="btn btn-success">Submit</button>
                 </form>
@@ -375,10 +376,14 @@
         {
             data: 'product_image',
             name: 'product_image'
-        }, 
+        },
         {
             data: 'product_name',
             name: 'product_name'
+        },
+        {
+            data: 'baki',
+            name: 'baki'
         },
         // {
         //     data: 'karat',
@@ -460,7 +465,7 @@ $(document).on('click', '#Tambah,#QrCode,#Show, #Edit', function(e){
             $('.modal-dialog').removeClass('modal-xl');
             $('.modal-dialog').removeClass('modal-sm');
             $('#ModalHeader').html('<i class="bi bi-grid-fill"></i> &nbsp;Cetak QR Code');
-        } 
+        }
 
          if($(this).attr('id') == 'Show')
         {
@@ -469,7 +474,7 @@ $(document).on('click', '#Tambah,#QrCode,#Show, #Edit', function(e){
             $('.modal-dialog').removeClass('modal-sm');
             $('#ModalHeader').html('<i class="bi bi-grid-fill"></i> &nbsp;Detail');
         }
-        
+
         $('#ModalContent').load($(this).attr('href'));
         // var myModalEl = document.getElementById('ModalGue');
         // var modal = new bootstrap.Modal(myModalEl);

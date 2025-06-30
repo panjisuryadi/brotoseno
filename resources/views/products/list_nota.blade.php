@@ -53,18 +53,19 @@
                         <table id="datatable" style="width: 100%" class="table table-bordered table-hover table-responsive-sm">
                             <thead>
                                 <tr>
-                                    <th style="width: 5%!important;">NO</th>
+                                    <th style="width: 4%!important;">NO</th>
                                     <th style="width: 15%!important;">Image</th>
                                     <th style="width: 15%!important;">Product</th>
                                     <th style="width: 10%!important;">Baki</th>
                                     <!-- <th style="width: 15%!important;" class="text-center">Harga Beli</th> -->
                                     <th style="width: 10%!important;" class="text-center">Berat</th>
+                                    
                                     <th style="width: 15%!important;" class="text-center">Code</th>
                                     <th style="width: 10%!important;" class="text-center">QR</th>
                                     <th style="width: 15%!important;" class="text-center">Keterangan</th>
                                     <th style="width: 15%!important;" class="text-center">Date</th>
                                     <th style="width: 15%!important;" class="text-center">#</th>
-
+                                    
                  <!-- <th style="width: 18%!important;" class="text-center">
                                         Action
                                     </th> -->
@@ -394,14 +395,17 @@
             name: 'berat_emas'
         },
         {
-            data: 'code',
-            name: 'code'
+            data: 'karat',
+            name: 'karat'
         },
         {
             data: 'qr',
             name: 'qr'
         },
         {
+            data: 'baki',
+            name: 'baki'
+        },{
             data: 'keterangan',
             name: 'keterangan'
         },

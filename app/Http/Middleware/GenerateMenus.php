@@ -428,18 +428,18 @@ class GenerateMenus
             //         'class' => 'c-sidebar-nav-link py-2',
             //     ]);
 
-            $Products->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Buyback'), [
-                'route' => 'buyback.list',
-                'class' => 'nav-item',
-            ])
-                ->data([
-                    'order'         => 77,
-                    'activematches' => ['returpembelians*'],
-                    'permission'    => ['access_returpembelians'],
-                ])
-                ->link->attr([
-                    'class' => 'c-sidebar-nav-link py-2',
-                ]);
+            // $Products->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Buyback'), [
+            //     'route' => 'buyback.list',
+            //     'class' => 'nav-item',
+            // ])
+            //     ->data([
+            //         'order'         => 77,
+            //         'activematches' => ['returpembelians*'],
+            //         'permission'    => ['access_returpembelians'],
+            //     ])
+            //     ->link->attr([
+            //         'class' => 'c-sidebar-nav-link py-2',
+            //     ]);
 
 
 
@@ -533,39 +533,39 @@ class GenerateMenus
 
 
             // EMAS - TOKO master menu
-            $toko = $emas->add('<i class="c-sidebar-nav-icon mb-1 bi bi-shop"></i>' . __('Toko') . '', [
-                'class' => 'c-sidebar-nav-dropdown',
-            ])
-                ->data([
-                    'order'         => 2,
-                    'activematches' => [
-                        'penentuanhargas*',
-                        'storeemployees*',
+            // $toko = $emas->add('<i class="c-sidebar-nav-icon mb-1 bi bi-shop"></i>' . __('Toko') . '', [
+            //     'class' => 'c-sidebar-nav-dropdown',
+            // ])
+            //     ->data([
+            //         'order'         => 2,
+            //         'activematches' => [
+            //             'penentuanhargas*',
+            //             'storeemployees*',
 
-                    ],
-                    'permission'    => [
-                        'access_penentuanharga',
-                        'access_storeemployees',
-                    ],
-                ]);
-            $toko->link->attr([
-                'class' => 'c-sidebar-nav-dropdown-toggle',
-                'href'  => '#',
-            ]);
+            //         ],
+            //         'permission'    => [
+            //             'access_penentuanharga',
+            //             'access_storeemployees',
+            //         ],
+            //     ]);
+            // $toko->link->attr([
+            //     'class' => 'c-sidebar-nav-dropdown-toggle',
+            //     'href'  => '#',
+            // ]);
 
 
-            $pegawai_toko = $toko->add('<i class="c-sidebar-nav-icon  bi bi-person text-sm"></i> ' . __('Data Pegawai Toko'), [
-                'route' => 'storeemployee.index',
-                'class' => 'nav-item',
-            ])
-                ->data([
-                    'order'         => 1,
-                    'activematches' => ['storeemployees*'],
-                    'permission'    => ['access_storeemployees'],
-                ])
-                ->link->attr([
-                    'class' => 'c-sidebar-nav-link py-2',
-                ]);
+            // $pegawai_toko = $toko->add('<i class="c-sidebar-nav-icon  bi bi-person text-sm"></i> ' . __('Data Pegawai Toko'), [
+            //     'route' => 'storeemployee.index',
+            //     'class' => 'nav-item',
+            // ])
+            //     ->data([
+            //         'order'         => 1,
+            //         'activematches' => ['storeemployees*'],
+            //         'permission'    => ['access_storeemployees'],
+            //     ])
+            //     ->link->attr([
+            //         'class' => 'c-sidebar-nav-link py-2',
+            //     ]);
 
             // EMAS - TOKO - PENENTUAN HARGA
             // $penentuan_harga = $toko->add('<i class="c-sidebar-nav-icon  bi bi-cash-stack text-sm"></i>

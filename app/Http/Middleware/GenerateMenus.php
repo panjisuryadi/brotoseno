@@ -298,18 +298,18 @@ class GenerateMenus
             //     ]);
 
             // ReturPembelians
-            $Products->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('All Products'), [
-                'route' => 'products.all',
-                'class' => 'nav-item',
-            ])
-                ->data([
-                    'order'         => 77,
-                    'activematches' => ['returpembelians*'],
-                    'permission'    => ['access_returpembelians'],
-                ])
-                ->link->attr([
-                    'class' => 'c-sidebar-nav-link py-2',
-                ]);
+            // $Products->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('All Products'), [
+            //     'route' => 'products.all',
+            //     'class' => 'nav-item',
+            // ])
+            //     ->data([
+            //         'order'         => 77,
+            //         'activematches' => ['returpembelians*'],
+            //         'permission'    => ['access_returpembelians'],
+            //     ])
+            //     ->link->attr([
+            //         'class' => 'c-sidebar-nav-link py-2',
+            //     ]);
 
             $Products->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Barang Luar'), [
                 'route' => 'products.luar',

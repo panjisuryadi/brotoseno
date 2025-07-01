@@ -103,7 +103,7 @@ class PurchasesController extends Controller
             })
 
             ->editColumn('no_faktur', function ($data) {
-                return 'no faktur';
+                return '-';
             })
 
             ->editColumn('jam', function ($data) {
@@ -121,7 +121,7 @@ class PurchasesController extends Controller
 
             ->editColumn('kode_intern', function ($data) {
                 // return number_format($data->total);
-                return 'kode intern';
+                return '-';
             })
 
             ->editColumn('kode_sales', function ($data) {
@@ -154,17 +154,17 @@ class PurchasesController extends Controller
 
             ->editColumn('hrg_nota', function ($data) {
                 // return number_format($data->total);
-                return 'hrg_nota';
+                return '-';
             })
 
             ->editColumn('hrg_beli', function ($data) {
                 // return number_format($data->total);
-                return 'hrg_beli';
+                return '-';
             })
 
             ->editColumn('hrg_rata', function ($data) {
                 // return number_format($data->total);
-                return 'hrg_rata';
+                return '-';
             })
 
             ->editColumn('type_payment', function ($data) {

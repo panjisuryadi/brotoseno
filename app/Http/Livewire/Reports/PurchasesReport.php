@@ -38,6 +38,61 @@ class PurchasesReport extends Component
         $this->supplier_id = '';
     }
 
+    // public function render() {
+
+    //     $data = DB::table('goodsreceipts as gr')
+    //             ->select(
+    //                 'gr.date',
+    //                 'gr.code',
+    //                 'gr.no_invoice',
+    //                 'gr.harga_beli',
+    //                 'gr.total_emas',
+    //                 'gr.total_karat',
+    //                 'gr.tipe_pembayaran',
+    //                 'gr.supplier_id',
+    //                 'suppliers.supplier_name',
+    //                 'tipe_pembelian.lunas',
+    //                 'penerimaan_barang_cicilan.updated_at as tgl_bayar',
+    //                 'penerimaan_barang_cicilan.jumlah_cicilan',
+    //                 'penerimaan_barang_cicilan.nomor_cicilan',
+    //                 'penerimaan_barang_cicilan.nominal',
+    //             )
+    //             ->leftJoin('suppliers', function($q) {
+    //                 $q->on('supplier_id', 'suppliers.id');
+    //             })
+    //             ->leftJoin('tipe_pembelian', function($q){
+    //                 $q->on('gr.id', 'tipe_pembelian.goodsreceipt_id');
+    //             })
+    //             ->leftJoin('penerimaan_barang_cicilan', function($q) {
+    //                 $q->on('payment_id', 'tipe_pembelian.id');
+    //             })
+    //             ->whereDate('gr.date', '>=', $this->start_date)
+    //             ->whereDate('gr.date', '<=', $this->end_date)
+    //             ->when($this->supplier_id, function ($query) {
+    //                 return $query->where('supplier_id', $this->supplier_id);
+    //             })
+    //             ->where(function($q){
+    //                 $q->where('gr.tipe_pembayaran', 'lunas');
+    //                 $q->orWhere('nominal', '>', '0');
+    //                 $q->orWhere('jumlah_cicilan', '>', '0');
+    //             })
+    //             ->orderBy('tgl_bayar', 'desc');
+    //     $this->purchase_data = $data->clone()->get();
+    //     $total_harga = $total_emas = 0;
+    //     foreach ($this->purchase_data as $row){
+    //         $row_nominal = !empty( $row->nominal) ? $row->nominal : $row->harga_beli;
+    //         $total_harga += $row_nominal;
+    //         $total_emas += (empty($row_nominal) ? $row->jumlah_cicilan : 0);
+    //     }
+    //     $this->total_harga = $total_harga;
+
+    //     return view('livewire.reports.purchases-report', [
+    //         'datas' => $data->paginate(10),
+    //         'total_harga' => $total_harga,
+    //         'total_emas' => $total_emas,
+    //     ]);
+    // }
+    
     public function render() {
 
         $data = DB::table('goodsreceipts as gr')

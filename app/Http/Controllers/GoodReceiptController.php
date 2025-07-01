@@ -56,7 +56,7 @@ class GoodReceiptController extends Controller
         $last_po    = (int)$last_po[1];
         $last_po    = $last_po+1;
         $count      = strlen($last_po);
-        for ($i=0; $i < 5; $i++) { 
+        for ($i=0; $i < 5; $i++) {
             if($count == 5){
 
             }else{
@@ -349,10 +349,10 @@ class GoodReceiptController extends Controller
     public function qr(Request $request)
     {
         $id = $request->id;
-        $goodsreceipt = GoodsReceipt::where('id', $id)->first();  
-        $product_categories = Category::all();  
-        $groups = Group::all();  
-        $models = ProdukModel::all(); 
+        $goodsreceipt = GoodsReceipt::where('id', $id)->first();
+        $product_categories = Category::all();
+        $groups = Group::all();
+        $models = ProdukModel::all();
         $dataKarat = Karat::whereNull('parent_id')->get();
         $hari_ini = new DateTime();
         $hari_ini = $hari_ini->format('Y-m-d');
@@ -411,7 +411,7 @@ class GoodReceiptController extends Controller
         $hari_ini = new DateTime();
         $hari_ini = $hari_ini->format('Y-m-d');
         $isLogamMulia   = true;
-        
+
         $tipe_pembayaran    = 'lunas';
 
         return view(
@@ -441,7 +441,7 @@ class GoodReceiptController extends Controller
     public function product_update(Request $request){
         $id = $request->id;
         $hitung     = count($request->category);
-        for ($i=0; $i < $hitung; $i++) { 
+        for ($i=0; $i < $hitung; $i++) {
             $group  = Group::where('id', $request->group[$i])->first();
             $group_name = $group->name;
             $model  = ProdukModel::where('id', $request->model[$i])->first();
@@ -475,7 +475,7 @@ class GoodReceiptController extends Controller
                 'berat_label'       => 0,
             ]);
         }
-        
+
         $goodsReceiptItem = GoodsReceiptItem::findOrFail($id);
         $idnya  = $goodsReceiptItem['goodsreceipt_id'];
         $goodsReceiptItem->status = 2;
@@ -655,7 +655,7 @@ class GoodReceiptController extends Controller
         $hari_ini = new DateTime();
         $hari_ini = $hari_ini->format('Y-m-d');
         $isLogamMulia   = true;
-        
+
         $tipe_pembayaran    = 'lunas';
         return view(
             'goodsreceipts.products', // Path to your create view file

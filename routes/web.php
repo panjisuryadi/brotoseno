@@ -112,8 +112,16 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/sale/recap/data', 'JualController@data_recap')
     ->name('sale.data_recap');
 
+    // report pembelian
+    Route::get('/purchases/report', 'PurchasesController@laporan_pembelian')
+    ->name('pembelian.report');
+
+    Route::get('/purchases/data_report', 'PurchasesController@data_report_pembelian')
+    ->name('pembelian.data_report');
+
     Route::post('/sale/print', 'JualController@print')
         ->name('sale.print');
+
 
     Route::get('/dashboard', 'DashboardController@list')
         ->name('dashboard.index');

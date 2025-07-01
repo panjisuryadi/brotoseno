@@ -1268,4 +1268,243 @@ class JualController extends Controller
             ])
             ->make(true);
     }
+
+
+
+    public function data_report_pembelian(Request $request)
+    {
+
+        // echo json_encode($_POST);
+        // exit();
+
+
+        $id     = $request->id;
+
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        $module_action = 'List';
+        // $$module_name = SalesGold::with('pelanggan')->latest()->get();
+        // $$module_name = SalesGold::latest()->get();
+        // dd($$module_name);
+
+        // $data = $$module_name;
+        // echo $data;
+        // exit();
+
+        $query = SalesGold::with('pelanggan');
+
+        if (!empty($request->startDate) && !empty($request->endDate)) {
+            $start = Carbon::parse($request->startDate)->startOfDay();
+            $end = Carbon::parse($request->endDate)->endOfDay();
+            $query->whereBetween('created_at', [$start, $end]);
+        }
+
+        $data = $query->latest()->get();
+        // dd($data);
+
+
+
+        return Datatables::of($data)
+            ->addColumn('action', function ($data) {
+                $module_name = $this->module_name;
+                $module_model = $this->module_model;
+                return view(
+                    'purchase.aksi',
+                    compact('module_name', 'data', 'module_model')
+                );
+            })
+
+            // ->editColumn('product_name', function ($data) {
+            //     $tb = '<div class="flex items-center gap-x-2">
+            //             <div>
+            //                <div class="text-xs font-normal text-yellow-600 dark:text-gray-400">
+            //                 ' . $data->category?->category_name . '</div>
+
+            //                 <h3 class="small font-medium text-gray-600 dark:text-white "> ' . $data->product_name . '</h3>
+            //                  <div class="text-xs font-normal text-blue-500 font-semibold">
+            //                 ' . @$data->cabang->name . '</div>
+
+
+            //             </div>
+            //         </div>';
+            //     return $tb;
+            // })
+            //    ->addColumn('product_image', function ($data) {
+            //     $url = $data->getFirstMediaUrl('images', 'thumb');
+            //     return '<img src="'.$url.'" border="0" width="50" class="img-thumbnail" align="center"/>';
+            // })
+
+            ->editColumn('customer', function ($data) {
+                return $data->pelanggan->customer_name ?? '-';
+            })
+
+            ->editColumn('created_at', function ($data) {
+                return tgljam($data->created_at);
+            })
+
+            ->editColumn('total', function ($data) {
+                return number_format($data->total);
+            })
+
+            // ->editColumn('berat_emas', function ($data) {
+            //     return $data->berat_emas ?? '-';
+            // })
+
+            ->editColumn('berat_emas', function ($data) {
+                $totalBerat = 0;
+
+                // Pastikan products adalah JSON string atau array
+                $productIds = is_string($data->products)
+                    ? json_decode($data->products, true)
+                    : $data->products;
+
+                if (is_array($productIds)) {
+                    $products = Product::whereIn('id', $productIds)->get();
+
+                    foreach ($products as $product) {
+                        $totalBerat += $product->berat_emas;
+                    }
+                }
+
+                return $totalBerat > 0 ? number_format($totalBerat, 2) . ' gr' : '-';
+            })
+
+
+            ->rawColumns([
+                'created_at', 'product_image', 'keterangan', 'code', 'weight', 'status', 'tracking',
+                'product_name', 'karat', 'berat_emas', 'cabang', 'action'
+            ])
+            ->make(true);
+        }
+
+    public function laporan_pembelian(Request $request){
+
+        // dd($request->all());
+        if(AdjustmentSetting::exists()){
+            toast('Stock Opname sedang Aktif!', 'error');
+            return redirect()->back();
+        }
+
+        if ($request->resetFilter) {
+            $startDate = Carbon::today()->toDateString();
+            $endDate = Carbon::today()->toDateString();
+        } else {
+            $startDate = $request->startDate ?? Carbon::today()->toDateString();
+            $endDate = $request->endDate ?? Carbon::today()->toDateString();
+        }
+
+        if ($startDate > $endDate) {
+            toast('Tanggal awal tidak boleh lebih besar dari tanggal akhir!', 'error');
+            return redirect()->back();
+        }
+
+
+        Cart::instance('sale')->destroy();
+
+        if ($request->startDate && $request->endDate && !$request->resetFilter) {
+            $karat  = Karat::whereBetween('created_at', [$startDate, $endDate])->latest()->get();
+            $category  = Category::whereBetween('created_at', [$startDate, $endDate])->latest()->get();
+            $group  = Group::whereBetween('created_at', [$startDate, $endDate])->latest()->get();
+            $models  = ProdukModel::whereBetween('created_at', [$startDate, $endDate])->latest()->get();
+            $customers = Customer::whereBetween('created_at', [$startDate, $endDate])->get();
+            $product_categories = Category::whereBetween('created_at', [$startDate, $endDate])->get();
+        } else {
+            $karat  = Karat::latest()->get();
+            $category  = Category::latest()->get();
+            $group  = Group::latest()->get();
+            $models  = ProdukModel::latest()->get();
+            $customers = Customer::all();
+            $product_categories = Category::all();
+        }
+
+
+        // dd(Product::all());
+
+        $module_title   = $this->module_title;
+
+        // ///// start data pada card
+        // $todayDate = Carbon::today(); // hari ini
+        // $todaySalesGold = SalesGold::whereDate('created_at', $todayDate)->get(); // data penjualan hari ini
+
+
+        // dd($karat);
+
+        if($request->resetFilter) {
+            $startDate = Carbon::today()->toDateString();
+            $endDate = Carbon::today()->toDateString();
+        }
+
+        // if ($startDate !== Carbon::today()->toDateString()  && $endDate !== Carbon::today()->toDateString()) {
+        //     dd($startDate, $endDate);
+        // }
+
+        // dd($startDate, $endDate);
+
+        $todaySalesGold = SalesGold::whereDate('created_at', '>=', $startDate)
+        ->whereDate('created_at', '<=', $endDate)
+        ->get();
+
+        // 1. HASIL PENJUALAN HARI INI (card ungu)
+        $totalGoldSales = 0;
+        // loop data hari ini dan kalkulasikan semua total ke dalam $totalGoldSales
+        foreach ($todaySalesGold as $data) {
+            $totalGoldSales = $totalGoldSales + $data->total;
+        }
+
+        // 2. TOTAL BERAT PENJUALAN HARI INI (card kuning)
+        // 3. TOTAL KUANTITAS PENJUALAN HARI INI (card hijau)
+        $totalGoldWeight = 0;
+        $totalGoldQuantity = 0;
+        $allProducts = [];
+
+        foreach ($todaySalesGold as $data) {
+            $arrayProducts = json_decode($data->products, true); // mengambil products menjadi array product_id
+            foreach ($arrayProducts as $product_id) {
+                $allProducts[] =  $product_id; // mengambil semua product_id yang ada
+                $goldWeight = Product::where('id', $product_id)->first()->berat_emas; // mengambil berat emas dari setiap product
+                $totalGoldWeight = $totalGoldWeight + $goldWeight; // kalkulasi semua berat emas
+            }
+        }
+
+        // dd(Product::where('id', $product_id)->first()->berat_emas);
+        $totalGoldQuantity = count($allProducts); // menghitung total semua product / emas (berdasarkan product_id)
+        // 4. JUMLAH PELANGGAN HARI INI (card biru)
+        // $totalCustomer = SalesGold::whereDate('created_at', $todayDate)->count();
+        // total sementara 17 juni 2025 = Rp. 11.252.326
+        // total berat emas sementara = 8,44
+        // total item sementara = 5
+        // jumlah pelanggan sementara = 4
+        /// end data pada card
+
+        $totalCustomer = SalesGold::whereBetween('created_at', [$startDate, $endDate])
+        ->distinct('id')
+        ->count('id');
+
+        // dd(1);
+        return view(
+            'purchase.report', compact(
+                'module_title',
+                'product_categories',
+                'customers',
+                'karat',
+                'category',
+                'group',
+                'models',
+                'totalGoldSales',
+                'totalGoldWeight',
+                'totalGoldQuantity',
+                'totalCustomer',
+                // 'todayDate',
+            )
+        );
+    }
+
+
+
+
 }

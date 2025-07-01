@@ -533,25 +533,25 @@ class GenerateMenus
 
 
             // EMAS - TOKO master menu
-            // $toko = $emas->add('<i class="c-sidebar-nav-icon mb-1 bi bi-shop"></i>' . __('Toko') . '', [
-            //     'class' => 'c-sidebar-nav-dropdown',
-            // ])
-            //     ->data([
-            //         'order'         => 2,
-            //         'activematches' => [
-            //             'penentuanhargas*',
-            //             'storeemployees*',
+            $toko = $emas->add('<i class="c-sidebar-nav-icon mb-1 bi bi-shop"></i>' . __('Toko') . '', [
+                'class' => 'c-sidebar-nav-dropdown',
+            ])
+                ->data([
+                    'order'         => 2,
+                    'activematches' => [
+                        'penentuanhargas*',
+                        'storeemployees*',
 
-            //         ],
-            //         'permission'    => [
-            //             'access_penentuanharga',
-            //             'access_storeemployees',
-            //         ],
-            //     ]);
-            // $toko->link->attr([
-            //     'class' => 'c-sidebar-nav-dropdown-toggle',
-            //     'href'  => '#',
-            // ]);
+                    ],
+                    'permission'    => [
+                        'access_penentuanharga',
+                        'access_storeemployees',
+                    ],
+                ]);
+            $toko->link->attr([
+                'class' => 'c-sidebar-nav-dropdown-toggle',
+                'href'  => '#',
+            ]);
 
 
             // $pegawai_toko = $toko->add('<i class="c-sidebar-nav-icon  bi bi-person text-sm"></i> ' . __('Data Pegawai Toko'), [

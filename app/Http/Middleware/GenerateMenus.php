@@ -19,7 +19,7 @@ class GenerateMenus
     {
         \Menu::make('admin_sidebar', function ($menu) {
             // Dashboard
-            $menu->add('<i class="cil-speedometer c-sidebar-nav-icon"></i> Dashboard', [
+            $menu->add('<i class="bi bi-speedometer2 c-sidebar-nav-icon"></i> Dashboard', [
                 'route' => 'home',
                 'class' => 'c-sidebar-nav-item',
             ])
@@ -34,7 +34,7 @@ class GenerateMenus
 
 
             // MASTER DATA
-            $masterData = $menu->add('<i class="c-sidebar-nav-icon cil-apps"></i> Master Data', [
+            $masterData = $menu->add('<i class="c-sidebar-nav-icon bi bi-database"></i> Master Data', [
                 'class' => 'c-sidebar-nav-dropdown',
             ])
                 ->data([
@@ -139,7 +139,7 @@ class GenerateMenus
 
 
             //menuemas
-            $emas = $menu->add('<i class="c-sidebar-nav-icon bi bi-star"></i> Emas', [
+            $emas = $menu->add('<i class="c-sidebar-nav-icon bi bi-gem"></i> Emas', [
                 'class' => 'c-sidebar-nav-dropdown',
             ])
                 ->data([
@@ -176,7 +176,7 @@ class GenerateMenus
             ]);
 
             // EMAS - PEMBELIAN
-            $Purchases = $emas->add('<i class="c-sidebar-nav-icon mb-1 bi bi-bag"></i>' . __('Purchases') . '', [
+            $Purchases = $emas->add('<i class="c-sidebar-nav-icon mb-1 bi bi-cart-plus"></i>' . __('Purchases') . '', [
                 'class' => 'c-sidebar-nav-dropdown',
             ])
                 ->data([
@@ -194,7 +194,7 @@ class GenerateMenus
             ]);
 
             // EMAS - PEMBELIAN - PENERIMAAN BARANG
-            $Purchases->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Goods Receipts'), [
+            $Purchases->add('<i class="c-sidebar-nav-icon  bi bi-inboxes text-sm"></i> ' . __('Goods Receipts'), [
                 'route' => 'goodsreceipt.index',
                 'class' => 'nav-item',
             ])
@@ -222,7 +222,7 @@ class GenerateMenus
             //     ]);
 
             // EMAS - PEMBELIAN - Hutang
-            $Purchases->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Goods Receipt Debts'), [
+            $Purchases->add('<i class="c-sidebar-nav-icon  bi bi-cash-coin text-sm"></i> ' . __('Goods Receipt Debts'), [
                 'route' => 'goodsreceipt.debts',
                 'class' => 'nav-item',
             ])
@@ -236,7 +236,7 @@ class GenerateMenus
                 ]);
 
             // ReturPembelians
-            $Purchases->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Retur Pembelian'), [
+            $Purchases->add('<i class="c-sidebar-nav-icon  bi bi-arrow-counterclockwise text-sm"></i> ' . __('Retur Pembelian'), [
                 'route' => 'returpembelian.index',
                 'class' => 'nav-item',
             ])
@@ -252,7 +252,7 @@ class GenerateMenus
 
 
             // EMAS - PRODUCT
-            $Products = $emas->add('<i class="c-sidebar-nav-icon mb-1 bi bi-bag"></i>' . __('Products') . '', [
+            $Products = $emas->add('<i class="c-sidebar-nav-icon mb-1 bi bi-boxes"></i>' . __('Products') . '', [
                 'class' => 'c-sidebar-nav-dropdown',
             ])
                 ->data([
@@ -298,20 +298,22 @@ class GenerateMenus
             //     ]);
 
             // ReturPembelians
-            // $Products->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('All Products'), [
-            //     'route' => 'products.all',
-            //     'class' => 'nav-item',
-            // ])
-            //     ->data([
-            //         'order'         => 77,
-            //         'activematches' => ['returpembelians*'],
-            //         'permission'    => ['access_returpembelians'],
-            //     ])
-            //     ->link->attr([
-            //         'class' => 'c-sidebar-nav-link py-2',
-            //     ]);
 
-            $Products->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Barang Luar'), [
+            $Products->add('<i class="c-sidebar-nav-icon  bi bi-box-seam text-sm"></i> ' . __('All Products'), [
+                'route' => 'products.all',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 77,
+                    'activematches' => ['returpembelians*'],
+                    'permission'    => ['access_returpembelians'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link py-2',
+                ]);
+
+
+            $Products->add('<i class="c-sidebar-nav-icon bi bi-truck text-sm"></i> ' . __('Barang Luar'), [
                 'route' => 'products.luar',
                 'class' => 'nav-item',
             ])
@@ -324,7 +326,7 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link py-2',
                 ]);
 
-            $Products->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Barang Satuan'), [
+            $Products->add('<i class="c-sidebar-nav-icon  bi bi-123	-right text-sm"></i> ' . __('Barang Satuan'), [
                 'route' => 'products.nota',
                 'class' => 'nav-item',
             ])
@@ -337,7 +339,7 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link py-2',
                 ]);
 
-            $Products->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Products Pending'), [
+            $Products->add('<i class="c-sidebar-nav-icon bi  bi-hourglass-split text-sm"></i> ' . __('Products Pending'), [
                 'route' => 'products.pending',
                 'class' => 'nav-item',
             ])
@@ -350,7 +352,7 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link py-2',
                 ]);
 
-            $Products->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Products History'), [
+            $Products->add('<i class="c-sidebar-nav-icon  bi bi-clock-history text-sm"></i> ' . __('Products History'), [
                 'route' => 'history_product.list',
                 'class' => 'nav-item',
             ])
@@ -363,7 +365,7 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link py-2',
                 ]);
 
-            $Products->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Products Reparasi'), [
+            $Products->add('<i class="c-sidebar-nav-icon  bi bi-tools text-sm"></i> ' . __('Products Reparasi'), [
                 'route' => 'products.reparasis',
                 'class' => 'nav-item',
             ])
@@ -376,7 +378,7 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link py-2',
                 ]);
 
-            $Products->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Products Cuci'), [
+            $Products->add('<i class="c-sidebar-nav-icon  bi bi-droplet text-sm"></i> ' . __('Products Cuci'), [
                 'route' => 'products.cuci',
                 'class' => 'nav-item',
             ])
@@ -389,7 +391,7 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link py-2',
                 ]);
 
-            $Products->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Products Lebur'), [
+            $Products->add('<i class="c-sidebar-nav-icon  bi bi-fire text-sm"></i> ' . __('Products Lebur'), [
                 'route' => 'products.lebur',
                 'class' => 'nav-item',
             ])
@@ -428,18 +430,20 @@ class GenerateMenus
             //         'class' => 'c-sidebar-nav-link py-2',
             //     ]);
 
-            // $Products->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Buyback'), [
-            //     'route' => 'buyback.list',
-            //     'class' => 'nav-item',
-            // ])
-            //     ->data([
-            //         'order'         => 77,
-            //         'activematches' => ['returpembelians*'],
-            //         'permission'    => ['access_returpembelians'],
-            //     ])
-            //     ->link->attr([
-            //         'class' => 'c-sidebar-nav-link py-2',
-            //     ]);
+
+            $Products->add('<i class="c-sidebar-nav-icon  bi bi-arrow-return-left text-sm"></i> ' . __('Buyback'), [
+                'route' => 'buyback.list',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 77,
+                    'activematches' => ['returpembelians*'],
+                    'permission'    => ['access_returpembelians'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link py-2',
+                ]);
+
 
 
 
@@ -458,7 +462,7 @@ class GenerateMenus
             //     'class' => 'c-sidebar-nav-link',
             // ]);
 
-            $pos = $emas->add('<i class="c-sidebar-nav-icon mb-1 bi bi-shop"></i>' . __('POS/Buyback') . '', [
+            $pos = $emas->add('<i class="c-sidebar-nav-icon mb-1 bi bi-cash-stack"></i>' . __('POS/Buyback') . '', [
                 'class' => 'c-sidebar-nav-dropdown',
             ])
                 ->data([
@@ -478,7 +482,7 @@ class GenerateMenus
                 'href'  => '#',
             ]);
 
-            $sale = $pos->add('<i class="c-sidebar-nav-icon  bi bi-person text-sm"></i> ' . __('POS'), [
+            $sale = $pos->add('<i class="c-sidebar-nav-icon  bi bi-receipt text-sm"></i> ' . __('POS'), [
                 'route' => 'sale.list',
                 'class' => 'nav-item',
             ])
@@ -491,7 +495,7 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link py-2',
                 ]);
 
-            $beli = $pos->add('<i class="c-sidebar-nav-icon  bi bi-person text-sm"></i> ' . __('Pembelian'), [
+            $beli = $pos->add('<i class="c-sidebar-nav-icon  bi bi-cart-check text-sm"></i> ' . __('Pembelian'), [
                 'route' => 'product.pembelian',
                 'class' => 'nav-item',
             ])
@@ -504,7 +508,7 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link py-2',
                 ]);
 
-            $buyback = $pos->add('<i class="c-sidebar-nav-icon  bi bi-person text-sm"></i> ' . __('Buyback'), [
+            $buyback = $pos->add('<i class="c-sidebar-nav-icon  bi bi-arrow-return-left text-sm"></i> ' . __('Buyback'), [
                 'route' => 'buyback.list',
                 'class' => 'nav-item',
             ])
@@ -517,7 +521,7 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link py-2',
                 ]);
 
-            $luar = $pos->add('<i class="c-sidebar-nav-icon  bi bi-person text-sm"></i> ' . __('Barang Luar'), [
+            $luar = $pos->add('<i class="c-sidebar-nav-icon  bi bi-truck text-sm"></i> ' . __('Barang Luar'), [
                 'route' => 'products.luar',
                 'class' => 'nav-item',
             ])
@@ -554,6 +558,19 @@ class GenerateMenus
             // ]);
 
 
+            $pegawai_toko = $toko->add('<i class="c-sidebar-nav-icon  bi bi-people text-sm"></i> ' . __('Data Pegawai Toko'), [
+                'route' => 'storeemployee.index',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 1,
+                    'activematches' => ['storeemployees*'],
+                    'permission'    => ['access_storeemployees'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link py-2',
+                ]);
+
             // $pegawai_toko = $toko->add('<i class="c-sidebar-nav-icon  bi bi-person text-sm"></i> ' . __('Data Pegawai Toko'), [
             //     'route' => 'storeemployee.index',
             //     'class' => 'nav-item',
@@ -566,6 +583,7 @@ class GenerateMenus
             //     ->link->attr([
             //         'class' => 'c-sidebar-nav-link py-2',
             //     ]);
+
 
             // EMAS - TOKO - PENENTUAN HARGA
             // $penentuan_harga = $toko->add('<i class="c-sidebar-nav-icon  bi bi-cash-stack text-sm"></i>
@@ -1322,7 +1340,7 @@ class GenerateMenus
 
 
 
-            $jual = $menu->add('<i class="c-sidebar-nav-icon bi bi-bag"></i> Report', [
+            $jual = $menu->add('<i class="c-sidebar-nav-icon bi bi-clipboard-data"></i> Report', [
                 'class' => 'c-sidebar-nav-dropdown',
             ])
                 ->data([
@@ -1359,7 +1377,7 @@ class GenerateMenus
             ]);
 
             // REPORT - PENJUALAN
-            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Sales') . '', [
+            $jual->add('<i class="c-sidebar-nav-icon bi-cash-stack"></i> ' . __('Sales') . '', [
                 'route' => 'sale.report',
                 'class' => 'nav-item',
             ])
@@ -1373,7 +1391,7 @@ class GenerateMenus
                 ]);
 
             // REPORT - REKAP PENJUALAN
-            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . 'Rekap Penjualan'. '', [
+            $jual->add('<i class="c-sidebar-nav-icon bi-journal-text"></i> ' . 'Rekap Penjualan'. '', [
                 'route' => 'sale.recap',
                 'class' => 'nav-item',
             ])
@@ -1387,7 +1405,7 @@ class GenerateMenus
                 ]);
 
             // REPORT - HUTANG
-            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Debt') . '', [
+            $jual->add('<i class="c-sidebar-nav-icon bi-wallet2"></i> ' . __('Debt') . '', [
                 'route' => 'goodsreceipt.debts',
                 'class' => 'nav-item',
             ])
@@ -1401,7 +1419,7 @@ class GenerateMenus
                 ]);
 
             // REPORT - PEMBELIAN
-            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Purchase') . '', [
+            $jual->add('<i class="c-sidebar-nav-icon bi-cart-check"></i> ' . __('Purchase') . '', [
                 'route' => 'pembelian.report',
                 'class' => 'nav-item',
             ])
@@ -1415,7 +1433,7 @@ class GenerateMenus
                 ]);
 
             // REPORT - STOK
-            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Stock') . '', [
+            $jual->add('<i class="c-sidebar-nav-icon bi-box-seam"></i> ' . __('Stock') . '', [
                 'route' => 'stock-report.index',
                 'class' => 'nav-item',
             ])
@@ -1430,7 +1448,7 @@ class GenerateMenus
 
             //////////start menu
             // REPORT - PENJUALAN UNIT
-            $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Unit Sales') . '', [
+            $jual->add('<i class="c-sidebar-nav-icon bi-tags"></i> ' . __('Unit Sales') . '', [
                 'route' => 'sales-unit-report.index',
                 'class' => 'nav-item',
             ])
@@ -1467,7 +1485,7 @@ class GenerateMenus
 
 
             //==== Access Control Dropdown Categories
-            $Categories = $masterData->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('labels.menu.categories'), [
+            $Categories = $masterData->add('<i class="c-sidebar-nav-icon  bi bi-grid-1x2 text-sm"></i> ' . __('labels.menu.categories'), [
                 'class' => 'c-sidebar-nav-dropdown',
             ])
                 ->data([
@@ -1485,7 +1503,7 @@ class GenerateMenus
 
             // Main Kategori
             $Categories->add(
-                '<i class="px-1 text-sm c-sidebar-nav-icon  bi bi-dot text-sm"></i> ' . __('Main Kategori'),
+                '<i class="px-1 text-sm c-sidebar-nav-icon  bi bi-list-nested text-sm"></i> ' . __('Main Kategori'),
                 [
                     'route' => 'kategoriproduk.index',
                     'class' => 'nav-item',
@@ -1502,7 +1520,7 @@ class GenerateMenus
 
             // Submenu: Categories
             $Categories->add(
-                '<i class="c-sidebar-nav-icon  bi bi-dot text-sm"></i> ' . __('labels.menu.kategori_produk'),
+                '<i class="c-sidebar-nav-icon  bi bi-list-ul text-sm"></i> ' . __('labels.menu.kategori_produk'),
                 [
                     'route' => 'product-categories.index',
                     'class' => 'nav-item',
@@ -1519,7 +1537,7 @@ class GenerateMenus
 
 
             // GoldCategories
-            $Categories->add('<i class="c-sidebar-nav-icon  bi bi-dot text-sm"></i> ' . __('Gold Categories'), [
+            $Categories->add('<i class="c-sidebar-nav-icon  bi bi-award text-sm"></i> ' . __('Gold Categories'), [
                 'route' => 'goldcategory.index',
                 'class' => 'nav-item',
             ])
@@ -2527,7 +2545,7 @@ class GenerateMenus
 
 
             // STOCK OPNAME
-            $stockopname = $menu->add('<i class="c-sidebar-nav-icon mb-1 bi bi-gear"></i>' . __('Stock Opname') . '', [
+            $stockopname = $menu->add('<i class="c-sidebar-nav-icon mb-1 bi bi-clipboard-check"></i>' . __('Stock Opname') . '', [
                 'class' => 'c-sidebar-nav-dropdown',
             ])
                 ->data([
@@ -2543,7 +2561,7 @@ class GenerateMenus
                 'href'  => '#',
             ]);
 
-            $stockopname->add('<i class="c-sidebar-nav-icon bi bi-currency-exchange"></i> ' . __('Opname') . '', [
+            $stockopname->add('<i class="c-sidebar-nav-icon bi bi-clipboard-data"></i> ' . __('Opname') . '', [
                 'route' => 'stock_opname.data',
                 'class' => 'nav-item',
             ])
@@ -2603,7 +2621,7 @@ class GenerateMenus
                 ]);
 
 
-            $setting->add('<i class="c-sidebar-nav-icon bi bi-config"></i> ' . __('Config') . '', [
+            $setting->add('<i class="c-sidebar-nav-icon bi bi-sliders"></i> ' . __('Config') . '', [
                 'route' => 'config.index',
                 'class' => 'nav-item',
             ])
@@ -2616,7 +2634,7 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link',
                 ]);
 
-            $setting->add('<i class="c-sidebar-nav-icon bi bi-config"></i> ' . __('Petty Cash') . '', [
+            $setting->add('<i class="c-sidebar-nav-icon bi bi-wallet2"></i> ' . __('Petty Cash') . '', [
                 'route' => 'pettycash.index',
                 'class' => 'nav-item',
             ])
@@ -2629,7 +2647,7 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link',
                 ]);
 
-            $setting->add('<i class="c-sidebar-nav-icon bi bi-config"></i> ' . __('Webcam') . '', [
+            $setting->add('<i class="c-sidebar-nav-icon bi bi-camera-video"></i> ' . __('Webcam') . '', [
                 'route' => 'webcam.index',
                 'class' => 'nav-item',
             ])
@@ -2699,7 +2717,7 @@ class GenerateMenus
 
 
             // Access Control Dropdown
-            $accessControl = $menu->add('<i class="c-sidebar-nav-icon cil-people"></i>' . __('Users Management') . '', [
+            $accessControl = $menu->add('<i class="c-sidebar-nav-icon bi bi-people-fill"></i>' . __('Users Management') . '', [
                 'class' => 'c-sidebar-nav-dropdown',
             ])
                 ->data([
@@ -2715,9 +2733,9 @@ class GenerateMenus
                 'href'  => '#',
             ]);
 
-            // Submenu: Users
+            // Submenu: Userss
 
-            $accessControl->add('<i class="c-sidebar-nav-icon cil-people"></i> ' . __('Users') . '', [
+            $accessControl->add('<i class="c-sidebar-nav-icon bi bi-person-lines-fill"></i> ' . __('Users') . '', [
                 'route' => 'users.index',
                 'class' => 'nav-item',
             ])
@@ -2730,7 +2748,7 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link',
                 ]);
 
-            $accessControl->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Roles') . '', [
+            $accessControl->add('<i class="c-sidebar-nav-icon  bi bi-shield-lock text-sm"></i> ' . __('Roles') . '', [
                 'route' => 'roles.index',
                 'class' => 'nav-item',
             ])
@@ -2745,7 +2763,7 @@ class GenerateMenus
 
 
             // UserCabangs
-            $accessControl->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('User Cabang'), [
+            $accessControl->add('<i class="c-sidebar-nav-icon  bi bi-building text-sm"></i> ' . __('User Cabang'), [
                 'route' => 'usercabang.index',
                 'class' => 'nav-item',
             ])
@@ -2759,7 +2777,7 @@ class GenerateMenus
                 ]);
 
             // UserLogins
-            $accessControl->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('User Login'), [
+            $accessControl->add('<i class="c-sidebar-nav-icon  bi bi-box-arrow-in-right text-sm"></i> ' . __('User Login'), [
                 'route' => 'userlogin.index',
                 'class' => 'nav-item',
             ])

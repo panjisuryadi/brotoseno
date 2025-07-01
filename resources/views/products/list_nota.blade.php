@@ -53,21 +53,16 @@
                         <table id="datatable" style="width: 100%" class="table table-bordered table-hover table-responsive-sm">
                             <thead>
                                 <tr>
-                                    <th style="width: 5%!important;">NO</th>
-                                    <th style="width: 15%!important;">Image</th>
-                                    <th style="width: 15%!important;">Product</th>
+                                    <th style="width: 4%!important;">NO</th>
+                                    <th style="width: 11%!important;">Image</th>
+                                    <th style="width: 10%!important;">Product</th>
                                     <th style="width: 10%!important;">Baki</th>
-                                    <!-- <th style="width: 15%!important;" class="text-center">Harga Beli</th> -->
-                                    <th style="width: 10%!important;" class="text-center">Berat</th>
-                                    <th style="width: 15%!important;" class="text-center">Code</th>
-                                    <th style="width: 10%!important;" class="text-center">QR</th>
-                                    <th style="width: 15%!important;" class="text-center">Keterangan</th>
-                                    <th style="width: 15%!important;" class="text-center">Date</th>
-                                    <th style="width: 15%!important;" class="text-center">#</th>
-
-                 <!-- <th style="width: 18%!important;" class="text-center">
-                                        Action
-                                    </th> -->
+                                    <th style="width: 6%!important;" class="text-center">Berat</th>
+                                    <th style="width: 12%!important;" class="text-center">Karat</th>
+                                    <th style="width: 8%!important;" class="text-center">QR</th>
+                                    <th style="width: 8%!important;" class="text-center">Status</th>
+                                    <th style="width: 11%!important;" class="text-center">Date</th>
+                                    <th style="width: 11%!important;" class="text-center">#</th>
                                 </tr>
                             </thead>
                         </table>
@@ -83,7 +78,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title text-lg font-bold" id="addModalLabel">Add Product Satuan</h3>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -247,6 +242,26 @@
                                             </div> -->
                                         </div>
 
+                                        <div class="form-group">
+                                            <?php
+                                            $field_name = 'new_product.baki_id';
+                                            $field_id   = 'baki_id_'.$number;
+                                            $field_lable = label_case('Baki');
+                                            $field_placeholder = $field_lable;
+                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                            $required = "required";
+                                            ?>
+                                            <label for="{{ $field_name }}">Baki</label>
+                                            <select name="{{ $field_name }}" id="{{ $field_id }}" class="form-control">
+                                                <option value="">Select Baki</option>
+                                                @foreach($baki as $b)
+                                                <option value="{{$b->id}}">{{$b->posisi}} - {{$b->name}}</option>
+                                                @endforeach
+                                            </select>
+                                            <!-- <div class="input-group">
+                                            </div> -->
+                                        </div>
+
                                     </div>
 
                                     {{-- ///batas --}}
@@ -374,17 +389,22 @@
             name: 'berat_emas'
         },
         {
-            data: 'code',
-            name: 'code'
+            data: 'karat',
+            name: 'karat'
         },
         {
             data: 'qr',
             name: 'qr'
         },
         {
-            data: 'keterangan',
-            name: 'keterangan'
+            data: 'status',
+            name: 'status'
         },
+        
+        // {
+        //     data: 'keterangan',
+        //     name: 'keterangan'
+        // },
         {
             data: 'created_at',
             name: 'created_at'

@@ -87,7 +87,7 @@ body {
                         <div class="header">
                         <img src="./storage/uploads/logo.png" alt="Logo">
 <!-- <img src="logo.png" alt="Logo"> Replace with your actual logo -->
-                            <h2>Toko Emas Lovin Cahaya</h2>
+                            <h2>{{$toko}}</h2>
                             <p>{{ $alamat }}</p>
                             <p>Telp: {{ $telp }}</p>
                         </div>
@@ -161,6 +161,10 @@ body {
             <div class="modal-body p-4">
                 <form action="/config/update" method="post">
                     @csrf
+                    <div class="form-group">
+                        <label for="">Toko</label>
+                        <textarea name="toko" id="toko" class="form-control">{{ $toko }}</textarea>
+                    </div>
                     <div class="form-group">
                         <label for="">Alamat</label>
                         <textarea name="alamat" id="alamat" class="form-control">{{ $alamat }}</textarea>

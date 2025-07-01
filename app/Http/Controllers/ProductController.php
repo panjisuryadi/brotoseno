@@ -204,7 +204,17 @@ class ProductController extends Controller
         // $gambar = 'products_20250522095614.png';
 
         $berat  = str_replace(',', '.', $request->new_product_berat);
-
+        $stat   = 4; // pending
+        $baki_id    = $request->new_product_baki_id;
+        if(!empty($baki_id)){
+            $baki   = Baki::where('id', $baki_id)->first();
+            $posisi = $baki->posisi;
+            if($posisi == 'etalase'){
+                $stat   = 1;
+            }
+        }else{
+            $baki_id    = 0;
+        }
         $product    = Product::create([
             'category_id'       => $request->new_product_category_id,
             'product_code'       => $request->new_product_code_id,
@@ -214,10 +224,11 @@ class ProductController extends Controller
             'product_unit'       => 'Gram',
             'karat_id'       => $request->new_product_karat_id,
             'product_stock_alert'       => 5,
-            'status'       => 4, // brankas
+            'status'       => $stat, // brankas
             'images'       => $gambar,
             'berat_emas'       => $berat,
-            'status_id'       => 4, // brankas
+            'baki_id'       => $baki_id,
+            'status_id'       => $stat, // brankas
             'group_id'       => $request->new_product_group_id,
             'model_id'       => $request->new_product_model_id,
             'goodreceipt_item_id' => 0,
@@ -324,8 +335,19 @@ class ProductController extends Controller
         $products->save();
         // INSERT HISTORY
         $stat[1] = 'O';
-        $stat[8] = 'R';
         $stat[2] = 'S';
+        $stat[3] = 'P';
+        $stat[4] = 'B';
+        $stat[5] = 'C';
+        $stat[6] = 'M';
+        $stat[7] = 'K';
+        $stat[8] = 'R';
+        $stat[9] = '2';
+        $stat[10] = 'L';
+        $stat[11] = 'D';
+        $stat[12] = 'W';
+        $stat[13] = 'F';
+        $stat[14] = 'N';
         $stat[15] = 'H';
         // $stat[1] = 'L';
         $product_history = ProductHistories::create([
@@ -339,20 +361,29 @@ class ProductController extends Controller
         return redirect()->action([ProductController::class, 'list_all']);
     }
 
-    public function update_status(Request $request)
-    {
-        // echo json_encode($_POST);
-        // exit();
+    public function update_lebur(Request $request){
         $id = $request->id;
         $product = $request->product;
         // UPDATE STATUS PRODUCT
         $products   = Product::where('id', $id)->firstOrFail();
+        $products->status_id   = $request->status;
         $products->status   = $request->status;
         $products->save();
         // INSERT HISTORY
         $stat[1] = 'O';
-        $stat[8] = 'R';
         $stat[2] = 'S';
+        $stat[3] = 'P';
+        $stat[4] = 'B';
+        $stat[5] = 'C';
+        $stat[6] = 'M';
+        $stat[7] = 'K';
+        $stat[8] = 'R';
+        $stat[9] = '2';
+        $stat[10] = 'L';
+        $stat[11] = 'D';
+        $stat[12] = 'W';
+        $stat[13] = 'F';
+        $stat[14] = 'N';
         $stat[15] = 'H';
         // $stat[1] = 'L';
         $product_history = ProductHistories::create([
@@ -363,7 +394,55 @@ class ProductController extends Controller
             'tanggal'       => date('Y-m-d'),
         ]);
 
-        return redirect()->action([ProductController::class, 'list_'.$product]);
+        return redirect()->action([ProductController::class, 'list_lebur']);
+    }
+
+    public function update_status(Request $request)
+    {
+        // echo json_encode($_POST);
+        // exit();
+        $id = $request->id;
+        $product = $request->product;
+        // UPDATE STATUS PRODUCT
+        $products   = Product::where('id', $id)->firstOrFail();
+        $products->status_id   = $request->status;
+        if($request->status == 15){ // lebur
+            
+        }
+        elseif($request->status == 1){
+            $products->baki_id   = $request->baki;
+            $products->status   = $request->status;
+        }
+        else{
+            $products->status   = $request->status;
+        }
+        $products->save();
+        // INSERT HISTORY
+        $stat[1] = 'O';
+        $stat[2] = 'S';
+        $stat[3] = 'P';
+        $stat[4] = 'B';
+        $stat[5] = 'C';
+        $stat[6] = 'M';
+        $stat[7] = 'K';
+        $stat[8] = 'R';
+        $stat[9] = '2';
+        $stat[10] = 'L';
+        $stat[11] = 'D';
+        $stat[12] = 'W';
+        $stat[13] = 'F';
+        $stat[14] = 'N';
+        $stat[15] = 'H';
+        // $stat[1] = 'L';
+        $product_history = ProductHistories::create([
+            'product_id'    => $id,
+            'status'        => $stat[$request->status],
+            'keterangan'    => 'update ',
+            'harga'         => $request->harga ?? 0,
+            'tanggal'       => date('Y-m-d'),
+        ]);
+
+        return redirect()->action([ProductController::class, 'list_nota']);
     }
 
     public function list_luar(Request $request)
@@ -447,7 +526,6 @@ class ProductController extends Controller
         $product_categories = Category::all();  // Assuming Supplier model is set up
         $groups = Group::all();  // Assuming Supplier model is set up
         $models = ProdukModel::all();  // Assuming Supplier model is set up
-        $dataKarat = Karat::whereNull('parent_id')->get();
         $hari_ini = new DateTime();
         $hari_ini = $hari_ini->format('Y-m-d');
         $isLogamMulia   = true;
@@ -460,7 +538,9 @@ class ProductController extends Controller
         $module_path = $this->module_path;
         $module_icon = $this->module_icon;
         $module_model = $this->module_model;
-        $dataKarat = Karat::whereNull('parent_id')->get();
+        $dataKarat = Karat::where('status', 'A')->whereNull('parent_id')->get();
+
+        $baki   = Baki::where('status', 'A')->latest()->get();
         return view(
             'products.list_nota', // Path to your create view file
             compact(
@@ -476,6 +556,7 @@ class ProductController extends Controller
                 'hari_ini',
                 // 'inputs',
                 'dataKarat',
+                'baki',
             )
         );
     }
@@ -871,6 +952,17 @@ class ProductController extends Controller
                 );
             })
 
+            ->addColumn('lebur', function ($data) {
+                $module_name = $this->module_name;
+                $module_model = $this->module_model;
+                $id = $data->status_id;
+                
+                return view(
+                    'product::products.partials.delete_lebur',
+                    compact('module_name', 'data', 'module_model')
+                );
+            })
+
             ->editColumn('product_name', function ($data) {
                 $tb = '<div class="flex items-center gap-x-2">
                         <div>
@@ -920,7 +1012,7 @@ class ProductController extends Controller
                 $tb = '<div class="items-center gap-x-2">
                                 <div class="text-sm text-center text-gray-500">
                                 <b>' . @$data->karat->label . ' </b><br>
-                                Rp .' . @rupiah($data->product_price) . ' <br>
+                                ' . @($data->berat_emas) . ' gr<br>
                                 </div>
                                 </div>';
                 return $tb;
@@ -1220,6 +1312,15 @@ class ProductController extends Controller
                 );
             })
 
+            ->addColumn('qr', function ($data) {
+                $module_name = $this->module_name;
+                $module_model = $this->module_model;
+                return view(
+                    'product::products.partials.qrcode_button',
+                    compact('module_name', 'data', 'module_model')
+                );
+            })
+
             ->editColumn('product_name', function ($data) {
                 $tb = '<div class="flex items-center gap-x-2">
                         <div>
@@ -1227,6 +1328,7 @@ class ProductController extends Controller
                             ' . $data->category?->category_name . '</div>
 
                             <h3 class="small font-medium text-gray-600 dark:text-white "> ' . $data->product_name . '</h3>
+                            <h3 class="small font-medium text-blue-600 dark:text-white "> ' . $data->product_code . '</h3>
                              <div class="text-xs font-normal text-blue-500 font-semibold">
                             ' . @$data->cabang->name . '</div>
 
@@ -1250,8 +1352,19 @@ class ProductController extends Controller
             })
 
             ->editColumn('code', function ($data) {
+                if(empty($data->temp_code)){
+                    return '';
+                }
                 return $data->product_code;
             })
+
+            ->editColumn('temp', function ($data) {
+                if(empty($data->temp_code)){
+                    return $data->product_code;
+                }
+                return $data->temp_code;
+            })
+
             ->editColumn('keterangan', function ($data) {
                 return $data->product_history->keterangan ?? '';
             })
@@ -1292,7 +1405,7 @@ class ProductController extends Controller
         $module_name_singular = Str::singular($module_name);
 
         $module_action = 'List';
-        $$module_name = $module_model::with('category', 'product_item', 'baki');
+        $$module_name = $module_model::with('category', 'product_item', 'baki', 'model', 'group');
         if ($request->get('status')) {
             $$module_name = $$module_name->where('status_id', $request->get('status'));
         }
@@ -1316,7 +1429,7 @@ class ProductController extends Controller
         });
         $data = $$module_name;
         // echo $data;
-
+        // exit();
         return Datatables::of($$module_name)
             ->addColumn('action', function ($data) {
                 $module_name = $this->module_name;
@@ -1330,9 +1443,24 @@ class ProductController extends Controller
             ->addColumn('delete', function ($data) {
                 $module_name = $this->module_name;
                 $module_model = $this->module_model;
+                $history    = ProductHistories::where('product_id', $data->id)->get();
+                $baki       = Baki::where('status', 'A')->get();
+                $invoice    = '';
+                if($data->is_nota == 1){
+                    $goodreceipt_item_id= $data->goodreceipt_item_id;
+                    $goodreceipt_item   = GoodsReceiptItem::where('id', $goodreceipt_item_id)->first();
+                    if($goodreceipt_item){
+                        $goodreceipt_id     = $goodreceipt_item->goodsreceipt_id;
+                        $goodreceipt        = GoodsReceipt::where('id', $goodreceipt_id)->first();
+                        if($goodreceipt){
+                            $no_invoice = $goodreceipt->no_invoice;
+                            $invoice    = ' - Invoice : '.$no_invoice;
+                        }
+                    }
+                }
                 return view(
                     'product::products.partials.delete',
-                    compact('module_name', 'data', 'module_model')
+                    compact('module_name', 'data', 'history', 'baki', 'invoice', 'module_model')
                 );
             })
 
@@ -1344,7 +1472,7 @@ class ProductController extends Controller
 
                             <h3 class="small font-medium text-gray-600 dark:text-white "> ' . $data->product_name . '</h3>
                              <div class="text-xs font-normal text-blue-500 font-semibold">
-                            ' . @$data->cabang->name . '</div>
+                            ' . @$data->product_code . '</div>
 
 
                         </div>
@@ -1377,18 +1505,43 @@ class ProductController extends Controller
             ->editColumn('baki', function ($data) {
                 return $data->baki->name ?? '-';
             })
+            ->editColumn('status', function ($data) {
+                $stat[0] = ['waiting', 'info'];
+                $stat[1] = ['ready', 'success'];
+                $stat[2] = ['sold', 'danger'];
+                $stat[3] = ['pending', 'warning'];
+                $stat[4] = ['brankas', 'info'];
+                $stat[5] = ['cuci', 'info'];
+                $stat[6] = ['masak/lebur', 'info'];
+                $stat[7] = ['rongsok', 'info'];
+                $stat[8] = ['reparasi', 'info'];
+                $stat[9] = ['second', 'info'];
+                $stat[10] = ['hilang', 'info'];
+                $stat[11] = ['draft', 'info'];
+                $stat[12] = ['perjalanan', 'info'];
+                $stat[13] = ['ready office', 'info'];
+                $stat[14] = ['dp', 'info'];
+                $stat[15] = ['removed', 'info'];
+                
+                return '<div class="text-sm text-center text-'.$stat[$data->status][1].'">
+                                <b>' . ucfirst(@$stat[$data->status][0]) . ' </b><br>
+                                </div>';
+            })
             ->editColumn('code', function ($data) {
                 return $data->product_code;
             })
+
             ->editColumn('keterangan', function ($data) {
                 return $data->product_history->keterangan ?? '';
+            })
+            ->editColumn('baki', function ($data) {
+                return $data->baki->name ?? '';
             })
 
             ->editColumn('karat', function ($data) {
                 $tb = '<div class="items-center gap-x-2">
                                 <div class="text-sm text-center text-gray-500">
                                 <b>' . @$data->karat->label . ' </b><br>
-                                Rp .' . @rupiah($data->product_price) . ' <br>
                                 </div>
                                 </div>';
                 return $tb;

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Webcam')
+@section('title', 'Buyback Persen')
 @section('third_party_stylesheets')
 <style>
 body {
@@ -61,7 +61,7 @@ body {
 @section('breadcrumb')
 <ol class="breadcrumb border-0 m-0">
     <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-    <li class="breadcrumb-item active">{{$module_title}}</li>
+    <li class="breadcrumb-item active">CC</li>
 </ol>
 @endsection
 @section('content')
@@ -72,22 +72,22 @@ body {
             <div class="card">
                 <div class="card-body">
                     <Strong>
-                    Webcam Aktif = {{$webcam->value}}
+                    Max Persen Potongan & Tambahan Buyback
                     </Strong>
-                    <div class="row mt-5">
-                        <div class="col-3">
-                            <a href="./webcam/update/0" class="btn btn-info">Webcam 0</a>
-                        </div>
-                        <div class="col-3">
-                            <a href="./webcam/update/1" class="btn btn-info">Webcam 1</a>
-                        </div>
-                        <div class="col-3">
-                            <a href="./webcam/update/2" class="btn btn-info">Webcam 2</a>
-                        </div>
-                        <div class="col-3">
-                            <a href="./webcam/update/3" class="btn btn-info">Webcam 3</a>
-                        </div>
-                    </div>
+                        <form class="form m-3" action="./buyback" method="post">
+                            @csrf
+                            <div class="form-group">
+                                <label for="">Potongan</label>
+                                <input type="text" name="potongan" id="potongan" value="{{$potongan}}" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="">Tambahan</label>
+                                <input type="text" name="tambahan" id="cc" value="{{$tambahan}}" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-success">Submit</button>
+                            </div>
+                        </form>
                 </div>
             </div>
         </div>

@@ -25,10 +25,7 @@ data-toggle="tooltip"
 </button>
 
 </div>
-
 @else
-
-
 <form action="{{ route('karats.delete', $data->id) }}" method="POST" style="display:inline;">
     @csrf
     @method('DELETE')

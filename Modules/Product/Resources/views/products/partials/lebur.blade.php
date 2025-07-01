@@ -29,7 +29,7 @@
                                             <input type="hidden" name="id" id="id">
                                             <select name="status" id="status" onchange="rubah_harga();" class="form-control" required>
                                                 <option value="1">Ready</option>
-                                                <option value="4">Pending Office</option>
+                                                <option value="3">Pending</option>
                                                 <option value="5">Cuci</option>
                                                 <option value="6">Masak</option>
                                                 <option value="8">Reparasi</option>

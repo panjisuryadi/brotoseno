@@ -75,13 +75,14 @@
                                     </th>
                                     <th style="width: 8%!important;" class="text-center">
                                         Margin
-                                    </th>
-                                    <!-- <th style="width: 8%!important;" class="text-center">
-                                        Harga Jual
-                                    </th>  -->
+                                    </th> 
                                     <th style="width: 8%!important;" class="text-center">
                                         Harga Jual
-                                    </th>
+                                    </th> 
+                                    
+                                    <th style="width: 8%!important;" class="text-center">
+                                        Harga Rounded
+                                    </th> 
                                     <th style="width: 10%!important;" class="text-center">
                                        {{__('Action')}}
                                     </th>
@@ -259,6 +260,10 @@
                 // {
                 //     data: 'rekomendasi',
                 //     name: 'rekomendasi'
+                // },
+                // {
+                //     data: 'asli',
+                //     name: 'asli'
                 // },
                 {
                     data: 'rounded',

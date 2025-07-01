@@ -237,8 +237,10 @@
                                         <th colspan="5" class="text-center">Tidak ada data</th>
                                     </tr>
                                     @php
-                                        $sisa_nominal -= $row->nominal;
-                                        $sisa_emas -= $row->jumlah_cicilan;
+                                        $row_nominal    = $row->nominal ?? 0;
+                                        $row_emas       = $row->jumlah_cicilan ?? 0;
+                                        $sisa_nominal -= $row_nominal;
+                                        $sisa_emas -= $row_emas;
                                     @endphp
                                     @endforelse
                                 </tbody>

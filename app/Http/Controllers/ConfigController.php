@@ -93,6 +93,7 @@ class ConfigController extends Controller
         $config = Config::where('name', 'nota')->first();
         $value   = $config->value;
         $val    = json_decode($value, true);
+        $toko = $val['toko'] ?? '';
         $alamat = $val['alamat'];
         $telp = $val['telp'];
         $info = $val['info'];
@@ -104,6 +105,7 @@ class ConfigController extends Controller
                 'module_path',
                 'module_icon',
                 'module_model',
+                'toko',
                 'alamat',
                 'telp',
                 'info',
@@ -111,7 +113,54 @@ class ConfigController extends Controller
         );
     }
 
+    public function cc() {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+
+        $cc = Config::where('name', 'cc')->first();
+        return view(
+            'config.cc', // Path to your create view file
+            compact(
+                'module_title',
+                'module_name',
+                'module_path',
+                'module_icon',
+                'module_model',
+                'cc',
+            )
+        );
+    }
+
+    public function buyback() {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+
+        $buyback = Config::where('name', 'buyback')->first();
+        $dec    = json_decode($buyback->value, true);
+        $potongan   = $dec['potongan'];
+        $tambahan   = $dec['tambahan'];
+        return view(
+            'config.buyback', // Path to your create view file
+            compact(
+                'module_title',
+                'module_name',
+                'module_path',
+                'module_icon',
+                'module_model',
+                'potongan',
+                'tambahan',
+            )
+        );
+    }
+
     public function insert(Request $request){
+        $value['toko'] = $request->toko;
         $value['alamat'] = $request->alamat;
         $value['telp'] = $request->telp;
         $value['info'] = $request->info;
@@ -124,6 +173,7 @@ class ConfigController extends Controller
     }
 
     public function update(Request $request){
+        $value['toko'] = $request->toko;
         $value['alamat'] = $request->alamat;
         $value['telp'] = $request->telp;
         $value['info'] = $request->info;
@@ -134,4 +184,23 @@ class ConfigController extends Controller
         
         return redirect()->action([ConfigController::class, 'list']);
     }
+
+    public function update_cc(Request $request){
+        $config = Config::where('name', 'cc')->firstOrFail();
+        $config->value = $request->cc;
+        $config->save();
+        
+        return redirect()->action([ConfigController::class, 'cc']);
+    }
+
+    public function update_buyback(Request $request){
+        $value['potongan'] = $request->potongan;
+        $value['tambahan'] = $request->tambahan;
+        $config = Config::where('name', 'buyback')->firstOrFail();
+        $config->value = json_encode($value);
+        $config->save();
+        
+        return redirect()->action([ConfigController::class, 'buyback']);
+    }
+
 }

@@ -34,6 +34,9 @@ use Modules\Product\Models\ProductStatus;
 use Yajra\DataTables\DataTables;
 use Modules\Karat\Models\Karat;
 use Modules\ProdukModel\Models\ProdukModel;
+use Modules\DataBank\Models\DataBank;
+use Modules\DataRekening\Models\DataRekening;
+
 
 class JualController extends Controller
 {
@@ -80,8 +83,12 @@ class JualController extends Controller
         $models  = ProdukModel::latest()->get();
         $customers = Customer::all();
         $product_categories = Category::all();
+        $cc = Config::where('name', 'cc')->first();
+        $bank   = DataBank::latest()->get();
+        $rekening   = DataRekening::latest()->get();
 
-        return view('sale.list', compact('product_categories', 'customers', 'karat', 'category', 'group', 'models'));
+
+        return view('sale.list', compact('product_categories', 'customers', 'karat', 'category', 'group', 'models', 'cc', 'bank', 'rekening'));
     }
 
     public function data_report(Request $request)
@@ -117,12 +124,76 @@ class JualController extends Controller
             $query->whereBetween('created_at', [$start, $end]);
         }
 
-        $data = $query->latest()->get();
-        // dd($data);
+        $sales = $query->latest()->get();
+        
+        $hargaEmas = Harga::latest()->first()->harga;
+        
+        $results = [];
 
+        foreach ($sales as $sale) {
+            $productIds = json_decode($sale->products);
 
+            if (!is_array($productIds)) continue;
+            
+            $products = Product::whereIn('id', $productIds)
+                ->with('category')
+                ->with('karats')
+                ->get();
+            
+            foreach ($products as $product) {
 
-        return Datatables::of($data)
+                // KOMPONEN UNTUK HARGA JUAL:
+                $coef = $product->karats->coef;
+                $persenMargin = $product->karats->persen;
+                $beratEmas = $product->berat_emas;
+                
+                // MEMBUAT HARGA JUAL PRODUK 
+                $hargaCoef = $coef * $hargaEmas;
+                $hargaJual = $hargaCoef + ($hargaCoef * ($persenMargin / 100));
+                $hargaTotalProduk = ceil($hargaJual * $beratEmas / 1000) * 1000;
+
+                // format angka rupiah
+                $formattedCash = 'Rp. ' . number_format($sale->cash, 0, ',', '.');
+                $formattedTransfer = 'Rp. ' . number_format($sale->transfer, 0, ',', '.');
+                $formattedEdc = 'Rp. ' . number_format($sale->edc, 0, ',', '.');
+                $formattedQr = 'Rp. ' . number_format($sale->qr, 0, ',', '.');
+                $formattedTotal = 'Rp. ' . number_format($sale->total, 0, ',', '.');
+                $formattedHargaTotalProduk = 'Rp. ' . number_format($hargaTotalProduk, 0, ',', '.');
+                $formattedRata2 = 'Rp. ' . number_format($hargaTotalProduk / $beratEmas, 0, ',', '.');
+
+                // format berat emas
+                $formattedBeratEmas = round($product->berat_emas, 2);
+
+                $results[] = [
+                    'id' => $sale->id,
+                    'nomor_transaksi' => $sale->nomor,
+                    'jam' => $sale->created_at->format('H:i'),
+                    'sales' => '-',
+                    'customer_name' => $sale->pelanggan->customer_name ?? '-',
+                    'category_code' => $product->category->category_code ?? '-',
+                    'product_name' => $product->product_name,
+                    'berat_emas' => $formattedBeratEmas,
+                    'karat' => $product->karats->name,
+                    // 'h_atr' => '-',
+                    'h_jual' => $formattedHargaTotalProduk,
+                    'ongkos' => '-',
+                    'total' => $formattedTotal,
+                    // 'dp' => '-',
+                    'cash' => $sale->cash ? $formattedCash : '-',
+                    'transfer' => $sale->transfer ? $formattedTransfer : '-',
+                    'edc' => $sale->edc ? $formattedEdc : '-',
+                    'qr' => $sale->qr ? $formattedQr : '-',
+                    // 'tukar' => '-',
+                    // 'tkr_krg' => '-',
+                    // 'btl_jual' => '-',
+                    'rata_rata' => $formattedRata2,
+                    'keterangan' => '-',
+                ];
+            }
+        }
+
+        return Datatables::of($results)
+        // COMMENT DULU
             ->addColumn('action', function ($data) {
                 $module_name = $this->module_name;
                 $module_model = $this->module_model;
@@ -152,40 +223,44 @@ class JualController extends Controller
             //     return '<img src="'.$url.'" border="0" width="50" class="img-thumbnail" align="center"/>';
             // })
 
-            ->editColumn('customer', function ($data) {
-                return $data->pelanggan->customer_name ?? '-';
-            })
+            // COMMENT DULU
+            // ->editColumn('customer', function ($data) {
+            //     return $data->pelanggan->customer_name ?? '-';
+            // })
 
-            ->editColumn('created_at', function ($data) {
-                return tgljam($data->created_at);
-            })
+            // COMMENT DULU
+            // ->editColumn('created_at', function ($data) {
+            //     return tgljam($data->created_at);
+            // })
 
-            ->editColumn('total', function ($data) {
-                return number_format($data->total);
-            })
+            // COMMENT DULU
+            // ->editColumn('total', function ($data) {
+            //     return number_format($data->total);
+            // })
 
             // ->editColumn('berat_emas', function ($data) {
             //     return $data->berat_emas ?? '-';
             // })
 
-            ->editColumn('berat_emas', function ($data) {
-                $totalBerat = 0;
+            // COMMENT DULU
+            // ->editColumn('berat_emas', function ($data) {
+            //     $totalBerat = 0;
 
-                // Pastikan products adalah JSON string atau array
-                $productIds = is_string($data->products)
-                    ? json_decode($data->products, true)
-                    : $data->products;
+            //     // Pastikan products adalah JSON string atau array
+            //     $productIds = is_string($data->products)
+            //         ? json_decode($data->products, true)
+            //         : $data->products;
 
-                if (is_array($productIds)) {
-                    $products = Product::whereIn('id', $productIds)->get();
+            //     if (is_array($productIds)) {
+            //         $products = Product::whereIn('id', $productIds)->get();
 
-                    foreach ($products as $product) {
-                        $totalBerat += $product->berat_emas;
-                    }
-                }
+            //         foreach ($products as $product) {
+            //             $totalBerat += $product->berat_emas;
+            //         }
+            //     }
 
-                return $totalBerat > 0 ? number_format($totalBerat, 2) . ' gr' : '-';
-            })
+            //     return $totalBerat > 0 ? number_format($totalBerat, 2) . ' gr' : '-';
+            // })
 
 
             ->rawColumns([
@@ -196,7 +271,7 @@ class JualController extends Controller
         }
 
     public function laporan(Request $request){
-
+        
         // dd($request->all());
         if(AdjustmentSetting::exists()){
             toast('Stock Opname sedang Aktif!', 'error');
@@ -226,6 +301,8 @@ class JualController extends Controller
             $models  = ProdukModel::whereBetween('created_at', [$startDate, $endDate])->latest()->get();
             $customers = Customer::whereBetween('created_at', [$startDate, $endDate])->get();
             $product_categories = Category::whereBetween('created_at', [$startDate, $endDate])->get();
+            // JUMLAH PELANGGAN BERDASARKAN RENTANG WAKTU (card biru)
+            $totalCustomer = SalesGold::whereBetween('created_at', [$startDate, $endDate])->count();
         } else {
             $karat  = Karat::latest()->get();
             $category  = Category::latest()->get();
@@ -233,6 +310,8 @@ class JualController extends Controller
             $models  = ProdukModel::latest()->get();
             $customers = Customer::all();
             $product_categories = Category::all();
+            // JUMLAH PELANGGAN HARI INI (card biru)
+            $totalCustomer = SalesGold::whereDate('created_at', Carbon::today())->count();
         }
 
 
@@ -241,23 +320,6 @@ class JualController extends Controller
         $module_title   = $this->module_title;
 
         // ///// start data pada card
-        // $todayDate = Carbon::today(); // hari ini
-        // $todaySalesGold = SalesGold::whereDate('created_at', $todayDate)->get(); // data penjualan hari ini
-
-
-        // dd($karat);
-
-        if($request->resetFilter) {
-            $startDate = Carbon::today()->toDateString();
-            $endDate = Carbon::today()->toDateString();
-        }
-
-        // if ($startDate !== Carbon::today()->toDateString()  && $endDate !== Carbon::today()->toDateString()) {
-        //     dd($startDate, $endDate);
-        // }
-
-        // dd($startDate, $endDate);
-
         $todaySalesGold = SalesGold::whereDate('created_at', '>=', $startDate)
         ->whereDate('created_at', '<=', $endDate)
         ->get();
@@ -268,6 +330,9 @@ class JualController extends Controller
         foreach ($todaySalesGold as $data) {
             $totalGoldSales = $totalGoldSales + $data->total;
         }
+
+        // format totalGoldSales
+        $formattedTotalGoldSales = 'Rp. ' . number_format($totalGoldSales, 0, ',', '.');
 
         // 2. TOTAL BERAT PENJUALAN HARI INI (card kuning)
         // 3. TOTAL KUANTITAS PENJUALAN HARI INI (card hijau)
@@ -284,21 +349,8 @@ class JualController extends Controller
             }
         }
 
-        // dd(Product::where('id', $product_id)->first()->berat_emas);
         $totalGoldQuantity = count($allProducts); // menghitung total semua product / emas (berdasarkan product_id)
-        // 4. JUMLAH PELANGGAN HARI INI (card biru)
-        // $totalCustomer = SalesGold::whereDate('created_at', $todayDate)->count();
-        // total sementara 17 juni 2025 = Rp. 11.252.326
-        // total berat emas sementara = 8,44
-        // total item sementara = 5
-        // jumlah pelanggan sementara = 4
-        /// end data pada card
 
-        $totalCustomer = SalesGold::whereBetween('created_at', [$startDate, $endDate])
-        ->distinct('id')
-        ->count('id');
-
-        // dd(1);
         return view(
             'sale.report', compact(
                 'module_title',
@@ -308,11 +360,10 @@ class JualController extends Controller
                 'category',
                 'group',
                 'models',
-                'totalGoldSales',
+                'formattedTotalGoldSales',
                 'totalGoldWeight',
                 'totalGoldQuantity',
                 'totalCustomer',
-                // 'todayDate',
             )
         );
     }
@@ -583,11 +634,14 @@ class JualController extends Controller
     public function insert(Request $request){
         // echo json_encode($_POST);
         // exit();
+
+
         $set_harga  = Harga::latest()->first();
         $set_harga  = $set_harga->harga;
         $config = Config::where('name', 'nota')->first();
         $value   = $config->value;
         $val    = json_decode($value, true);
+        $toko = $val['toko'];
         $alamat = $val['alamat'];
         $telp = $val['telp'];
         $info = $val['info'];
@@ -643,12 +697,17 @@ class JualController extends Controller
                 $nomor  = '0'.$nomor;
             }
         }
-
+        $nomor  = 'INV-LUV-'.date('ymd').rand(100, 999);
         if($lanjut){
             $cash       = $request->hidden_cash;
             $edc        = $request->hidden_edc;
             $transfer   = $request->hidden_transfer;
-            $sum        = $cash+$edc+$transfer;
+            $qr         = $request->hidden_qr;
+            $cc         = $request->hidden_muncul_cc;
+            $cc_up      = $request->hidden_cc;
+            $bank       = $request->hidden_bank;
+            $rekening   = $request->hidden_rekening;
+            $sum        = $cash+$edc+$transfer+$qr+$cc;
             // echo json_encode($_POST);
             // echo $request->customer;
             // echo $request->nominal_cash;
@@ -668,6 +727,11 @@ class JualController extends Controller
                 'cash' => $cash,
                 'edc' => $edc,
                 'transfer' => $transfer,
+                'qr' => $qr,
+                'cc' => $cc,
+                'cc_up' => $cc_up,
+                'bank_id' => $bank,
+                'rekening_id' => $rekening,
             ]);
             $id = $salesGold->id;
         }
@@ -759,6 +823,8 @@ class JualController extends Controller
                     $salesNomor  = '0'.$salesNomor;
                 }
             }
+            $salesNomor = 'INV-LUV-'.date('ymd').rand(100, 999);
+            $salesNomor = $nomor;
             if($lanjut){
                 $salesItem  = SalesItem::create([
                     'sales_gold_id'     => $id,
@@ -772,6 +838,9 @@ class JualController extends Controller
                     'total_real'     => $total_real,
                 ]);
                 $sales_id   = $salesItem->id;
+            }else{
+                $salesNomor = SalesItem::where('product', $p)->orderBy('created_at', 'desc')->first();
+                $salesNomor = $salesNomor->nomor;
             }
 
             // for ($i=0; $i < 8; $i++) {
@@ -791,6 +860,7 @@ class JualController extends Controller
             $array['products'][$number]['nomor'] = $salesNomor;
             $array['products'][$number]['sales_id'] = $salesNomor;
             // $array['products'][$number]['sales_id'] = $sales_id;
+            $array['products'][$number]['toko'] = $toko;
             $array['products'][$number]['alamat'] = $alamat;
             $array['products'][$number]['telp'] = $telp;
             $array['products'][$number]['info'] = $info;
@@ -927,7 +997,9 @@ class JualController extends Controller
                 $persen = isset($data->karat->persen) ? $data->karat->persen : 0;
                 $harga  = isset($data->harga) ? $data->harga : 0;
                 $berat  = isset($data->berat_emas) ? $data->berat_emas : 0;
-                $price  = ($coef*$harga*$berat)+($coef*$harga*$berat*$persen/100);
+                $har    = ceil($coef*$harga*1000)/1000;
+                $har    = $har*$berat;
+                $price  = ($har)+($har*$persen/100);
                 $price  = ceil($price/1000);
                 $price  = $price*1000;
                 $tb = '<div class="items-center gap-x-2">

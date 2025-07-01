@@ -15,11 +15,13 @@ use Modules\Product\Entities\Product;
 use Modules\Product\Entities\ProductItem;
 use Modules\ProdukModel\Models\ProdukModel;
 use Modules\GoodsReceipt\Models\GoodsReceipt;
+use Modules\GoodsReceipt\Models\GoodsReceiptInstallment;
 use Modules\KategoriProduk\Models\KategoriProduk;
 use Modules\GoodsReceipt\Models\TipePembelian;
 use Modules\GoodsReceipt\Models\GoodsReceiptItem;
 use Modules\Stok\Models\StockOffice;
 use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\Storage;
 
 class GoodReceiptController extends Controller
 {
@@ -64,7 +66,7 @@ class GoodReceiptController extends Controller
         }
         $last_po    = 'PO-'.$last_po;
         $dataSupplier = Supplier::all();  // Assuming Supplier model is set up
-        $dataKarat = Karat::whereNull('parent_id')->get();
+        $dataKarat = Karat::where('status', 'A')->whereNull('parent_id')->get();
         $hari_ini = new DateTime();
         $hari_ini = $hari_ini->format('Y-m-d');
         $inputs = [
@@ -158,13 +160,22 @@ class GoodReceiptController extends Controller
         ]);
 
         if ($tipe_pembayaran->isCicil()) {
-            foreach ($input['detail_cicilan'] as $key => $value) {
-                GoodsReceiptInstallment::create([
-                    'payment_id' => $tipe_pembayaran->id,
-                    'nomor_cicilan' => $key,
-                    'tanggal_cicilan' => $input['detail_cicilan'][$key]
-                ]);
+            for ($i=1; $i < 4; $i++) { 
+                if(isset($input['detail_cicilan_'.$i])){
+                    GoodsReceiptInstallment::create([
+                        'payment_id' => $tipe_pembayaran->id,
+                        'nomor_cicilan' => $i,
+                        'tanggal_cicilan' => $input['detail_cicilan_'.$i]
+                    ]);
+                }
             }
+            // foreach ($input['detail_cicilan'] as $key => $value) {
+            //     GoodsReceiptInstallment::create([
+            //         'payment_id' => $tipe_pembayaran->id,
+            //         'nomor_cicilan' => $key,
+            //         'tanggal_cicilan' => $input['detail_cicilan'][$key]
+            //     ]);
+            // }
         }
     }
 
@@ -445,6 +456,7 @@ class GoodReceiptController extends Controller
                 'product_unit'       => 'Gram',
                 'product_stock_alert'       => 5,
                 'status'       => 0,
+                'karat_id'       => $request->karat[$i],
                 'images'       => 'jpg',
                 'berat_emas'       => $request->total[$i],
                 'product_price'       => 0,
@@ -523,7 +535,7 @@ class GoodReceiptController extends Controller
             ];
         }
         $kategori_produk_id = KategoriProduk::whereSlug('gold')->value('id');
-        $input = $request->except('_token', 'document');
+        $input = $request->except('_token');
         // echo json_encode($input);
         $goodsreceipt = GoodsReceipt::create([
             'code'                       => $input['code'],
@@ -536,7 +548,7 @@ class GoodReceiptController extends Controller
             'user_id'                    => 1,
             // 'user_id'                    => $input['pic_id'],
             'total_berat_kotor'          => $input['total_berat_kotor'],
-            'total_bayar'                => $input['yang_harus_dibayar'],
+            'total_bayar'                => str_replace(',', '.', $input['yang_harus_dibayar']),
             'total_qty'                  => $input['total_qty'],
             'berat_timbangan'            => !empty($input['berat_timbangan']) ? $input['berat_timbangan'] : 0,
             'selisih'                    => $input['selisih'] ?? null,
@@ -547,8 +559,8 @@ class GoodReceiptController extends Controller
             'qty'                        => '8',
             'kategoriproduk_id'          => $kategori_produk_id,
             'pengirim'                   => $input['pengirim'],
-            'images'                     => 'jpg',
-            // 'images'                     => $this->getUploadedImage($input['image'], $input['uploaded_image'])
+            // 'images'                     => 'jpg',
+            'images'                     => $this->getUploadedImage($input['document'][0], $input['document'][0])
         ]);
         $goodsreceipt_id = $goodsreceipt->id;
         $this->_saveTipePembelian($input, $goodsreceipt_id);
@@ -562,6 +574,16 @@ class GoodReceiptController extends Controller
         $goodsreceipt   = GoodsReceipt::where('id', $id)->firstOrFail();
         $goodsreceipt->status = 0;
         $goodsreceipt->save();
+
+        $id = $goodsreceipt->id;
+        $goodReceiptItem    = GoodsReceiptItem::where('goodsreceipt_id', $id)->get();
+        foreach($goodReceiptItem as $g){
+            $good_id    = $g->id;
+            $product    = Product::where('goodreceipt_item_id', $good_id)->first();
+            $product->status_id = 3;
+            $product->status = 3;
+            $product->save();
+        }
         return redirect()->action([ProductController::class, 'list_pembelian']);
     }
 

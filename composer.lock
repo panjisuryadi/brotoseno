@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a13182af1c1d690d18026399138c911a",
+    "content-hash": "d2da6e8d326b81ef1ae5b2dd56be7710",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -2507,64 +2507,6 @@
             "time": "2022-05-21T17:30:32+00:00"
         },
         {
-            "name": "ixudra/curl",
-            "version": "6.22.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ixudra/curl.git",
-                "reference": "ac1844e9770995a493fd92b6b18b254b1636f2d0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ixudra/curl/zipball/ac1844e9770995a493fd92b6b18b254b1636f2d0",
-                "reference": "ac1844e9770995a493fd92b6b18b254b1636f2d0",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "illuminate/support": ">=4.0",
-                "php": ">=5.4.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Ixudra\\Curl\\CurlServiceProvider"
-                    ],
-                    "aliases": {
-                        "Curl": "Ixudra\\Curl\\Facades\\Curl"
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Ixudra\\Curl\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jan Oris",
-                    "email": "jan.oris@ixudra.be"
-                }
-            ],
-            "description": "Custom PHP Curl library for the Laravel framework - developed by Ixudra",
-            "homepage": "http://ixudra.be",
-            "keywords": [
-                "Ixudra",
-                "curl",
-                "laravel"
-            ],
-            "support": {
-                "issues": "https://github.com/ixudra/curl/issues",
-                "source": "https://github.com/ixudra/curl/tree/6.22.2"
-            },
-            "time": "2024-04-22T18:35:47+00:00"
-        },
-        {
             "name": "jaybizzle/crawler-detect",
             "version": "v1.2.118",
             "source": {
@@ -4773,61 +4715,6 @@
                 }
             ],
             "time": "2022-08-04T09:53:51+00:00"
-        },
-        {
-            "name": "n0izestr3am/license-client",
-            "version": "v1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/n0izestr3am/license-client.git",
-                "reference": "6533962279af99e0297c2fde766db2b31d509210"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/n0izestr3am/license-client/zipball/6533962279af99e0297c2fde766db2b31d509210",
-                "reference": "6533962279af99e0297c2fde766db2b31d509210",
-                "shasum": ""
-            },
-            "require": {
-                "ext-json": "*",
-                "ixudra/curl": "6.*",
-                "laravel/framework": "^6.0|^8.0",
-                "php": "^7.2|^8.0"
-            },
-            "type": "package",
-            "autoload": {
-                "psr-4": {
-                    "n0izestr3am\\LicenseClient\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Irfa A",
-                    "email": "irfa.backend@protonmail.com"
-                },
-                {
-                    "name": "n0izestr3am",
-                    "email": "n0izestr3am@gmail.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "\"License/Serial for web apllication\"",
-            "keywords": [
-                "laravel",
-                "license",
-                "security",
-                "serial",
-                "serial number"
-            ],
-            "support": {
-                "issues": "https://github.com/n0izestr3am/license-client/issues",
-                "source": "https://github.com/n0izestr3am/license-client/tree/1.0.0"
-            },
-            "time": "2023-07-28T09:33:50+00:00"
         },
         {
             "name": "nesbot/carbon",
@@ -9511,6 +9398,45 @@
             "time": "2023-12-08T13:03:43+00:00"
         },
         {
+            "name": "twbs/bootstrap-icons",
+            "version": "v1.13.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/twbs/icons.git",
+                "reference": "ab0d9f339463eebe55ba775acb049139864ad994"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/twbs/icons/zipball/ab0d9f339463eebe55ba775acb049139864ad994",
+                "reference": "ab0d9f339463eebe55ba775acb049139864ad994",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mark Otto",
+                    "email": "markdotto@gmail.com"
+                }
+            ],
+            "description": "Official open source SVG icon library for Bootstrap",
+            "homepage": "https://icons.getbootstrap.com/",
+            "keywords": [
+                "bootstrap",
+                "icon font",
+                "icons",
+                "svg"
+            ],
+            "support": {
+                "issues": "https://github.com/twbs/icons/issues",
+                "source": "https://github.com/twbs/icons/tree/v1.13.0"
+            },
+            "time": "2025-05-09T22:12:41+00:00"
+        },
+        {
             "name": "ua-parser/uap-php",
             "version": "v3.9.14",
             "source": {
@@ -12753,5 +12679,5 @@
         "php": "^7.3|^8.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }

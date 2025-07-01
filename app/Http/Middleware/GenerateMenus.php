@@ -2715,7 +2715,7 @@ class GenerateMenus
                 'href'  => '#',
             ]);
 
-            // Submenu: Users
+            // Submenu: Userss
 
             $accessControl->add('<i class="c-sidebar-nav-icon cil-people"></i> ' . __('Users') . '', [
                 'route' => 'users.index',

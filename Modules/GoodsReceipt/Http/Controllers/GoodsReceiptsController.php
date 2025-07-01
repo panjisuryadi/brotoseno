@@ -228,142 +228,290 @@ class GoodsReceiptsController extends Controller
 
 
     public function index_data(Request $request)
-
     {
-        $module_title = $this->module_title;
-        $module_name = $this->module_name;
-        $module_path = $this->module_path;
-        $module_icon = $this->module_icon;
-        $module_model = $this->module_model;
-        $module_name_singular = Str::singular($module_name);
+            $module_title = $this->module_title;
+            $module_name = $this->module_name;
+            $module_path = $this->module_path;
+            $module_icon = $this->module_icon;
+            $module_model = $this->module_model;
+            $module_name_singular = Str::singular($module_name);
 
-        $module_action = 'List';
+            $module_action = 'List';
 
-        // $$module_name = $module_model::active()->latest()->get();
-        $$module_name = $module_model::with('pembelian')->whereNull('kategoriproduk_id')->orWhere('kategoriproduk_id', 1)->latest()->get();
+            // $$module_name = $module_model::active()->latest()->get();
+            $$module_name = $module_model::with('pembelian')->whereNull('kategoriproduk_id')->orWhere('kategoriproduk_id', 1)->latest()->get();
 
-        $data = $$module_name;
+            $data = $$module_name;
 
-        return Datatables::of($$module_name)
-            ->addColumn('action', function ($data) {
-                $module_name = $this->module_name;
-                $module_model = $this->module_model;
-                $module_path = $this->module_path;
-                return view(
-                    '' . $module_name . '::' . $module_path . '.action',
-                    compact('module_name', 'data', 'module_model')
-                );
-            })
+            return Datatables::of($$module_name)
+                ->addColumn('action', function ($data) {
+                    $module_name = $this->module_name;
+                    $module_model = $this->module_model;
+                    $module_path = $this->module_path;
+                    return view(
+                        '' . $module_name . '::' . $module_path . '.action',
+                        compact('module_name', 'data', 'module_model')
+                    );
+                })
 
-            ->editColumn('image', function ($data) {
-                if ($data->images) {
-                    $url = asset(imageUrl() . @$data->images);
-                } else {
-                    $url = $data->getFirstMediaUrl('pembelian', 'thumb');
-                }
-                return '<img src="' . $url . '" border="0" width="50" class="img-thumbnail" align="center"/>';
-            })
-
-            ->editColumn('date', function ($data) {
-                $tb = '<div class="text-xs font-semibold">
-                                     ' . $data->code . '
-                                    </div>';
-                $tb .= '<div class="text-xs text-left">
-                                     ' . tanggal($data->date) . '
-                                    </div>';
-
-
-                return $tb;
-            })
-            ->editColumn('code', function ($data) {
-                $tb = '<div class="text-xs text-blue-500 font-semibold items-center text-center">
-                                     ' . $data->code . '
-                                    </div>';
-                return $tb;
-            })
-
-            ->editColumn('berat', function ($data) {
-                $tb = '<div class="text-xs">
-                                     Berat Kotor :' . $data->total_berat_kotor . '
-                                    </div>';
-                $tb .= '<div class="text-xs text-left">
-                                    Total Emas :' . $data->total_emas . '
-                                    </div>';
-                $tb .= '<div class="text-xs text-left">
-                                    Total Qty :' . $data->total_qty . '
-                                    </div>';
-                $tb .= '<div class="text-xs text-left">
-                                    Karat :' . $data->goodsreceiptitem->pluck('karat.label')->implode(', ') . '
-                                    </div>';
-                return $tb;
-            })
-
-
-            ->editColumn('harga', function ($data) {
-                $tb = '<div class="text-xs">
-                                    Gram : <span class="font-semibold">' . $data->selisih . '</span>
-                                    </div>';
-                $tb .= '<div class="text-xs text-left">
-                                      Nominal :<span class="font-semibold">' . number_format($data->selisih) . '</span>
-                                    </div>';
-                return $tb;
-            })
-
-            ->editColumn('pembayaran', function ($data) {
-                if ($data->pembelian->tipe_pembayaran == 'jatuh_tempo') {
-                    $info =  'Jatuh Tempo';
-                    $pembayaran =  tgljam(@$data->pembelian->jatuh_tempo);
-                    if (!empty(@$data->pembelian->lunas) && @$data->pembelian->lunas == 'lunas') {
-                        $info .= ' (Lunas) ';
+                ->editColumn('image', function ($data) {
+                    if ($data->images) {
+                        $url = asset(imageUrl() . @$data->images);
+                    } else {
+                        $url = $data->getFirstMediaUrl('pembelian', 'thumb');
                     }
-                } else if ($data->pembelian->tipe_pembayaran == 'cicil') {
-                    $info =  'Cicilan';
-                    $pembayaran =  @$data->pembelian->cicil . ' kali';
-                    if (!empty(@$data->pembelian->lunas) && @$data->pembelian->lunas == 'lunas') {
-                        $pembayaran .= ' (Lunas) ';
+                    return '<img src="' . $url . '" border="0" width="50" class="img-thumbnail" align="center"/>';
+                })
+
+                ->editColumn('date', function ($data) {
+                    $tb = '<div class="text-xs font-semibold">
+                                         ' . $data->code . '
+                                        </div>';
+                    $tb .= '<div class="text-xs text-left">
+                                         ' . tanggal($data->date) . '
+                                        </div>';
+
+
+                    return $tb;
+                })
+                ->editColumn('code', function ($data) {
+                    $tb = '<div class="text-xs text-blue-500 font-semibold items-center text-center">
+                                         ' . $data->code . '
+                                        </div>';
+                    return $tb;
+                })
+
+                ->editColumn('berat', function ($data) {
+                    $tb = '<div class="text-xs">
+                                         Berat Kotor :' . $data->total_berat_kotor . '
+                                        </div>';
+                    $tb .= '<div class="text-xs text-left">
+                                        Total Emas :' . $data->total_emas . '
+                                        </div>';
+                    $tb .= '<div class="text-xs text-left">
+                                        Total Qty :' . $data->total_qty . '
+                                        </div>';
+                    $tb .= '<div class="text-xs text-left">
+                                        Karat :' . $data->goodsreceiptitem->pluck('karat.label')->implode(', ') . '
+                                        </div>';
+                    return $tb;
+                })
+
+
+                ->editColumn('harga', function ($data) {
+                    $tb = '<div class="text-xs">
+                                        Gram : <span class="font-semibold">' . $data->selisih . '</span>
+                                        </div>';
+                    $tb .= '<div class="text-xs text-left">
+                                          Nominal :<span class="font-semibold">' . number_format($data->selisih) . '</span>
+                                        </div>';
+                    return $tb;
+                })
+
+                ->editColumn('pembayaran', function ($data) {
+                    if ($data->pembelian->tipe_pembayaran == 'jatuh_tempo') {
+                        $info =  'Jatuh Tempo';
+                        $pembayaran =  tgljam(@$data->pembelian->jatuh_tempo);
+                        if (!empty(@$data->pembelian->lunas) && @$data->pembelian->lunas == 'lunas') {
+                            $info .= ' (Lunas) ';
+                        }
+                    } else if ($data->pembelian->tipe_pembayaran == 'cicil') {
+                        $info =  'Cicilan';
+                        $pembayaran =  @$data->pembelian->cicil . ' kali';
+                        if (!empty(@$data->pembelian->lunas) && @$data->pembelian->lunas == 'lunas') {
+                            $pembayaran .= ' (Lunas) ';
+                        }
+                    } else {
+                        $info =  '';
+                        $pembayaran =  'Lunas';
                     }
-                } else {
-                    $info =  '';
-                    $pembayaran =  'Lunas';
-                }
-                $tb = '<div class="items-left text-left">
-                              <div class="small text-gray-800">' . $info . '</div>
-                              <div class="text-gray-800">' . $pembayaran . '</div>
-                              </div>';
-                return $tb;
-            })
+                    $tb = '<div class="items-left text-left">
+                                  <div class="small text-gray-800">' . $info . '</div>
+                                  <div class="text-gray-800">' . $pembayaran . '</div>
+                                  </div>';
+                    return $tb;
+                })
 
-            ->editColumn('supplier', function ($data) {
-                $tb = '<div class="items-left text-left">
-                                    <div>' . $data->supplier->supplier_name . '</div>
-                                    </div>';
-                return $tb;
-            })
+                ->editColumn('supplier', function ($data) {
+                    $tb = '<div class="items-left text-left">
+                                        <div>' . $data->supplier->supplier_name . '</div>
+                                        </div>';
+                    return $tb;
+                })
 
-            ->editColumn('updated_at', function ($data) {
-                $module_name = $this->module_name;
+                ->editColumn('updated_at', function ($data) {
+                    $module_name = $this->module_name;
 
-                $diff = Carbon::now()->diffInHours($data->updated_at);
-                if ($diff < 25) {
-                    return \Carbon\Carbon::parse($data->updated_at)->diffForHumans();
-                } else {
-                    return \Carbon\Carbon::parse($data->created_at)->isoFormat('L');
-                }
-            })
-            ->rawColumns([
-                'updated_at',
-                'date',
-                'action',
-                'code',
-                'berat',
-                'harga',
-                'image',
-                'pembayaran',
-                'supplier',
-                'detail',
-                'name'
-            ])
-            ->make(true);
+                    $diff = Carbon::now()->diffInHours($data->updated_at);
+                    if ($diff < 25) {
+                        return \Carbon\Carbon::parse($data->updated_at)->diffForHumans();
+                    } else {
+                        return \Carbon\Carbon::parse($data->created_at)->isoFormat('L');
+                    }
+                })
+                ->rawColumns([
+                    'updated_at',
+                    'date',
+                    'action',
+                    'code',
+                    'berat',
+                    'harga',
+                    'image',
+                    'pembayaran',
+                    'supplier',
+                    'detail',
+                    'name'
+                ])
+                ->make(true);
+
+
+                // // $$module_name = $module_model::active()->latest()->get();
+                // // $$module_name = $module_model::with(
+                // //     'pembelian',
+                // //     'user',
+                // //     'product',
+                // //     'goodsreceiptitem')
+                // // ->whereNull('kategoriproduk_id')
+                // // ->orWhere('kategoriproduk_id', 1)
+                // // ->latest()
+                // // ->get();
+
+                // $query = $module_model::with(['product'])
+                //   ->where(function($q){
+                //       $q->whereNull('kategoriproduk_id')
+                //         ->orWhere('kategoriproduk_id',1);
+                //   });
+
+                // $data = $$module_name;
+
+                // return Datatables::of($$module_name)
+                //     ->addColumn('action', function ($data) {
+                //         $module_name = $this->module_name;
+                //         $module_model = $this->module_model;
+                //         $module_path = $this->module_path;
+                //         return view(
+                //             '' . $module_name . '::' . $module_path . '.action',
+                //             compact('module_name', 'data', 'module_model')
+                //         );
+                //     })
+
+                    // ->editColumn('image', function ($data) {
+                    //     if ($data->images) {
+                    //         $url = asset(imageUrl() . @$data->images);
+                    //     } else {
+                    //         $url = $data->getFirstMediaUrl('pembelian', 'thumb');
+                    //     }
+                    //     return '<img src="' . $url . '" border="0" width="50" class="img-thumbnail" align="center"/>';
+                    // })
+                    // ->editColumn('no_fb', function ($data) {
+                    //     $tb = '<div class="text-xs">
+                    //                          CASH :( Rp. 1000.000)
+                    //             </div>';
+                    //     $tb .= '<div class="text-xs text-left">
+                    //                         KODE FB
+                    //             </div>';
+
+                    //     return $tb;
+                    // })
+
+
+                    // ->editColumn('no_fj', function ($data) {
+                    //     return '-';
+                    // })
+
+                    // ->editColumn('kd_intern', function ($data) {
+                    //     return '-';
+                    // })
+
+                    // ->editColumn('kd_sales', function ($data) {
+                    //     return 'WINDA';
+                    // })
+
+                    // ->editColumn('kd_member', function ($data) {
+                    //     return 'NONMEMBER';
+                    // })
+
+                    // ->editColumn('nama_member', function ($data) {
+                    //     $tb = '<div class="text-xs font-semibold">'.
+                    //                     (optional($data)->pengirim ?? '-') .
+                    //    '</div>';
+                    //     return $tb;
+                    // })
+
+                    // ->editColumn('nama_barang', function ($data) {
+                    //     $tb = '<div class="text-xs font-semibold">'.
+                    //                     (optional($data->goodsreceiptitem->first())->berat_kotor ?? '-') .
+                    //    '</div>';
+
+                    //     return $tb;
+                    // })
+
+                    // ->editColumn('kondisi', function ($data) {
+                    //     return 'ROSOK';
+                    // })
+
+                    // ->editColumn('kd_jenis', function ($data) {
+                    //     return 'CCPTJ';
+                    // })
+
+                    // ->editColumn('berat_nota', function ($data) {
+                    //     return '8.100';
+                    // })
+
+                    // ->editColumn('berat', function ($data) {
+                    //     $tb = '<div class="text-xs font-semibold">'.
+                    //    (optional($data->goodsreceiptitem->first())->berat_real ?? '-') .
+                    //                     // '8.100' .
+                    //    '</div>';
+
+                    //     return $tb;
+                    // })
+
+                    // ->editColumn('berat_atb', function ($data) {
+                    //     return '0.000';
+                    // })
+
+                    // ->editColumn('kadar', function ($data) {
+                    //     return '0';
+                    // })
+
+                    // ->editColumn('harga_nota', function ($data) {
+                    //     return '8,620,000';
+                    // })
+
+                    // ->editColumn('harga_beli', function ($data) {
+                    //     return '8,620,000';
+                    // })
+
+                    // ->editColumn('harga_rata', function ($data) {
+                    //     return '1,077,500';
+                    // })
+
+                    // ->editColumn('jam', function ($data) {
+                    //     return '8:00';
+                    // })
+
+                    // ->rawColumns([
+                    //     'action',
+                    //     'no_fb',
+                    //     'no_fj',
+                    //     'kd_intern',
+                    //     'kd_sales',
+                    //     'kd_member',
+                    //     'nama_member',
+                    //     'nama_barang',
+                    //     'kondisi',
+                    //     'kd_jenis',
+                    //     'berat_nota',
+                    //     'berat',
+                    //     'berat_atb',
+                    //     'kadar',
+                    //     'harga_nota',
+                    //     'harga_beli',
+                    //     'harga_rata',
+                    //     'jam'
+                    // ])->make(true);
+
     }
 
 
@@ -659,9 +807,9 @@ class GoodsReceiptsController extends Controller
 
             ->editColumn('status', function ($data) {
                 $tb = '<div class="font-semibold items-center text-center">
-                             
+
                                     ' . statusPo($data->status) . '
-                                      
+
                                     </div>';
                 return $tb;
             })
@@ -1077,7 +1225,7 @@ class GoodsReceiptsController extends Controller
         $module_icon = $this->module_icon;
         $module_model = $this->module_model;
         $module_model = $this->module_model;
-        $module_products = $this->module_products;
+        // $module_products = $this->module_products;
         $module_name_singular = Str::singular($module_name);
         $id_kategoriproduk_berlian = LookUp::where('kode', 'id_kategoriproduk_berlian')->value('value');
         $module_action = 'Show';

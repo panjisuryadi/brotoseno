@@ -1402,7 +1402,7 @@ class GenerateMenus
 
             // REPORT - PEMBELIAN
             $jual->add('<i class="c-sidebar-nav-icon bi-sliders"></i> ' . __('Purchase') . '', [
-                'route' => 'goodsreceipt.index',
+                'route' => 'pembelian.report',
                 'class' => 'nav-item',
             ])
                 ->data([

@@ -73,10 +73,10 @@
         <div class="col-12">
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                  
+
 
 <div class="flex flex-row grid grid-cols-3 gap-3 mb-2">
-    
+
 
               <div class="card border-0">
                     <div class="card-body p-0 d-flex align-items-center shadow-sm">
@@ -116,7 +116,7 @@
       <div class="card border-0">
                     <div class="card-body p-0 d-flex align-items-center shadow-sm">
                         <div class="bg-gradient-success p-4 mfe-3 rounded-left">
-                         
+
                             <i class="bi bi-currency-dollar font-2xl"></i>
                         </div>
                         <div>
@@ -198,12 +198,12 @@
                                     </div>
 
                                     @endif
-                                    
+
                                 </td>
                                 <td>
                                     @php
                                         $nominal = number_format(!empty( $data->nominal) ? $data->nominal : $data->harga_beli);
-                                        
+
                                     @endphp
                                     {{ !empty($nominal) ? 'Rp. ' . $nominal : formatBerat($data->jumlah_cicilan) . ' gr' }}
                                 </td>

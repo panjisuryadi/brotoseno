@@ -36,7 +36,6 @@
         "spatie/laravel-permission": "^4.2",
         "stevebauman/location": "^6.5",
         "symfony/console": "5.4.35",
-        "twbs/bootstrap-icons": "1.13",
         "yajra/laravel-datatables": "^1.5"
     },
     "require-dev": {

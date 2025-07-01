@@ -86,14 +86,14 @@ class ReportsController extends Controller
         // harga emas dari hargas
         // harga jual dari: 
         // - harga emas * coef karat = harga coef, 
-        // - harga coef * persen margin karat = harga margin
+        // - harga coef * (persen margin karat / 100) = harga margin
         // - harga coef + harga margin = harga jual, SELESAI.
 
         // harga emas sekarang
         $hargaEmas = Harga::latest()->first()->harga;
 
         // berisi coef dan berat emas
-        $coefWeightAndMargin = Karat::leftJoin('products', 'karats.id', '=', 'products.karat_id')
+        $coefWeightAndMargin = Product::leftJoin('karats', 'products.karat_id', '=', 'karats.id')
             ->where('products.status_id', 1)
             ->select('karats.coef', 'products.berat_emas', 'karats.persen')
             ->get();
@@ -111,20 +111,15 @@ class ReportsController extends Controller
             $persenMargin = $cwm->persen; // mengambil persen margin dari tiap karat
             $weight = $cwm->berat_emas; // mengambil berat emas dari tiap produk
 
-            // perhitungan harga jual
-            // $hargaCoef = $hargaEmas * $coef;
-            // $hargaMargin = $hargaCoef * $persenMargin;
-            // $hargaJual = $hargaCoef + $hargaMargin;
+            // nilaiAset = coef * berat * harga (IDR tanpa margin karat)
+            $nilaiAset += ($coef * $weight * $hargaEmas);
 
             // perhitungan harga jual
             $hargaCoef = $coef * $hargaEmas;
             $hargaJual = $hargaCoef + ($hargaCoef * ($persenMargin / 100));
             $hargaAkhirProduk = ceil($hargaJual * $weight / 1000) * 1000;
 
-            // nilaiAset = coef * berat * harga (IDR tanpa margin karat)
-            $nilaiAset += ($coef * $weight * $hargaEmas);
-
-            // potensiAset = coef * berat * harga jual (IDR dengan margin karat)
+            // potensiAset = harga jual * berat dari setiap produk (IDR dengan margin karat)
             $potensiAset += $hargaAkhirProduk;
         }
 
@@ -135,12 +130,12 @@ class ReportsController extends Controller
         $formattedPotensiAset = 'Rp. ' . number_format($potensiAset, 0, ',', '.');
 
         // total berat produk
-        $stockWeight = Karat::leftJoin('products', 'karats.id', '=', 'products.karat_id')
+        $stockWeight = Product::leftJoin('karats', 'products.karat_id', '=', 'karats.id')
             ->where('products.status_id', 1)
             ->sum('products.berat_emas');
 
         // total kuantitas produk
-        $stockQuantity = Karat::leftJoin('products', 'karats.id', '=', 'products.karat_id')
+        $stockQuantity = Product::leftJoin('karats', 'products.karat_id', '=', 'karats.id')
             ->where('products.status_id', 1)
             ->count('products.id');
 
@@ -157,7 +152,7 @@ class ReportsController extends Controller
     // data untuk table Laporan Stok pada halaman stock/report
     public function stockReportData(Request $request)
     {
-        $stockData = Karat::leftJoin('products', 'karats.id', '=', 'products.karat_id')
+        $stockData = Product::leftJoin('karats', 'products.karat_id', '=', 'karats.id')
             ->where('products.status_id', 1)
             ->select('karats.id', 'karats.name', DB::raw('SUM(products.berat_emas) as total_berat'), DB::raw('COUNT(products.id) as total_produk'))
             ->groupBy('karats.id', 'karats.name')

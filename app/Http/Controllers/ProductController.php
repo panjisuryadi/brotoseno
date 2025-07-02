@@ -146,22 +146,72 @@ class ProductController extends Controller
 
         $productItem    = ProductItem::create([
             'product_id'       => $product->id,
-            'berat_total'       => $request->new_product_total_weight,
-            'berat_emas'       => $request->new_product_gold_weight,
-            'berat_accessories'       => $request->new_product_accessories_weight,
+            // 'berat_total'       => $request->new_product_total_weight,
+            'berat_total'       => $request->new_product_berat,
+            // 'berat_emas'       => $request->new_product_gold_weight,
+            'berat_emas'       => $request->new_product_berat,
+            // 'berat_accessories'       => $request->new_product_accessories_weight,
+            'berat_accessories'       => 0,
             'tag_label'       => 0,
             'berat_label'       => 0,
         ]);
-
+        
+        $nota   = 'BL-LUV-'.date('ymd').rand(100, 999);
         $product_history = ProductHistories::create([
             'product_id'    => $product->id,
             'status'        => 'P',
-            'keterangan'    => $request->new_product_keterangan,
+            'keterangan'    => 'Nota BL : '.$nota.' | '.$request->new_product_keterangan,
             'harga'         => $request->new_product_harga,
             'tanggal'       => date('Y-m-d'),
         ]);
 
-        return redirect()->action([ProductController::class, 'list_luar']);
+        $luar   = array();
+        $luar['nota']   = $nota;
+        $luar['name']   = $product_name;
+        $luar['code']   = $request->new_product_code_id;
+        $luar['berat']   = $request->new_product_berat;
+        $luar['harga']   = $request->new_product_harga;
+
+        return view(
+            'products.struk', // Path to your create view file
+            compact(
+                'luar',
+            )
+        );
+
+        // return redirect()->action([ProductController::class, 'list_luar']);
+    }
+
+    public function print_struk($id)
+    {
+        $history = ProductHistories::where('product_id', $id)
+            ->where('keterangan', 'like', '%Nota BL%')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $harga      = $history->harga;
+        $nota       = $history->nota;
+        $explode    = explode(' | ', $nota);
+        $sub        = str_replace('Nota BL ', '', $explode[0]);
+
+        $product    = Product::where('id', $id)->first();
+        $berat      = $product->berat_emas;
+        $name       = $product->product_name;
+        $code       = $product->product_code;
+
+        $luar   = array();
+        $luar['nota']   = $sub;
+        $luar['name']   = $name;
+        $luar['code']   = $code;
+        $luar['berat']  = $berat;
+        $luar['harga']  = $harga;
+
+        return view(
+            'products.struk', // Path to your create view file
+            compact(
+                'luar',
+            )
+        );
     }
 
     public function insert_nota(Request $request)
@@ -1313,14 +1363,18 @@ class ProductController extends Controller
         // exit();
 
         return Datatables::of($$module_name)
+            // ->addColumn('action', function ($data) {
+            //     $module_name = $this->module_name;
+            //     $module_model = $this->module_model;
+            //     return view(
+            //         'product::products.partials.actions',
+            //         compact('module_name', 'data', 'module_model')
+            //     );
+            // })
             ->addColumn('action', function ($data) {
-                $module_name = $this->module_name;
-                $module_model = $this->module_model;
-                return view(
-                    'product::products.partials.actions',
-                    compact('module_name', 'data', 'module_model')
-                );
-            })
+                        return view('products.print',
+                        compact('data'));
+                            })
 
             ->addColumn('qr', function ($data) {
                 $module_name = $this->module_name;
@@ -1419,13 +1473,13 @@ class ProductController extends Controller
         if ($request->get('status')) {
             $$module_name = $$module_name->where('status_id', $request->get('status'));
         }
-        if($id == 1){ // with nota
-            $$module_name->where('is_nota', true)->get();
-        }
-        if($id == 2){ // without nota
-            $$module_name->where('is_nota', false)->get();
-        }
-        $$module_name->where('product_price', '=', 0)->get();
+        // if($id == 1){ // with nota
+        //     $$module_name->where('is_nota', true)->get();
+        // }
+        // if($id == 2){ // without nota
+        //     $$module_name->where('is_nota', false)->get();
+        // }
+        // $$module_name->where('product_price', '=', 0)->get();
         $harga = Harga::latest()->first();
         if($harga == null){
             $harga  = 0;

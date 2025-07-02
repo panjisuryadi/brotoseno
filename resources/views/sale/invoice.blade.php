@@ -221,12 +221,12 @@
             <img src="{{ $imageSrc }}" alt="Logo">
 
             <!-- Centered: Toko Emas Cahaya -->
-            <!-- <h3>{{ $product['toko'] }}</h3> -->
+          
             <h3>Toko Emas Lovin Cahaya</h3>
             <p>{{ $product['alamat'] }}</p>
             <p>{{ $product['telp'] }}</p>
         </div>
-
+  <!-- <h3>{{ $product['toko'] }}</h3> -->
         <!-- <div class="row">
             <div class="col-6">
                 <p>Hormat</p>

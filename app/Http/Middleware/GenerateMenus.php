@@ -1419,7 +1419,9 @@ class GenerateMenus
                 ]);
 
             // REPORT - PEMBELIAN
+
             $jual->add('<i class="c-sidebar-nav-icon bi-cart-check"></i> ' . __('Purchase') . '', [
+
                 'route' => 'pembelian.report',
                 'class' => 'nav-item',
             ])

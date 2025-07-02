@@ -6,8 +6,8 @@
 <link rel="stylesheet" href="{{ url('/') }}{{ mix('css/app.css') }}" crossorigin="anonymous">
 <!-- Bootstrap Icons -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-
-<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet"> 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.css" integrity="sha512-Woz+DqWYJ51bpVk5Fv0yES/edIMXjj3Ynda+KWTIkGoynAMHrqTcDUQltbipuiaD5ymEo9520lyoVOo9jCQOCA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
@@ -45,7 +45,7 @@ button:focus {
 /*dropdown aktif background*/
 .c-sidebar .c-sidebar-nav-dropdown.c-show {
     background: {{settings()->bg_dropdown_aktif}} !important;
-  
+
 }
 
 .hokkie {
@@ -60,12 +60,12 @@ button:focus {
 
    .border-jsr {
     border-color:{{settings()->btn_color}} !important;
-   
+
    }
 
 
 .c-header {
-   
+
      background: {{settings()->bg_header_top}} !important;
     border-bottom: 1px solid #d8dbe0;
 }
@@ -75,7 +75,7 @@ button:focus {
 
 .c-header .c-header-nav .c-header-nav-link, .c-header .c-header-nav .c-header-nav-btn {
     color: {{settings()->link_header_top}} !important;
-   
+
 }
 
 .c-header .c-header-toggler {
@@ -86,7 +86,7 @@ button:focus {
 
 .c-header .online {
     color: {{settings()->link_header_top}} !important;
-  
+
 }
 
 
@@ -267,25 +267,25 @@ button:focus {
 
 .text-jsr {
     color: #ee0086 !important;
-   
+
 }
 
 .table-sm td {
     padding: 0.3rem 0.5rem 0.3rem 0.5rem!important;
-   
+
      font-size: 0.8rem !important;
 }
 
 
 .table-sm th {
     padding: 0.5rem 0.3rem 0.5rem 0.3rem!important;
-   
+
      font-size: 0.8rem !important;
 }
 
 
 
-@media (max-width: 767.98px) { 
+@media (max-width: 767.98px) {
  .table-sm th,
  .table-sm td {
       padding: 0.3rem 0.5rem 0.3rem 0.5rem!important;

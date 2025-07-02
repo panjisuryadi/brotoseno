@@ -407,8 +407,13 @@ class ProductController extends Controller
         $products   = Product::where('id', $id)->firstOrFail();
         $products->status_id   = $request->status;
         if($request->status == 15){ // lebur
-
-        }else{
+            
+        }
+        elseif($request->status == 1){
+            $products->baki_id   = $request->baki;
+            $products->status   = $request->status;
+        }
+        else{
             $products->status   = $request->status;
         }
         $products->save();
@@ -432,12 +437,12 @@ class ProductController extends Controller
         $product_history = ProductHistories::create([
             'product_id'    => $id,
             'status'        => $stat[$request->status],
-            'keterangan'    => 'update dari '.$product,
+            'keterangan'    => 'update ',
             'harga'         => $request->harga ?? 0,
             'tanggal'       => date('Y-m-d'),
         ]);
 
-        return redirect()->action([ProductController::class, 'list_'.$product]);
+        return redirect()->action([ProductController::class, 'list_nota']);
     }
 
     public function list_luar(Request $request)
@@ -1439,9 +1444,23 @@ class ProductController extends Controller
                 $module_name = $this->module_name;
                 $module_model = $this->module_model;
                 $history    = ProductHistories::where('product_id', $data->id)->get();
+                $baki       = Baki::where('status', 'A')->get();
+                $invoice    = '';
+                if($data->is_nota == 1){
+                    $goodreceipt_item_id= $data->goodreceipt_item_id;
+                    $goodreceipt_item   = GoodsReceiptItem::where('id', $goodreceipt_item_id)->first();
+                    if($goodreceipt_item){
+                        $goodreceipt_id     = $goodreceipt_item->goodsreceipt_id;
+                        $goodreceipt        = GoodsReceipt::where('id', $goodreceipt_id)->first();
+                        if($goodreceipt){
+                            $no_invoice = $goodreceipt->no_invoice;
+                            $invoice    = ' - Invoice : '.$no_invoice;
+                        }
+                    }
+                }
                 return view(
                     'product::products.partials.delete',
-                    compact('module_name', 'data', 'history', 'module_model')
+                    compact('module_name', 'data', 'history', 'baki', 'invoice', 'module_model')
                 );
             })
 
@@ -1485,6 +1504,28 @@ class ProductController extends Controller
 
             ->editColumn('baki', function ($data) {
                 return $data->baki->name ?? '-';
+            })
+            ->editColumn('status', function ($data) {
+                $stat[0] = ['waiting', 'info'];
+                $stat[1] = ['ready', 'success'];
+                $stat[2] = ['sold', 'danger'];
+                $stat[3] = ['pending', 'warning'];
+                $stat[4] = ['brankas', 'info'];
+                $stat[5] = ['cuci', 'info'];
+                $stat[6] = ['masak/lebur', 'info'];
+                $stat[7] = ['rongsok', 'info'];
+                $stat[8] = ['reparasi', 'info'];
+                $stat[9] = ['second', 'info'];
+                $stat[10] = ['hilang', 'info'];
+                $stat[11] = ['draft', 'info'];
+                $stat[12] = ['perjalanan', 'info'];
+                $stat[13] = ['ready office', 'info'];
+                $stat[14] = ['dp', 'info'];
+                $stat[15] = ['removed', 'info'];
+                
+                return '<div class="text-sm text-center text-'.$stat[$data->status][1].'">
+                                <b>' . ucfirst(@$stat[$data->status][0]) . ' </b><br>
+                                </div>';
             })
             ->editColumn('code', function ($data) {
                 return $data->product_code;

@@ -54,21 +54,16 @@
                             <thead>
                                 <tr>
                                     <th style="width: 4%!important;">NO</th>
-                                    <th style="width: 15%!important;">Image</th>
-                                    <th style="width: 15%!important;">Product</th>
+                                    <th style="width: 11%!important;">Image</th>
+                                    <th style="width: 10%!important;">Product</th>
                                     <th style="width: 10%!important;">Baki</th>
-                                    <!-- <th style="width: 15%!important;" class="text-center">Harga Beli</th> -->
-                                    <th style="width: 10%!important;" class="text-center">Berat</th>
-                                    
-                                    <th style="width: 15%!important;" class="text-center">Code</th>
-                                    <th style="width: 10%!important;" class="text-center">QR</th>
-                                    <th style="width: 15%!important;" class="text-center">Keterangan</th>
-                                    <th style="width: 15%!important;" class="text-center">Date</th>
-                                    <th style="width: 15%!important;" class="text-center">#</th>
+                                    <th style="width: 6%!important;" class="text-center">Berat</th>
+                                    <th style="width: 12%!important;" class="text-center">Karat</th>
+                                    <th style="width: 8%!important;" class="text-center">QR</th>
+                                    <th style="width: 8%!important;" class="text-center">Status</th>
+                                    <th style="width: 11%!important;" class="text-center">Date</th>
+                                    <th style="width: 11%!important;" class="text-center">#</th>
 
-                 <!-- <th style="width: 18%!important;" class="text-center">
-                                        Action
-                                    </th> -->
                                 </tr>
                             </thead>
                         </table>
@@ -402,11 +397,15 @@
             data: 'qr',
             name: 'qr'
         },
-        
         {
-            data: 'keterangan',
-            name: 'keterangan'
+            data: 'status',
+            name: 'status'
         },
+        
+        // {
+        //     data: 'keterangan',
+        //     name: 'keterangan'
+        // },
         {
             data: 'created_at',
             name: 'created_at'

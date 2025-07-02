@@ -523,6 +523,7 @@ class JualController extends Controller
         $config = Config::where('name', 'nota')->first();
         $value  = $config->value;
         $val    = json_decode($value, true);
+        $toko = $val['toko'];
         $alamat = $val['alamat'];
         $telp   = $val['telp'];
         $info   = $val['info'];
@@ -574,6 +575,7 @@ class JualController extends Controller
             $array['products'][$number]['nomor'] = $salesNomor;
             $array['products'][$number]['sales_id'] = $salesNomor;
             // $array['products'][$number]['sales_id'] = $sales_id;
+            $array['products'][$number]['toko'] = $toko;
             $array['products'][$number]['alamat'] = $alamat;
             $array['products'][$number]['telp'] = $telp;
             $array['products'][$number]['info'] = $info;

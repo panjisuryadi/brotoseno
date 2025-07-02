@@ -442,6 +442,12 @@ class ProductController extends Controller
             'tanggal'       => date('Y-m-d'),
         ]);
 
+        if(isset($request->product)){
+            if($request->product == 'reparasi'){
+                return redirect()->action([ProductController::class, 'list_reparasi']);
+            }
+        }
+
         return redirect()->action([ProductController::class, 'list_nota']);
     }
 
@@ -938,6 +944,8 @@ class ProductController extends Controller
                 $module_name = $this->module_name;
                 $module_model = $this->module_model;
                 $id = $data->status_id;
+
+                $baki   = Baki::where('status', 'A')->get();
                 $stat[4] = 'gudang';
                 $stat[4] = 'gudang';
                 $stat[4] = 'gudang';
@@ -948,7 +956,7 @@ class ProductController extends Controller
                 $stat[8] = 'reparasi';
                 return view(
                     'product::products.partials.'.$stat[8],
-                    compact('module_name', 'data', 'module_model')
+                    compact('module_name', 'data', 'baki', 'module_model')
                 );
             })
 
@@ -1199,6 +1207,9 @@ class ProductController extends Controller
                            <div class="text-xs font-normal text-yellow-600 dark:text-gray-400">
                             ' . $data->category?->category_name . '</div>
 
+                            <div class="text-xs font-normal text-blue-600 dark:text-gray-400">
+                            ' . $data->product_code . '</div>
+
                             <h3 class="small font-medium text-gray-600 dark:text-white "> ' . $data->product_name . '</h3>
                              <div class="text-xs font-normal text-blue-500 font-semibold">
                             ' . @$data->cabang->name . '</div>
@@ -1234,7 +1245,6 @@ class ProductController extends Controller
                 $tb = '<div class="items-center gap-x-2">
                                 <div class="text-sm text-center text-gray-500">
                                 <b>' . @$data->karat->label . ' </b><br>
-                                Rp .' . @rupiah($data->product_price) . ' <br>
                                 </div>
                                 </div>';
                 return $tb;

@@ -51,25 +51,7 @@ table.dataTable>thead .sorting, table.dataTable>thead .sorting_asc, table.dataTa
                                     <th class="text-center">{{ __('Pembayaran') }}
                                     </th>
                                     <th style="width:23%!important;" class="text-center">{{ __('Action') }}
-                                        {{-- <th>Kode FB</th>
-                                        <th>Kode FJ</th>
-                                        <th>Kode Intern</th>
-                                        <th>Kode Sales</th>
-                                        <th>Kode Member</th>
-                                        <th>Nama Member</th>
-                                        <th>Nama Barang</th>
-                                        <th>Kondisi</th>
-                                        <th>Kode Jenis</th>
-                                        <th>Berat Nota</th>
-                                        <th>Berat</th>
-                                        <th>Berat ATB</th>
-                                        <th>Kadar</th>
-                                        <th>Harga Nota</th>
-                                        <th>Harga beli</th>
-                                        <th>Harga rata</th>
-                                        <th>Jam</th> --}}
                                     </th>
-
                                 </tr>
                             </thead>
                         </table>
@@ -168,25 +150,6 @@ table.dataTable>thead .sorting, table.dataTable>thead .sorting_asc, table.dataTa
                 {data: 'berat', name: 'berat'},
                 {data: 'supplier', name: 'supplier'},
                 {data: 'pembayaran', name: 'pembayaran'},
-
-                // { data: 'no_fb', name: 'no_fb' },
-                // { data: 'no_fj', name: 'no_fj' },
-                // { data: 'kd_intern', name: 'kd_intern' },
-                // { data: 'kd_sales', name: 'kd_sales' },
-                // { data: 'kd_member', name: 'kd_member' },
-                // { data: 'nama_member', name: 'nama_member' },
-                // { data: 'nama_barang', name: 'nama_barang' },
-                // { data: 'kondisi', name: 'kondisi' },
-                // { data: 'kd_jenis', name: 'kd_jenis' },
-                // { data: 'berat_nota', name: 'berat' },
-                // { data: 'berat', name: 'berat' },
-                // { data: 'berat_atb', name: 'berat_atb' },
-                // { data: 'kadar', name: 'kadar' },
-                // { data: 'harga_nota', name: 'harga_nota' },
-                // { data: 'harga_beli', name: 'harga_beli' },
-                // { data: 'harga_rata', name: 'harga_rata' },
-                // { data: 'jam', name: 'jam' },
-
 
                 {
                     data: 'action',

@@ -221,7 +221,8 @@
             <img src="{{ $imageSrc }}" alt="Logo">
 
             <!-- Centered: Toko Emas Cahaya -->
-            <h3>{{ $product['toko'] }}</h3>
+            <!-- <h3>{{ $product['toko'] }}</h3> -->
+            <h3>Toko Emas Lovin Cahaya</h3>
             <p>{{ $product['alamat'] }}</p>
             <p>{{ $product['telp'] }}</p>
         </div>
@@ -288,7 +289,9 @@
                 <!-- Left cell: Footer text -->
                 <td style="width: 50%; vertical-align: top; font-size: 11px; padding-right: 10px;">
                     <p style="margin: 0;">Hormat Kami,</p>
-                    <p style="margin: 0;">{{$product['toko']}}</p>
+                    <!-- <p style="margin: 0;">{{$product['toko']}}</p> -->
+                     <p style="margin: 0;">Toko Emas Lovin Cahaya</p>
+                    
                 </td>
                 <!-- Right cell: Totals -->
                 <td style="width: 50%; vertical-align: top; font-size: 11px; text-align: right; padding-left: 10px;">

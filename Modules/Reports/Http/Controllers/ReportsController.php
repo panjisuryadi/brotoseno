@@ -156,7 +156,12 @@ class ReportsController extends Controller
             ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
             ->where('products.status_id', 1)
             ->select('categories.category_code', 'karats.name', DB::raw('SUM(products.berat_emas) as total_berat'), DB::raw('COUNT(products.id) as total_produk'))
-            ->groupBy('products.category_id', 'products.karat_id')
+            ->groupBy(
+                'categories.category_code',
+                'karats.name',
+                'products.category_id',
+                'products.karat_id'
+            )
             ->orderBy('total_produk', 'desc'); // diurutakan berdasarkan stock dari yang paling tinggi
 
         return DataTables::of($stockData)

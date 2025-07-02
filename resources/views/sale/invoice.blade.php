@@ -289,7 +289,7 @@
                 <!-- Left cell: Footer text -->
                 <td style="width: 50%; vertical-align: top; font-size: 11px; padding-right: 10px;">
                     <p style="margin: 0;">Hormat Kami,</p>
-                    <!-- <p style="margin: 0;">{{$product['toko']}}</p> -->
+                  
                      <p style="margin: 0;">Toko Emas Lovin Cahaya</p>
                     
                 </td>

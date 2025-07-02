@@ -204,6 +204,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/product_history', 'HistoryProductsController@list')
         ->name('history_product.list');
 
+    Route::get('/products/struk/{id}', 'ProductController@print_struk')
+        ->name('product.print_struk');
+
     Route::get('/product_history_data', 'HistoryProductsController@product_data')
         ->name('history_product.product_data');
 

@@ -65,13 +65,14 @@
                                 <tr>
                                     <th style="width: 5%!important;">NO</th>
                                     <th style="width: 15%!important;">Image</th>
-                                    <th style="width: 15%!important;">Product</th>
-                                    <th style="width: 15%!important;" class="text-center">Harga Beli</th>
+                                    <th style="width: 10%!important;">Product</th>
+                                    <th style="width: 10%!important;" class="text-center">Harga Beli</th>
                                     <th style="width: 10%!important;" class="text-center">Berat</th>
                                     <th style="width: 15%!important;" class="text-center">Temp Code</th>
                                     <th style="width: 15%!important;" class="text-center">QR</th>
                                     <th style="width: 25%!important;" class="text-center">Keterangan</th>
                                     <th style="width: 15%!important;" class="text-center">Date</th>
+                                    <th style="width: 5%!important;" class="text-center">#</th>
                                     
                  <!-- <th style="width: 18%!important;" class="text-center">
                                         Action
@@ -96,7 +97,7 @@
                 </button>
             </div>
             <div class="modal-body p-4">
-                <form action="/products_insert_luar" method="post">
+                <form action="/products_insert_luar" target="_blank" method="post">
                     @csrf
                     <input type="hidden" name="webcam" id="hasilcapture">
                     <div class="px-0 py-2">
@@ -274,7 +275,7 @@
                                     {{-- ///batas --}}
                                     
                                 </div>
-                                <button class="btn btn-success">Submit</button>
+                                <button class="btn btn-success" onclick="return confirmAndReload();">Submit</button>
                 </form>
             </div>
         </div>
@@ -291,6 +292,18 @@
 <script src="{{  asset('js/jquery.min.js') }}"></script>
 
 <script type="text/javascript">
+    function confirmAndReload() {
+        if (confirm('Confirm Barang Luar ?')) {
+            // Reload after 5 seconds (5000 ms)
+            setTimeout(() => {
+                location.reload();
+            }, 5000);
+
+            return true; // continue with form submit or action
+        }
+
+        return false; // cancel action if user pressed Cancel
+    }
     var uploadedDocumentMap = {}
     Dropzone.options.documentDropzone = {
         url: "{{ route('dropzone.upload') }}",
@@ -496,12 +509,12 @@
         //     data: 'status',
         //     name: 'status'
         // },
-        // {
-        //     data: 'action',
-        //     name: 'action',
-        //     orderable: false,
-        //     searchable: false
-        // }
+        {
+            data: 'action',
+            name: 'action',
+            orderable: false,
+            searchable: false
+        }
         ]
     })
     .buttons()

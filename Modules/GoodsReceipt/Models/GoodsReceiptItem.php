@@ -24,9 +24,17 @@ class GoodsReceiptItem extends Model
         return $this->belongsTo(GoodsReceipt::class, 'goodsreceipt_id', 'id');
     }
 
+    public function goodsreceipt() {
+        return $this->belongsTo(GoodsReceipt::class, 'goodsreceipt_id', 'id');
+    }
+
     public function karat() {
         return $this->belongsTo(Karat::class, 'karat_id', 'id');
-    } 
+    }
+
+    public function products() {
+        return $this->belongsTo(Product::class, 'product_id', 'id');
+    }
 
      public function mainkategori() {
         return $this->belongsTo(KategoriProduk::class, 'kategoriproduk_id', 'id');

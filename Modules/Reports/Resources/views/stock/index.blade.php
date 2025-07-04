@@ -82,20 +82,20 @@
                 </div>
 
                 <div class="col-md-6 col-lg-3">
-                <div class="card border-0">
-                    <div class="card-body p-0 d-flex align-items-center shadow-sm">
-                        <div class="bg-gradient-info p-4 mfe-3 rounded-left">
-                            <i class="bi bi-cash font-2xl"></i>
-                        </div>
-                        <div>
-                            <div class="text-value text-info">{{ $formattedPotensiAset }}</div>
-                            <div class="text-muted text-uppercase font-weight-bold small">
-                             @lang('Asset Potential')
-                        </div>
+                    <div class="card border-0">
+                        <div class="card-body p-0 d-flex align-items-center shadow-sm">
+                            <div class="bg-gradient-info p-4 mfe-3 rounded-left">
+                                <i class="bi bi-cash font-2xl"></i>
+                            </div>
+                            <div>
+                                <div class="text-value text-info">{{ $formattedPotensiAset }}</div>
+                                <div class="text-muted text-uppercase font-weight-bold small">
+                                    @lang('Asset Potential')
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
             </div>
         @endcan
@@ -117,6 +117,7 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
+                                        <th>Kode Kategori</th>
                                         <th>Nama Karat</th>
                                         <th>Total Berat</th>
                                         <th>Total Produk</th>
@@ -181,18 +182,20 @@
                         }
                     },
                     {
+                        data: 'category_code',
+                        name: 'category_code'
+                    },
+                    {
                         data: 'name',
-                        name: 'karats.name'
+                        name: 'name'
                     },
                     {
                         data: 'total_berat',
-                        name: 'total_berat',
-                        searchable: false
+                        name: 'total_berat'
                     },
                     {
                         data: 'total_produk',
-                        name: 'total_produk',
-                        searchable: false
+                        name: 'total_produk'
                     },
                 ]
             })

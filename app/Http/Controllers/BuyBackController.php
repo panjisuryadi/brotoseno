@@ -85,8 +85,10 @@ class BuybackController extends Controller
         // echo json_encode($products);
         // exit();
         // $id_product = $products;
+        $nota   = 'BUY-LUV-'.date('ymd').rand(100, 999);
         $buyback    = Buyback::create([
-            'nota'   => $request->nota,
+            // 'nota'   => $request->nota,
+            'nota'   => $nota,
             'product_id'   => $product,
             'kondisi'   => $request->kondisi,
             'payment'   => $request->payment,

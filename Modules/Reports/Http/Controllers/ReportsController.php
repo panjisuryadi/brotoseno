@@ -153,9 +153,15 @@ class ReportsController extends Controller
     public function stockReportData(Request $request)
     {
         $stockData = Product::leftJoin('karats', 'products.karat_id', '=', 'karats.id')
+            ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
             ->where('products.status_id', 1)
-            ->select('karats.id', 'karats.name', DB::raw('SUM(products.berat_emas) as total_berat'), DB::raw('COUNT(products.id) as total_produk'))
-            ->groupBy('karats.id', 'karats.name')
+            ->select('categories.category_code', 'karats.name', DB::raw('SUM(products.berat_emas) as total_berat'), DB::raw('COUNT(products.id) as total_produk'))
+            ->groupBy(
+                'categories.category_code',
+                'karats.name',
+                'products.category_id',
+                'products.karat_id'
+            )
             ->orderBy('total_produk', 'desc'); // diurutakan berdasarkan stock dari yang paling tinggi
 
         return DataTables::of($stockData)

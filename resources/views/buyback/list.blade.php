@@ -375,9 +375,9 @@ function view_nota(){
                         let rupiahMaxTambahan  = 'Rp ' + maxTambahan.toLocaleString('id-ID');
 
                         $('#potongan').attr('max', maxPotongan);
-                        $('#label_potongan').html('Potongan '+potonganPercent+'% : '+ rupiahMaxPotongan);
+                        $('#label_potongan').html('Potongan Max '+potonganPercent+'% : '+ rupiahMaxPotongan);
                         $('#tambahan').attr('max', maxTambahan);
-                        $('#label_tambahan').html('Tambahan '+tambahanPercent+'% : '+ rupiahMaxTambahan);
+                        $('#label_tambahan').html('Tambahan Max '+tambahanPercent+'% : '+ rupiahMaxTambahan);
 
                         $('#kondisi').prop('readonly', false);
                         

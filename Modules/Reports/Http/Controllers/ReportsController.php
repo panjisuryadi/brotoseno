@@ -139,7 +139,7 @@ class ReportsController extends Controller
             ->where('products.status_id', 1)
             ->count('products.id');
 
-        $formattedStockWeight = number_format(round($stockWeight, 1), 1, '.', ',') . ' Gram';
+        $formattedStockWeight = number_format($stockWeight, 2, ',', '.') . ' Gram';
 
         return view('reports::stock.index', compact(
             'formattedStockWeight',
@@ -167,7 +167,7 @@ class ReportsController extends Controller
         return DataTables::of($stockData)
             ->addIndexColumn() // menambahkan penomoran pada kolom pertama table
             ->editColumn('total_berat', function ($data) { // mengedit kolom 'total_berat' dengan mengedit data yang ditampilkan
-                return number_format($data->total_berat, 0, ',', '.') . ' gram';
+                return number_format($data->total_berat, 2, ',', '.') . ' gram';
             })
             // KAYANYA BELUM PERLU ACTION
             // ->addColumn('action', function($row){

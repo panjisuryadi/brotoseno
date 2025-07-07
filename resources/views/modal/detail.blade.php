@@ -134,7 +134,7 @@ body {
                 }
             ],
             "sPaginationType": "simple_numbers",
-            ajax: '{{ route("modal.detail_data", ["id" => <?=$id;?>]) }}'
+            ajax: '/modal/detail_data/<?=$id;?>',
             dom: 'Blfrtip',
             buttons: [
                 'excel',

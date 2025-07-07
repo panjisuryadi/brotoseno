@@ -75,7 +75,7 @@ body {
                         <i class="bi bi-bar-chart font-2xl"></i>
                     </div>
                     <div>
-                        <div class="text-value text-primary">Rp. {{number_format($modal->current)}}</div>
+                        <div class="text-value text-primary">Rp. {{number_format($modal_)}}</div>
                         <div class="text-muted text-uppercase font-weight-bold small">
                         Modal                        </div>
                     </div>
@@ -90,7 +90,7 @@ body {
                         <i class="bi bi-arrow-return-left font-2xl"></i>
                     </div>
                     <div>
-                        <div class="text-value text-warning">Rp. {{number_format($modal->in)}}</div>
+                        <div class="text-value text-warning">Rp. {{number_format($pos)}}</div>
                         <div class="text-muted text-uppercase font-weight-bold small">
                         Penjualan                        </div>
                     </div>
@@ -211,7 +211,7 @@ body {
     <div class="modal-dialog modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title text-lg font-bold" id="addModalLabel">Petty Cash</h3>
+                <h3 class="modal-title text-lg font-bold" id="addModalLabel">Modal</h3>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
@@ -232,11 +232,11 @@ body {
     </div>
 </div>
 
-<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="closeModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title text-lg font-bold" id="addModalLabel">Petty Cash</h3>
+                <h3 class="modal-title text-lg font-bold" id="addModalLabel">Modal</h3>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
@@ -254,7 +254,7 @@ body {
                         <textarea name="keterangan" id="" class="form-control" required></textarea>
                     </div>
                     <br>
-                    <button class="btn btn-sm btn-success" onclick="return confirm('Close Petty Cash ?');">Submit</button>
+                    <button class="btn btn-sm btn-success" onclick="return confirm('Close Modal ?');">Submit</button>
                 </form>
             </div>
         </div>
@@ -328,14 +328,14 @@ body {
                     name: 'modal'
                 },
                 {
-                    data: 'current',
-                    name: 'current'
-                },{
                     data: 'cash_in',
                     name: 'cash_in'
                 },{
                     data: 'cash_out',
                     name: 'cash_out'
+                },{
+                    data: 'current',
+                    name: 'current'
                 },{
                     data: 'final',
                     name: 'final'

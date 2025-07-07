@@ -98,29 +98,40 @@ class ModalController extends Controller
         $module_path = $this->module_path;
         $module_icon = $this->module_icon;
         $module_model = $this->module_model;
-
-        $modal  = Modal::latest()->first();
-        $status     = $modal->status;
-        $id         = $modal->id;
-
-        $modaldata  = ModalData::where('modal_id', $id)->latest()->get();
         $buyback        = 0;
         $luar           = 0;
-        foreach($modaldata as $p){
-            if($p->from == 'buyback'){
-                $buyback    = $buyback+$p->nominal;
-            }
-            elseif($p->from == 'luar'){
-                $luar    = $luar+$p->nominal;
+        $pos            = 0;
+        $status         = 'B';
+        $modal_         = 0;
+        $modal  = Modal::where('status', 'A')->latest()->first();
+        if($modal){
+            $status     = $modal->status;
+            $modal_     = $modal->current;
+            $id         = $modal->id;
+    
+            $modaldata  = ModalData::where('modal_id', $id)->latest()->get();
+            foreach($modaldata as $p){
+                if($p->type == 'buyback'){
+                    $buyback    = $buyback+$p->nominal;
+                }
+                elseif($p->type == 'luar'){
+                    $luar    = $luar+$p->nominal;
+                }
+                elseif($p->type == 'pos'){
+                    $pos    = $pos+$p->nominal;
+                }
             }
         }
+        
+        
 
         return view(
             'modal.list', // Path to your create view file
             compact(
-                'modal',
+                'modal_',
                 'buyback',
                 'luar',
+                'pos',
                 'status',
                 'module_title',
                 'module_name',
@@ -168,12 +179,12 @@ class ModalController extends Controller
                 return number_format($data->final);
             })
 
-            ->editColumn('in', function($data){
-                return number_format($data->in);
+            ->editColumn('cash_in', function($data){
+                return number_format($data->cash_in);
             })
 
-            ->editColumn('out', function($data){
-                return number_format($data->out);
+            ->editColumn('cash_out', function($data){
+                return number_format($data->cash_out);
             })
             ->editColumn('status', function($data){
                 $stat   = 'Aktif';
@@ -200,13 +211,13 @@ class ModalController extends Controller
         $$module_name = ModalData::where('modal_id', $id)->latest()->get();
         $data = $$module_name;
         return Datatables::of($data)
-            ->addColumn('action', function ($data) {
-                $module_name = $this->module_name;
-                $module_model = $this->module_model;
-                $module_path = $this->module_path;
-                return view('petty_cash.action',
-                    compact('module_name', 'data', 'module_model'));
-            })
+            // ->addColumn('action', function ($data) {
+            //     $module_name = $this->module_name;
+            //     $module_model = $this->module_model;
+            //     $module_path = $this->module_path;
+            //     return view('petty_cash.action',
+            //         compact('module_name', 'data', 'module_model'));
+            // })
 
             ->editColumn('tanggal', function($data){
                 return '<div class="items-center text-center">' .($data->created_at) . '</div>';
@@ -227,6 +238,10 @@ class ModalController extends Controller
                 }
                 return number_format($cash_out);
             })
+
+            // ->editColumn('current', function($data){
+            //     return number_format($data->current);
+            // })
 
             ->rawColumns(['harga', 'tanggal','user'])
             ->make(true);
@@ -276,16 +291,15 @@ class ModalController extends Controller
     }
 
     public function close(Request $request){
-        $id = $request->id;
+        // $id = $request->id;
         $sisa = $request->sisa;
         $keterangan = $request->keterangan;
         
-        $pettycash          = Modal::where('id', $id)->firstOrFail();
-        $current_modal      = $pettycash->modal;
-        $current_current    = $pettycash->current;
-        $pettycash->sisa   = $sisa;
-        $pettycash->keterangan = $keterangan;
-        $pettycash->save();
+        $modal          = Modal::where('status', 'A')->latest()->first();
+        $modal->final   = $sisa;
+        $modal->keterangan = $keterangan;
+        $modal->status = 'B';
+        $modal->save();
         
         return redirect()->action([ModalController::class, 'list']);
     }

@@ -6,7 +6,7 @@
 </div>
 
 <div class="btn-group">
-    <a href="#" class="px-3 btn btn-warning" data-toggle="modal" data-target="#closeModal" onclick="close_modal('{{$data->id}}');">
+    <a href="#" class="px-3 btn btn-warning" data-toggle="modal" data-target="#closeModal">
         x<i class="bi bi-close"></i>
     </a>
 </div>

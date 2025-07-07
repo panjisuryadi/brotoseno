@@ -19,6 +19,8 @@ use Modules\GoodsReceipt\Models\GoodsReceiptItem;
 use Modules\Stok\Models\StockOffice;
 use App\Models\Harga;
 use App\Models\BuyBack;
+use App\Models\Modal;
+use App\Models\ModalData;
 use App\Models\Config;
 use App\Models\PettyCash;
 use App\Models\PettyCashData;
@@ -123,21 +125,38 @@ class BuybackController extends Controller
         ]);
 
         if($request->payment == 'cash'){
-            $pettycash          = PettyCash::where('status', 'A')->latest()->firstOrFail();
-            $id                 = $pettycash->id;
-            $current_modal      = $pettycash->modal;
-            $current_current    = $pettycash->current;
-            $current_out        = $pettycash->out;
-            $pettycash->current = $current_current-$request->harga;
-            $pettycash->out     = $current_out+$request->harga;
-            $pettycash->save();
             
-            $pettycashdata  = PettycashData::create([
-                'petty_cash_id' => $id,
-                'type'  => 'buyback',
-                'nominal' => $request->harga,
-                'from' => 'kasir'
-            ]);
+            $modal      = Modal::where('status', 'A')->first();
+            if($modal){
+                $cash_out   = $modal->cash_out;
+                $current    = $modal->current;
+                $modal->cash_out= $cash_out+$request->harga;
+                $modal->current = $current-$request->harga;
+                $modal->save();
+                
+                $modalData  = ModalData::create([
+                    'modal_id' => $modal->id,
+                    'type'  => 'buyback',
+                    'nominal' => $request->harga,
+                    'from' => 'kasir'
+                ]);
+            }
+
+            // $pettycash          = PettyCash::where('status', 'A')->latest()->firstOrFail();
+            // $id                 = $pettycash->id;
+            // $current_modal      = $pettycash->modal;
+            // $current_current    = $pettycash->current;
+            // $current_out        = $pettycash->out;
+            // $pettycash->current = $current_current-$request->harga;
+            // $pettycash->out     = $current_out+$request->harga;
+            // $pettycash->save();
+            
+            // $pettycashdata  = PettycashData::create([
+            //     'petty_cash_id' => $id,
+            //     'type'  => 'buyback',
+            //     'nominal' => $request->harga,
+            //     'from' => 'kasir'
+            // ]);
         }
         return redirect()->route('buyback.print', ['id' => $buyback->id]);
 

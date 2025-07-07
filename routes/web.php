@@ -112,12 +112,24 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/sale/recap/data', 'JualController@data_recap')
     ->name('sale.data_recap');
 
+    Route::get('/summary/report/recap', 'JualController@summary')
+    ->name('summary.recap');
+
+    Route::get('/summary/recap/data', 'JualController@summary_data')
+    ->name('summary.data_recap');
+
     // report pembelian
     Route::get('/purchases/report', 'PurchasesController@laporan_pembelian')
     ->name('pembelian.report');
 
     Route::get('/purchases/data_report', 'PurchasesController@data_report_pembelian')
     ->name('pembelian.data_report');
+
+    Route::get('/goodreceipt/report/recap', 'PurchasesController@recap')
+    ->name('goodreceipt.recap');
+
+    Route::get('/goodreceipt/recap/data', 'PurchasesController@data_recap')
+    ->name('goodreceipt.data_recap');
 
     Route::post('/sale/print', 'JualController@print')
         ->name('sale.print');

@@ -1404,6 +1404,34 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link',
                 ]);
 
+            // REPORT - REKAP PENERIMAAN BARANG
+            $jual->add('<i class="c-sidebar-nav-icon bi-journal-text"></i> ' . 'Rekap Penerimaan'. '', [
+                'route' => 'goodreceipt.recap',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 91,
+                    'activematches' => 'settings*',
+                    'permission'    => ['access_settings'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link',
+                ]);
+
+            // REPORT - REKAP PENJUALAN (SUMMARY)
+            $jual->add('<i class="c-sidebar-nav-icon bi-journal-text"></i> ' . 'Summary'. '', [
+                'route' => 'summary.recap',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 91,
+                    'activematches' => 'settings*',
+                    'permission'    => ['access_settings'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link',
+                ]);
+
             // REPORT - HUTANG
             $jual->add('<i class="c-sidebar-nav-icon bi-wallet2"></i> ' . __('Debt') . '', [
                 'route' => 'goodsreceipt.debts',
@@ -1421,7 +1449,6 @@ class GenerateMenus
             // REPORT - PEMBELIAN
 
             $jual->add('<i class="c-sidebar-nav-icon bi-cart-check"></i> ' . __('Purchase') . '', [
-
                 'route' => 'pembelian.report',
                 'class' => 'nav-item',
             ])

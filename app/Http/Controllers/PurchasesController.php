@@ -4,36 +4,44 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use Gloudemans\Shoppingcart\Facades\Cart;
-use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Support\Str;
-use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
-use Modules\People\Entities\Customer;
-use Modules\Product\Entities\Category;
-use Modules\Group\Models\Group;
-use Modules\Product\Entities\Product;
-use App\Models\SalesGold;
-use App\Models\SalesItem;
-use App\Models\Service;
-use App\Models\Harga;
-use App\Models\Config;
-use App\Models\ProductHistories;
-use App\Models\StockOpname;
-use Modules\Product\Entities\ProductItem;
-use Modules\Purchase\Entities\Purchase;
-use Modules\Sale\Entities\SaleDetails;
-use Modules\Sale\Entities\SalePayment;
-use Modules\Sale\Entities\SaleManual;
-use Modules\Sale\Http\Requests\StorePosSaleRequest;
-use PDF;
-use Auth;
+use App\Models\LookUp;
 use Carbon\Carbon;
-use Modules\Adjustment\Entities\AdjustmentSetting;
-use Modules\Product\Models\ProductStatus;
+use App\Models\User;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Gate;
 use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Response;
+use Illuminate\Support\Str;
+use Lang;
+use Image;
+use Modules\GoodsReceipt\Events\GoodsReceiptItemCreated;
+use Modules\GoodsReceipt\Models\GoodsReceiptInstallment;
+use PDF;
+use Modules\Upload\Entities\Upload;
+use Modules\Product\Entities\Category;
+use Modules\Product\Entities\Product;
+use Modules\KategoriProduk\Models\KategoriProduk;
+use Modules\ParameterKadar\Models\ParameterKadar;
 use Modules\Karat\Models\Karat;
+use Modules\GoodsReceipt\Models\TipePembelian;
+use Modules\GoodsReceipt\Models\GoodsReceiptItem;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Modules\Stok\Models\StockOffice;
+use Illuminate\Support\Facades\DB;
+use Modules\Adjustment\Entities\Adjustment;
+use Modules\Adjustment\Entities\AdjustmentSetting;
+// use Modules\GoodsReceipt\Models\GoodsReceipt;
+use Modules\Stok\Models\StockKroom;
+use Gloudemans\Shoppingcart\Facades\Cart;
+use Modules\Group\Models\Group;
 use Modules\ProdukModel\Models\ProdukModel;
+use Modules\People\Entities\Customer;
+use App\Models\SalesGold;
+use Modules\GoodsReceipt\Models\GoodsReceipt;
+
 
 class PurchasesController extends Controller
 {
@@ -49,22 +57,13 @@ class PurchasesController extends Controller
 
     public function __construct()
     {
-        // $opname = StockOpname::check_opname();
-        // if($opname == 'A'){
-        //     abort(403, 'Access denied during active stock opname.');
-        // }
-        $this->module_title = 'Purchases';
-
-        $this->module_name = 'purchases';
-
-        $this->module_path = 'purchase';
-
+        $this->module_title = 'Pembelian';
+        $this->module_name = 'pembelian';
+        $this->module_path = 'pembelian';
         $this->module_icon = 'fas fa-sitemap';
-
-        $this->module_model = "Modules\Purchase\Entities\Purchase";
-        $this->module_detail = "Modules\Purchase\Entities\PurchaseDetail";
-        $this->module_payment = "Modules\Purchase\Entities\PurchasePayment";
-        $this->module_product = "Modules\Product\Entities\Product";
+        $this->module_model = "Modules\GoodsReceipt\Models\GoodsReceipt";
+        $this->module_categories = "Modules\Product\Entities\Category";
+        $this->module_products = "Modules\Product\Entities\Product";
     }
 
 
@@ -82,104 +81,65 @@ class PurchasesController extends Controller
 
         $module_action = 'List';
 
-        $query = Purchase::with(['purchaseDetails.product.karat']);
-        // $query = Purchase::all();
+        $query = GoodsReceiptItem::with([
+            'goodsReceipt.supplier',   // relasi ke header GR dan supplier
+            'karat'                    // relasi ke karat
+        ])->get();
 
-        $data = $query->latest()->get();
+        // dd($query);
 
-        // $karat = Product::where('id', $query)
-        // dd($data);
-
-
-
-        return Datatables::of($query)
+        $dataTable = Datatables::of($query)
             ->addColumn('action', function ($data) {
                 $module_name = $this->module_name;
                 $module_model = $this->module_model;
-                return view(
-                    'purchase.aksi',
-                    compact('module_name', 'data', 'module_model')
-                );
+                return view('purchase.aksi', compact('module_name', 'data', 'module_model'));
             })
 
-            ->editColumn('no_faktur', function ($data) {
-                return '-';
+            ->editColumn('code', fn($data) =>
+                $data->goodsReceipt->code ?? '-'
+            )
+
+            ->editColumn('invoice', fn($data) =>
+                $data->goodsReceipt->no_invoice ?? '-'
+            )
+
+            ->editColumn('jam', fn($data) =>
+                $data->goodsReceipt->created_at?->format('H:i') ?? '-'
+            )
+
+            ->editColumn('supplier', fn($data) =>
+                $data->goodsReceipt->supplier->supplier_name ?? '-'
+            )
+
+            ->editColumn('karat', fn($data) =>
+                $data->karat->name ?? '-'
+            )
+
+            ->editColumn('berat', fn($data) =>
+                $data->berat_kotor ?? '-'
+            )
+
+            ->editColumn('berat_timbangan', fn($data) =>
+                $data->berat_real ?? '-'
+            )
+
+
+            ->editColumn('type_payment', fn($data) =>
+                $data->goodsReceipt->tipe_pembayaran ?? '-'
+            )
+
+            ->editColumn('qty', function ($data) {
+                return $data->qty ?? 1; // misalnya default 1 kalau tidak ada
             })
-
-            ->editColumn('jam', function ($data) {
-                $tb = $data->created_at->format('H:i');
-
-                return $tb;
-                // return 'jam';
-            })
-
-            ->editColumn('kode_barcode', function ($data) {
-                // return number_format($data->total);
-                $tb = optional($data->purchaseDetails->first())->product_code ?? '-';
-                return $tb;
-            })
-
-            ->editColumn('kode_intern', function ($data) {
-                // return number_format($data->total);
-                return '-';
-            })
-
-            ->editColumn('kode_sales', function ($data) {
-                $tb = $data->kode_sales;
-
-                return $tb;
-            })
-
-            ->editColumn('nama_customer', function ($data) {
-                $tb = $data->supplier_name;
-                return $tb;
-            })
-
-            ->editColumn('nama_barang', function ($data) {
-                // return number_format($data->total);
-                $tb = optional($data->purchaseDetails->first())->product_name ?? '-';
-                return $tb;
-            })
-
-            ->editColumn('berat', function ($data) {
-                // return number_format($data->total);
-                return 'berat';
-            })
-
-            ->editColumn('kadar', function ($data) {
-                $kadar = optional(optional($data->purchaseDetails->first())->product)->karat->name ?? '-';
-
-                return $kadar;
-            })
-
-            ->editColumn('hrg_nota', function ($data) {
-                // return number_format($data->total);
-                return '-';
-            })
-
-            ->editColumn('hrg_beli', function ($data) {
-                // return number_format($data->total);
-                return '-';
-            })
-
-            ->editColumn('hrg_rata', function ($data) {
-                // return number_format($data->total);
-                return '-';
-            })
-
-            ->editColumn('type_payment', function ($data) {
-                // return number_format($data->total);
-                $tb = $data->payment_method;
-
-                return $tb;
-            })
-
-
 
             ->rawColumns([
-                'action', 'no_faktur', 'created_at', 'kode_barcode', 'kode_intern', 'nama_customer', 'nama_barang', 'berat', 'kadar', 'hrg_nota', 'hrg_beli', 'hrg_rata', 'type_payment'
+                'action', 'qty', 'code','jam' , 'kode_sales' , 'berat_timbangan' , 'no_faktur', 'created_at', 'nama_customer', 'nama_barang', 'berat', 'type_payment'
             ])
             ->make(true);
+
+        // dd($dataTable);
+
+        return $dataTable;
         }
 
     public function laporan_pembelian(Request $request){
@@ -303,6 +263,121 @@ class PurchasesController extends Controller
             )
         );
     }
+
+
+
+    public function data_recap(Request $request)
+{
+    /* 1. Tarik header + relasi item */
+    $receipts = GoodsReceipt::with('goodsReceiptItems')
+        ->when($request->filled(['bulan', 'tahun']), function ($q) use ($request) {
+            $q->whereMonth('created_at', $request->bulan)
+              ->whereYear('created_at',  $request->tahun);
+        })
+        ->latest()
+        ->get();
+
+        $detailRows = collect();
+
+        foreach ($sales as $row) {
+            $items = json_decode($row->products, true) ?? [];
+
+            foreach ($items as $item) {
+                //   ── Ambil id & qty ───────────────────────────────
+                $idProduk = is_array($item) ? $item['id'] : $item;
+                $itemQty  = is_array($item) && isset($item['qty']) ? $item['qty'] : 1;
+
+                $product = Product::find($idProduk);
+                if (!$product) continue;              // stop kalau id tak valid
+
+                $detailRows->push([
+                    'tanggal'     => $row->created_at->format('Y-m-d'),
+                    'product'     => $product->product_name,      // ← cuma string
+                    'berat_emas'  => $product->berat_emas * $itemQty,
+                    'qty'         => $itemQty,
+                    // contoh pembobotan total per‑item (sesuaikan skema Anda)
+                    'total'       => ($row->total / max($row->grand_qty,1)) * $itemQty
+                ]);
+            }
+        }
+
+    /* 3. Kirim ke DataTables */
+    return DataTables::of($rekap)
+        ->editColumn('tanggal',    fn($r) => $r['tanggal']->format('d/m/Y'))
+        ->editColumn('berat_kotor',fn($r) => number_format($r['berat_kotor'],2).' gr')
+        ->editColumn('berat_real', fn($r) => number_format($r['berat_real'], 2).' gr')
+        ->editColumn('qty',        fn($r) => number_format($r['qty']))
+        ->make(true);
+}
+
+
+
+    public function recap(Request $request)
+        {
+            if (AdjustmentSetting::exists()) {
+                toast('Stock Opname sedang Aktif!', 'error');
+                return redirect()->back();
+            }
+
+            Cart::instance('sale')->destroy();
+
+            $karat = Karat::latest()->get();
+            $category = Category::latest()->get();
+            $group = Group::latest()->get();
+            $models = ProdukModel::latest()->get();
+            $customers = Customer::all();
+            $product_categories = Category::all();
+
+            // Ambil filter dari request
+            $bulan = $request->input('bulan', now()->month);
+            $tahun = $request->input('tahun', now()->year);
+
+            // Ambil data SalesGold berdasarkan filter (jika ada)
+            $salesGold = SalesGold::when($bulan, function ($query) use ($bulan) {
+                    return $query->whereMonth('created_at', $bulan);
+                })
+                ->when($tahun, function ($query) use ($tahun) {
+                    return $query->whereYear('created_at', $tahun);
+                })
+                ->get();
+
+            // Total nilai penjualan
+            $totalGoldSales = $salesGold->sum('total');
+
+            // Hitung berat dan jumlah produk
+            $totalGoldWeight = 0;
+            $allProducts = [];
+
+            foreach ($salesGold as $data) {
+                $arrayProducts = json_decode($data->products, true);
+                foreach ($arrayProducts as $product_id) {
+                    $allProducts[] = $product_id;
+                    $berat = Product::find($product_id)?->berat_emas ?? 0;
+                    $totalGoldWeight += $berat;
+                }
+            }
+
+            $totalGoldQuantity = count($allProducts);
+            $totalCustomer = $salesGold->count();
+
+            $module_title = $this->module_title;
+
+            return view('purchase.recap', compact(
+                'module_title',
+                'karat',
+                'category',
+                'group',
+                'models',
+                'customers',
+                'product_categories',
+                'totalGoldSales',
+                'totalGoldWeight',
+                'totalGoldQuantity',
+                'totalCustomer',
+                'bulan',
+                'tahun'
+            ));
+        }
 
 
 }

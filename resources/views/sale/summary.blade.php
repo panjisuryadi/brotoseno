@@ -34,7 +34,7 @@
 @endsection
 @section('content')
 <div class="container-fluid">
-{{--
+
     @can('show_total_stats')
         <div class="row">
             <div class="col-md-6 col-lg-3">
@@ -101,7 +101,7 @@
                 </div>
             </div>
         </div>
-        @endcan --}}
+        @endcan
 
     <div class="row">
         <div class="col-12">
@@ -109,7 +109,7 @@
                 <div class="card-body">
                     <div class="flex justify-between pb-3 border-bottom">
                         <div>
-                            <i class="bi bi-plus"></i> &nbsp; <span class="text-lg font-semibold"> List Penerimaan Barang</span>
+                            <i class="bi bi-plus"></i> &nbsp; <span class="text-lg font-semibold"> List Sales</span>
                         </div>
                         <div id="buttons"></div>
                     </div>
@@ -146,10 +146,11 @@
                                 <tr>
                                     <th style="width: 5%!important;">NO</th>
                                     <th style="width: 15%!important;" class="text-center">Date</th>
-                                    <th style="width: 15%!important;" class="text-center">Code</th>
-                                    <th style="width: 15%!important;" class="text-center">Berat Real</th>
-                                    <th style="width: 15%!important;" class="text-center">Berat Kotor</th>
-                                    <th style="width: 10%!important;" class="text-center">Qty</th>
+                                    <th style="width: 15%!important;" class="text-center">Kategori</th>
+                                    <th style="width: 15%!important;" class="text-center">Karat</th>
+                                    <th style="width: 15%!important;" class="text-center">gr</th>
+                                    <th style="width: 15%!important;" class="text-center">Qty</th>
+                                    <th style="width: 10%!important;" class="text-center">IDR</th>
                                     {{-- <th style="width: 15%!important;" class="text-center">#</th> --}}
 
                  <!-- <th style="width: 18%!important;" class="text-center">
@@ -202,7 +203,7 @@
 
         // ajax: '/sale/recap/data', // tanpa filter tanggal
         ajax: {
-            url: '/goodreceipt/recap/data',
+            url: '/summary/recap/data',
             data: function(d) {
                 d.bulan = $('#bulan').val();
                 d.tahun = $('#tahun').val();
@@ -218,12 +219,12 @@
         buttons: [
             {
                 extend: 'excel',
-                exportOptions: { columns: [0, 1, 2, 3,4,5] }
+                exportOptions: { columns: [0, 1, 2, 3] }
             },
             {
                 extend: 'pdf',
                 title: `${$('#bulan option:selected').text()} ${$('#tahun option:selected').text()}`,
-                exportOptions: { columns: [0, 1, 2, 3,4,5] },
+                exportOptions: { columns: [0, 1, 2, 3] },
                 customize: function(doc) {
                         // Rata tengah semua isi tabel
                         doc.styles.tableHeader.alignment = 'center';
@@ -246,7 +247,7 @@
             },
             {
                 extend: 'print',
-                exportOptions: { columns: [0, 1, 2, 3,4,5] }
+                exportOptions: { columns: [0, 1, 2, 3] }
             }
         ],
         columns: [
@@ -257,29 +258,12 @@
                     return meta.row + meta.settings._iDisplayStart + 1;
                 }
             },
-            {
-                data: 'tanggal',
-                name: 'tanggal',
-                className: 'text-center'
-            },
-            {
-                data: 'code',
-                name: 'code',
-                className: 'text-center'
-            },
-            {
-                data: 'berat_kotor',
-                name: 'berat_kotor',
-                className: 'text-center'
-            },
-            {
-                data: 'berat_real',
-                name: 'berat_real',
-                className: 'text-center'
-            },
-            {
-                data: 'qty',      name: 'qty'
-            },
+            { data:'tanggal',   name:'tanggal'   },
+            { data:'kategori',  name:'kategori'  }, // ← nama kategori
+            { data:'karat',     name:'karat'     }, // ← nama karat
+            { data:'berat',name:'berat'},
+            { data:'qty',      name:'qty'      },
+            { data:'total',     name:'total'     }
             // {
             //     data: 'action',
             //     name: 'action',

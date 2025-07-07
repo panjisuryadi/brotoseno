@@ -9,6 +9,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Modules\Karat\Models\Karat;
+use Modules\Product\Entities\Category;
 use Modules\Product\Entities\Product;
 use Yajra\DataTables\DataTables;
 
@@ -81,6 +82,7 @@ class ReportsController extends Controller
     {
         abort_if(Gate::denies('access_reports'), 403);
 
+        // SUMBER DATA
         // berat dari products
         // coef dari karats
         // harga emas dari hargas
@@ -92,10 +94,13 @@ class ReportsController extends Controller
         // harga emas sekarang
         $hargaEmas = Harga::latest()->first()->harga;
 
+        // semua products yang ada di stok
+        $products = Product::leftJoin('karats', 'products.karat_id', '=', 'karats.id')
+            ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
+            ->where('products.status_id', 1);
+
         // berisi coef dan berat emas
-        $coefWeightAndMargin = Product::leftJoin('karats', 'products.karat_id', '=', 'karats.id')
-            ->where('products.status_id', 1)
-            ->select('karats.coef', 'products.berat_emas', 'karats.persen')
+        $coefWeightAndMargin = $products->select('karats.coef', 'products.berat_emas', 'karats.persen')
             ->get();
 
         // inisialisasi nilaiAset
@@ -139,23 +144,41 @@ class ReportsController extends Controller
             ->where('products.status_id', 1)
             ->count('products.id');
 
-        $formattedStockWeight = number_format(round($stockWeight, 1), 1, '.', ',') . ' Gram';
+        // format stockWeight
+        $formattedStockWeight = number_format($stockWeight, 2, ',', '.') . ' Gram';
+
+        // data categories yang ada di stok
+        $categories = $products->select('categories.id', 'categories.category_code')->distinct()->get();
+
+        // data categories yang ada di stok
+        $karats = $products->select('karats.id', 'karats.name')->distinct()->orderBy('karats.name', 'asc')->get();
 
         return view('reports::stock.index', compact(
             'formattedStockWeight',
             'stockQuantity',
             'formattedNilaiAset',
-            'formattedPotensiAset'
+            'formattedPotensiAset',
+            'categories',
+            'karats',
         ));
     }
 
     // data untuk table Laporan Stok pada halaman stock/report
     public function stockReportData(Request $request)
     {
-        $stockData = Product::leftJoin('karats', 'products.karat_id', '=', 'karats.id')
+        $query = Product::leftJoin('karats', 'products.karat_id', '=', 'karats.id')
             ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
-            ->where('products.status_id', 1)
-            ->select('categories.category_code', 'karats.name', DB::raw('SUM(products.berat_emas) as total_berat'), DB::raw('COUNT(products.id) as total_produk'))
+            ->where('products.status_id', 1);
+
+        if (!empty($request->categories)) {
+            $query->whereIn('products.category_id', $request->categories);
+        }
+
+        if (!empty($request->karats)) {
+            $query->whereIn('products.karat_id', $request->karats);
+        }
+
+        $stockData = $query->select('categories.category_code', 'karats.name', DB::raw('SUM(products.berat_emas) as total_berat'), DB::raw('COUNT(products.id) as total_produk'))
             ->groupBy(
                 'categories.category_code',
                 'karats.name',
@@ -167,7 +190,7 @@ class ReportsController extends Controller
         return DataTables::of($stockData)
             ->addIndexColumn() // menambahkan penomoran pada kolom pertama table
             ->editColumn('total_berat', function ($data) { // mengedit kolom 'total_berat' dengan mengedit data yang ditampilkan
-                return number_format($data->total_berat, 0, ',', '.') . ' gram';
+                return number_format($data->total_berat, 2, ',', '.') . ' gram';
             })
             // KAYANYA BELUM PERLU ACTION
             // ->addColumn('action', function($row){

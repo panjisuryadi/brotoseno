@@ -34,7 +34,7 @@ data-toggle="tooltip"
 </div>
 
 <div class="btn-group">
-    <a href="#" class="px-3 btn btn-sm btn-success" data-toggle="modal" data-target="#createModal" onclick="show_modal({{ $data->id }});">
+    <a href="#" class="px-3 btn btn-sm btn-success" data-toggle="modal" data-target="#updateModal" onclick="show_modal({{ $data->id }});">
         <i class="bi bi-pencil"></i>
     </a>
 </div>
@@ -184,7 +184,7 @@ data-toggle="tooltip"
   </div>
 </div>
 
-<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">

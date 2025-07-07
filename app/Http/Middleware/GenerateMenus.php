@@ -2663,8 +2663,21 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link',
                 ]);
 
-            $setting->add('<i class="c-sidebar-nav-icon bi bi-wallet2"></i> ' . __('Petty Cash') . '', [
-                'route' => 'pettycash.index',
+            // $setting->add('<i class="c-sidebar-nav-icon bi bi-wallet2"></i> ' . __('Petty Cash') . '', [
+            //     'route' => 'pettycash.index',
+            //     'class' => 'nav-item',
+            // ])
+            //     ->data([
+            //         'order'         => 91,
+            //         'activematches' => 'settings*',
+            //         'permission'    => ['access_settings'],
+            //     ])
+            //     ->link->attr([
+            //         'class' => 'c-sidebar-nav-link',
+            //     ]);
+
+            $setting->add('<i class="c-sidebar-nav-icon bi bi-wallet2"></i> ' . __('Modal') . '', [
+                'route' => 'modal.index',
                 'class' => 'nav-item',
             ])
                 ->data([

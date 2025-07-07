@@ -141,6 +141,30 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/pettycash', 'PettyCashController@list')
         ->name('pettycash.index');
 
+    Route::get('/modal', 'ModalController@list')
+        ->name('modal.index');
+
+    Route::get('/modal/detail/{id}', 'ModalController@detail')
+        ->name('modal.detail');
+
+    Route::get('/modal/index_data', 'ModalController@index_data')
+        ->name('modal.index_data');
+
+    Route::get('/modal/detail_data/{id}', 'ModalController@detail_data')
+        ->name('modal.detail_data');
+
+    Route::post('/modal/close', 'ModalController@close')
+        ->name('modal.close');
+
+    Route::post('/modal/insert', 'ModalController@insert')
+        ->name('modal.insert');
+
+    Route::post('/modal/update', 'ModalController@update')
+        ->name('modal.update');
+
+    Route::get('/modal', 'ModalController@list')
+        ->name('modal.index');
+
     Route::get('/webcam', 'WebcamController@list')
         ->name('webcam.index');
 

@@ -18,6 +18,8 @@ use App\Models\SalesItem;
 use App\Models\Service;
 use App\Models\Harga;
 use App\Models\Config;
+use App\Models\Modal;
+use App\Models\ModalData;
 use App\Models\ProductHistories;
 use App\Models\StockOpname;
 use Modules\Product\Entities\ProductItem;
@@ -834,6 +836,27 @@ class JualController extends Controller
             $bank       = $request->hidden_bank;
             $rekening   = $request->hidden_rekening;
             $sum        = $cash+$edc+$transfer+$qr+$cc;
+
+            // START MODAL
+            $modal      = Modal::where('status', 'A')->first();
+            if($modal && $cash > 0){
+                $cash_in    = $modal->cash_in;
+                $current    = $modal->current;
+                $modal->cash_in = $cash_in+$cash;
+                $modal->current = $current+$cash;
+                $modal->save();
+                
+                $modalData  = ModalData::create([
+                    'modal_id' => $modal->id,
+                    'type'  => 'pos',
+                    'nominal' => $cash,
+                    'from' => 'kasir'
+                ]);
+            }
+            // END MODAL
+
+
+
             // echo json_encode($_POST);
             // echo $request->customer;
             // echo $request->nominal_cash;
@@ -1123,6 +1146,7 @@ class JualController extends Controller
                 $persen = isset($data->karat->persen) ? $data->karat->persen : 0;
                 $harga  = isset($data->harga) ? $data->harga : 0;
                 $berat  = isset($data->berat_emas) ? $data->berat_emas : 0;
+                // $biaya  = $harga
                 $har    = ceil($coef*$harga*1000)/1000;
                 $har    = $har*$berat;
                 $price  = ($har)+($har*$persen/100);

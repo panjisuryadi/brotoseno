@@ -19,32 +19,14 @@
                         <div>
 
                 <div class="btn-group">
-                    <a  href="{{ route('karat.create') }}" class="px-3 btn btn-warning">
-                        Tambah Karat <i class="bi bi-plus"></i>
-                    </a>
-                    <a href="{{ route('karats.history') }}" class="px-3 btn btn-success">
-                        History Harga <i class="bi bi-plus"></i>
-                    </a>
-                    @if(empty($harga->harga))
-                        <a href="#" class="px-3 btn btn-danger" data-toggle="modal" data-target="#createModal">
-                            Set Harga <i class="bi bi-plus"></i>
-                        </a>
-                    @else
-                        <a href="#" class="px-3 btn btn-danger" data-toggle="modal" data-target="#createModal">
-                            Set Harga <i class="bi bi-plus"></i>
-                        </a>
-
-
                         <div class="text-center ml-5">
-                            <div class="fw-bold h3 text-danger" style="text-decoration: underline;">
-                                IDR {{ number_format($harga->harga) }}
+                            <div class="fw-bold h3" style="text-decoration: underline;">
+                                {{ number_format($harga->harga) }}
                             </div>
                             <div>
-                                Updated at : {{ $harga->updated_at }}
+                                {{ $harga->updated_at }}
                             </div>
                         </div>
-
-                    @endif
                 </div>
 
                     </div>
@@ -58,34 +40,15 @@
                                         NO
                                     </th>
                                     <th>
-                                        Karat
-                                    </th>
-                                     <th style="width: 13%!important;" class="text-center">
-                                        Tipe
-                                    </th>
-
-                                     <th style="width: 9%!important;" class="text-center">
-                                        Coef
-                                    </th>
-                                     <!-- <th style="width: 7%!important;" class="text-center">
-                                        Ph
-                                    </th>  -->
-                                    <th style="width: 8%!important;" class="text-center">
                                         Harga
                                     </th>
-                                    <th style="width: 8%!important;" class="text-center">
-                                        Margin
-                                    </th> 
-                                    <th style="width: 8%!important;" class="text-center">
-                                        Harga Jual
-                                    </th> 
-                                    
-                                    <!-- <th style="width: 8%!important;" class="text-center">
-                                        Harga Rounded
-                                    </th>  -->
-                                    <th style="width: 10%!important;" class="text-center">
-                                       {{__('Action')}}
-                                    </th>
+                                     <th style="width: 13%!important;" class="text-center">
+                                        Tanggal
+                                    </th>  
+
+                                     <th style="width: 9%!important;" class="text-center">
+                                        User
+                                    </th>  
                                 </tr>
                             </thead>
                         </table>
@@ -110,7 +73,6 @@
                     @csrf
                     <label for="">Harga</label>
                     <input type="number" class="form-control" name="harga">
-                    <br>
                     <button class="btn btn-sm btn-success">Submit</button>
                 </form>
             </div>
@@ -143,15 +105,6 @@
 <x-library.datatable />
 @push('page_scripts')
    <script type="text/javascript">
-    function muncul_submit(){
-        let pass = document.getElementById('password').value;
-        console.log(pass);
-        if (pass === 'luvenia12345') {
-            document.getElementById('SimpanUpdate').style.display = 'block';
-        } else {
-            document.getElementById('SimpanUpdate').style.display = 'none';
-        }
-    }
         $('#datatable').DataTable({
            processing: true,
            serverSide: true,
@@ -180,51 +133,12 @@
                 }
             ],
             "sPaginationType": "simple_numbers",
-            ajax: '{{ route("karats.index_data") }}',
+            ajax: '{{ route("karats.history_data") }}',
             dom: 'Blfrtip',
-            // buttons: [
-            //     'excel',
-            //     'pdf',
-            //     'print'
-            // ],
             buttons: [
-                {
-                    extend: 'excel',
-                    exportOptions: {
-                        columns: [0, 1, 6]
-                    }
-                },
-                {
-                    extend: 'pdf',
-                    exportOptions: {
-                        columns: [0, 1, 6]
-                    },
-                    customize: function(doc) {
-                        // Rata tengah semua isi tabel
-                        doc.styles.tableHeader.alignment = 'center';
-                        doc.styles.tableBodyEven.alignment = 'center';
-                        doc.styles.tableBodyOdd.alignment = 'center';
-
-                        // Atur padding dan garis supaya lebih rapi
-                        doc.content[1].layout = {
-                            hLineWidth: function(i) { return 0.5; },
-                            vLineWidth: function(i) { return 0.5; },
-                            hLineColor: function(i) { return '#aaa'; },
-                            vLineColor: function(i) { return '#aaa'; },
-                            paddingLeft: function(i) { return 5; },
-                            paddingRight: function(i) { return 5; }
-                        };
-
-                        // Atur ukuran kolom secara proporsional (optional)
-                        doc.content[1].table.widths = ['10%', '45%', '45%'];
-                    }
-                },
-                {
-                    extend: 'print',
-                    exportOptions: {
-                        columns: [0, 1, 6]
-                    }
-                }
+                'excel',
+                'pdf',
+                'print'
             ],
             columns: [{
                     "data": 'id',
@@ -235,45 +149,14 @@
                 },
 
                 {
-                    data: 'karat',
-                    name: 'karat'
-                },{
-                    data: 'type',
-                    name: 'type'
-                },{
-                    data: 'coef',
-                    name: 'coef'
-                },
-                // {
-                //     data: 'ph',
-                //     name: 'ph'
-                // }
-                // ,
-                {
                     data: 'harga',
                     name: 'harga'
-                },
-                {
-                    data: 'margin',
-                    name: 'margin'
-                },
-                // {
-                //     data: 'rekomendasi',
-                //     name: 'rekomendasi'
-                // },
-                // {
-                //     data: 'asli',
-                //     name: 'asli'
-                // },
-                {
-                    data: 'rounded',
-                    name: 'rounded'
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
+                },{
+                    data: 'tanggal',
+                    name: 'tanggal'
+                },{
+                    data: 'user',
+                    name: 'user'
                 }
             ]
         })

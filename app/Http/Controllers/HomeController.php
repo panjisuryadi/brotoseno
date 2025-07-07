@@ -91,6 +91,8 @@ class HomeController extends Controller
             }
         }
         
+        $formattedTotalGoldWeight = number_format($totalGoldWeight, 2, ',', '.') . ' Gram';
+
         // 4. JUMLAH PELANGGAN HARI INI (card biru)
         $totalCustomer = SalesGold::whereDate('created_at', $todayDate)->count();
         /// end data pada card
@@ -102,7 +104,7 @@ class HomeController extends Controller
             'status'     => $status,
             'lastActivity'     => $lastActivity,
             'formattedTotalGoldSales' => $formattedTotalGoldSales,
-            'totalGoldWeight' => $totalGoldWeight,
+            'formattedTotalGoldWeight' => $formattedTotalGoldWeight,
             'totalGoldQuantity' => $totalGoldQuantity,
             'totalCustomer' => $totalCustomer,
             // 'revenue'          => $revenue, // tidak dipakai sepertinya!

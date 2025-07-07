@@ -1146,8 +1146,9 @@ class JualController extends Controller
                 $persen = isset($data->karat->persen) ? $data->karat->persen : 0;
                 $harga  = isset($data->harga) ? $data->harga : 0;
                 $berat  = isset($data->berat_emas) ? $data->berat_emas : 0;
-                // $biaya  = $harga
-                $har    = ceil($coef*$harga*1000)/1000;
+                $biaya  = $harga*$coef;
+                $har    = ceil($biaya/1000)*1000;
+                // $rounded = ceil($biaya / 1000) * 1000;
                 $har    = $har*$berat;
                 $price  = ($har)+($har*$persen/100);
                 $price  = ceil($price/1000);

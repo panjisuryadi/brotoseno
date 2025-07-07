@@ -37,9 +37,9 @@
                             <thead>
                                 <tr>
                                     <th style="width: 5%!important;">NO</th>
-                                    <!-- <th style="width: 9%!important;">{{ Label_case('image') }}</th> -->
+                                    <th style="width: 9%!important;">{{ Label_case('image') }}</th>
                                     <th>{{ Label_case('product') }}</th>
-                                    <th style="width: 14%!important;" class="text-center">{{ Label_case('Karat / Harga') }}</th>
+                                    <th style="width: 14%!important;" class="text-center">{{ Label_case('Karat / Berat') }}</th>
                                     <th style="width: 14%!important;" class="text-center">Berat (gr)</th>
                                     <th style="width: 11%!important;" class="text-center">{{ Label_case('Date') }}</th>
                                      <th style="width: 18%!important;" class="text-center">
@@ -120,10 +120,10 @@
                 return meta.row + meta.settings._iDisplayStart + 1;
             }
         },
-        // {
-        //     data: 'product_image',
-        //     name: 'product_image'
-        // }, 
+        {
+            data: 'product_image',
+            name: 'product_image'
+        }, 
         {
             data: 'product_name',
             name: 'product_name'

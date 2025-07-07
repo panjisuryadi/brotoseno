@@ -132,19 +132,16 @@
                             <thead>
                                 <tr>
                                     <th>No</th>
+                                    <th>Code</th>
                                     <th>No Faktur</th>
                                     <th>Jam</th>
                                     <th>Kode Barcode</th>
                                     <th>Kode Intern</th>
                                     <th>Kode Sales</th>
                                     <th>Nama Customer</th>
-                                    <th>Nama Barang</th>
-                                    <th>Berat</th>
+                                    <th>Karat</th>
                                     <th>Kadar</th>
-                                    <th>Hrg Nota</th>
-                                    <th>Hrg Beli</th>
-                                    <th>Hrg Rata</th>
-                                    <th>Type Payment</th>
+                                    <th>Berat</th>
                                     <th>#</th>
                  <!-- <th style="width: 18%!important;" class="text-center">
                                         Action
@@ -220,7 +217,8 @@
             }
         },
 
-        "aaSorting": [[ 0, "desc" ]],
+        // "aaSorting": [[ 0, "desc" ]],
+        order: [[1, 'asc']],
         "columnDefs": [
         {
             "targets": 'no-sort',
@@ -230,11 +228,6 @@
         "sPaginationType": "simple_numbers",
         ajax: {
             url: '/purchases/data_report',
-            data: function (d) {
-                d.startDate = $('#startDate').val();
-                d.endDate = $('#endDate').val();
-                console.log(d);
-            }
         },
         dom: 'Blfrtip',
         buttons: [
@@ -264,81 +257,49 @@
                 return meta.row + meta.settings._iDisplayStart + 1;
             }
         },
-        { data: 'no_faktur', name: 'no_faktur' },
+        {data: 'code', name: 'code' },
+        {data: 'no_faktur', name: 'no_faktur' },
         {data:'jam',           name:'jam'},
+        {data:'qty', name:'qty', visible: false}, // penting! meski disembunyikan
         {data:'kode_barcode',  name:'kode_barcode'},
         {data:'kode_intern',   name:'kode_intern'},
         {data:'kode_sales',    name:'kode_sales'},
         {data:'nama_customer', name:'nama_customer'},
-        {data:'nama_barang',   name:'nama_barang'},
-        {data:'berat',         name:'berat'},
+        {data:'karat',   name:'karat'},
         {data:'kadar',         name:'kadar'},
-        {data:'hrg_nota',      name:'hrg_nota'},
-        {data:'hrg_beli',      name:'hrg_beli'},
-        {data:'hrg_rata',      name:'hrg_rata'},
-        {data:'type_payment',  name:'type_payment'},
+        {data:'berat',         name:'berat'},
         {
             data: 'action',
             name: 'action',
             orderable: false,
             searchable: false
         }
-        ]
+        ],
+        rowGroup: {
+            dataSrc: 'code',
+            endRender: function(rows, code){
+                const totalRows = rows.count();
+                const colCount  = this.api().columns().count(); // 12
+
+                return $('<tr/>').append(
+                $('<td/>')
+                    .attr('colspan', colCount)
+                    .addClass('fw-bold text-end')
+                    .html(`Total Code ${code}: ${totalRows} item`)
+                );
+            }
+        }
     })
     .buttons()
     .container()
     .appendTo("#buttons");
 
-    $('#startDate, #endDate').datepicker({
-        format: 'yyyy-mm-dd',
-        autoclose: true,
-        todayHighlight: true
-    });
-    console.log('script loaded');
-    $(document).ready(function () {
-            $('#startDate').val('');
-            $('#endDate').val('');
-            table.ajax.reload();
-        });
-    // $(document).on('click', '#resetFilter', function(e) {
-    //     console.log('reset clicked');
-    //     e.preventDefault();
-    // });
-
-    // Event onsubmit
-    $('#filterForm').on('submit', function(e) {
-        e.preventDefault();
-        const start = $('#startDate').val();
-        const end = $('#endDate').val();
-
-        if (start && end && start > end) {
-            alert('Tanggal awal tidak boleh lebih besar dari tanggal akhir.');
-            return;
-        }
-
-        table.ajax.reload();
-    });
-
-    // $('#filterForm').on('submit', function(e) {
-    //     e.preventDefault();
-    //     const start = $('#startDate').val();
-    //     const end = $('#endDate').val();
-
-    //     if (start && end && start > end) {
-    //         alert('Tanggal awal tidak boleh lebih besar dari tanggal akhir.');
-    //         return;
-    //     }
-
-    //     table.ajax.reload();
-    // });
-
-
-// });
-// })(jQuery);
-
-
 
 </script>
+<script src="https://cdn.datatables.net/1.13.10/js/jquery.dataTables.min.js"></script>
+
+<!-- ✅ 3. RowGroup (harus setelah core) -->
+<script src="https://cdn.datatables.net/rowgroup/1.4.1/js/dataTables.rowGroup.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>

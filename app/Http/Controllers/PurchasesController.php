@@ -84,9 +84,11 @@ class PurchasesController extends Controller
         $query = GoodsReceiptItem::with([
             'goodsReceipt.supplier',   // relasi ke header GR dan supplier
             'karat'                    // relasi ke karat
-        ]);
+        ])->get();
 
-        return Datatables::of($query)
+        // dd($query);
+
+        $dataTable = Datatables::of($query)
             ->addColumn('action', function ($data) {
                 $module_name = $this->module_name;
                 $module_model = $this->module_model;
@@ -97,7 +99,7 @@ class PurchasesController extends Controller
                 $data->goodsReceipt->code ?? '-'
             )
 
-            ->editColumn('no_faktur', fn($data) =>
+            ->editColumn('invoice', fn($data) =>
                 $data->goodsReceipt->no_invoice ?? '-'
             )
 
@@ -105,13 +107,7 @@ class PurchasesController extends Controller
                 $data->goodsReceipt->created_at?->format('H:i') ?? '-'
             )
 
-            ->editColumn('kode_barcode', fn($data) => '-')
-
-            ->editColumn('kode_intern', fn($data) => '-')
-
-            ->editColumn('kode_sales', fn($data) => '-')
-
-            ->editColumn('nama_customer', fn($data) =>
+            ->editColumn('supplier', fn($data) =>
                 $data->goodsReceipt->supplier->supplier_name ?? '-'
             )
 
@@ -127,13 +123,6 @@ class PurchasesController extends Controller
                 $data->berat_real ?? '-'
             )
 
-            ->editColumn('kadar', fn($data) => '-') // belum ditentukan
-
-            ->editColumn('hrg_nota', fn($data) => '-') // belum ditentukan
-
-            ->editColumn('hrg_beli', fn($data) => '-') // belum ditentukan
-
-            ->editColumn('hrg_rata', fn($data) => '-') // belum ditentukan
 
             ->editColumn('type_payment', fn($data) =>
                 $data->goodsReceipt->tipe_pembayaran ?? '-'
@@ -144,9 +133,13 @@ class PurchasesController extends Controller
             })
 
             ->rawColumns([
-                'action', 'qty', 'code','jam' , 'kode_sales' , 'berat_timbangan' , 'no_faktur', 'created_at', 'kode_barcode', 'kode_intern', 'nama_customer', 'nama_barang', 'berat', 'kadar', 'hrg_nota', 'hrg_beli', 'hrg_rata', 'type_payment'
+                'action', 'qty', 'code','jam' , 'kode_sales' , 'berat_timbangan' , 'no_faktur', 'created_at', 'nama_customer', 'nama_barang', 'berat', 'type_payment'
             ])
             ->make(true);
+
+        // dd($dataTable);
+
+        return $dataTable;
         }
 
     public function laporan_pembelian(Request $request){
@@ -270,6 +263,121 @@ class PurchasesController extends Controller
             )
         );
     }
+
+
+
+    public function data_recap(Request $request)
+{
+    /* 1. Tarik header + relasi item */
+    $receipts = GoodsReceipt::with('goodsReceiptItems')
+        ->when($request->filled(['bulan', 'tahun']), function ($q) use ($request) {
+            $q->whereMonth('created_at', $request->bulan)
+              ->whereYear('created_at',  $request->tahun);
+        })
+        ->latest()
+        ->get();
+
+        $detailRows = collect();
+
+        foreach ($sales as $row) {
+            $items = json_decode($row->products, true) ?? [];
+
+            foreach ($items as $item) {
+                //   ── Ambil id & qty ───────────────────────────────
+                $idProduk = is_array($item) ? $item['id'] : $item;
+                $itemQty  = is_array($item) && isset($item['qty']) ? $item['qty'] : 1;
+
+                $product = Product::find($idProduk);
+                if (!$product) continue;              // stop kalau id tak valid
+
+                $detailRows->push([
+                    'tanggal'     => $row->created_at->format('Y-m-d'),
+                    'product'     => $product->product_name,      // ← cuma string
+                    'berat_emas'  => $product->berat_emas * $itemQty,
+                    'qty'         => $itemQty,
+                    // contoh pembobotan total per‑item (sesuaikan skema Anda)
+                    'total'       => ($row->total / max($row->grand_qty,1)) * $itemQty
+                ]);
+            }
+        }
+
+    /* 3. Kirim ke DataTables */
+    return DataTables::of($rekap)
+        ->editColumn('tanggal',    fn($r) => $r['tanggal']->format('d/m/Y'))
+        ->editColumn('berat_kotor',fn($r) => number_format($r['berat_kotor'],2).' gr')
+        ->editColumn('berat_real', fn($r) => number_format($r['berat_real'], 2).' gr')
+        ->editColumn('qty',        fn($r) => number_format($r['qty']))
+        ->make(true);
+}
+
+
+
+    public function recap(Request $request)
+        {
+            if (AdjustmentSetting::exists()) {
+                toast('Stock Opname sedang Aktif!', 'error');
+                return redirect()->back();
+            }
+
+            Cart::instance('sale')->destroy();
+
+            $karat = Karat::latest()->get();
+            $category = Category::latest()->get();
+            $group = Group::latest()->get();
+            $models = ProdukModel::latest()->get();
+            $customers = Customer::all();
+            $product_categories = Category::all();
+
+            // Ambil filter dari request
+            $bulan = $request->input('bulan', now()->month);
+            $tahun = $request->input('tahun', now()->year);
+
+            // Ambil data SalesGold berdasarkan filter (jika ada)
+            $salesGold = SalesGold::when($bulan, function ($query) use ($bulan) {
+                    return $query->whereMonth('created_at', $bulan);
+                })
+                ->when($tahun, function ($query) use ($tahun) {
+                    return $query->whereYear('created_at', $tahun);
+                })
+                ->get();
+
+            // Total nilai penjualan
+            $totalGoldSales = $salesGold->sum('total');
+
+            // Hitung berat dan jumlah produk
+            $totalGoldWeight = 0;
+            $allProducts = [];
+
+            foreach ($salesGold as $data) {
+                $arrayProducts = json_decode($data->products, true);
+                foreach ($arrayProducts as $product_id) {
+                    $allProducts[] = $product_id;
+                    $berat = Product::find($product_id)?->berat_emas ?? 0;
+                    $totalGoldWeight += $berat;
+                }
+            }
+
+            $totalGoldQuantity = count($allProducts);
+            $totalCustomer = $salesGold->count();
+
+            $module_title = $this->module_title;
+
+            return view('purchase.recap', compact(
+                'module_title',
+                'karat',
+                'category',
+                'group',
+                'models',
+                'customers',
+                'product_categories',
+                'totalGoldSales',
+                'totalGoldWeight',
+                'totalGoldQuantity',
+                'totalCustomer',
+                'bulan',
+                'tahun'
+            ));
+        }
 
 
 }

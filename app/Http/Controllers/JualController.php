@@ -127,29 +127,29 @@ class JualController extends Controller
         }
 
         $sales = $query->latest()->get();
-        
+
         $hargaEmas = Harga::latest()->first()->harga;
-        
+
         $results = [];
 
         foreach ($sales as $sale) {
             $productIds = json_decode($sale->products);
 
             if (!is_array($productIds)) continue;
-            
+
             $products = Product::whereIn('id', $productIds)
                 ->with('category')
                 ->with('karats')
                 ->get();
-            
+
             foreach ($products as $product) {
 
                 // KOMPONEN UNTUK HARGA JUAL:
                 $coef = $product->karats->coef;
                 $persenMargin = $product->karats->persen;
                 $beratEmas = $product->berat_emas;
-                
-                // MEMBUAT HARGA JUAL PRODUK 
+
+                // MEMBUAT HARGA JUAL PRODUK
                 $hargaCoef = $coef * $hargaEmas;
                 $hargaJual = $hargaCoef + ($hargaCoef * ($persenMargin / 100));
                 $hargaTotalProduk = ceil($hargaJual * $beratEmas / 1000) * 1000;
@@ -273,7 +273,7 @@ class JualController extends Controller
         }
 
     public function laporan(Request $request){
-        
+
         // dd($request->all());
         if(AdjustmentSetting::exists()){
             toast('Stock Opname sedang Aktif!', 'error');
@@ -484,10 +484,134 @@ class JualController extends Controller
                 'tahun'
             ));
         }
+        public function summary_data(Request $request)
+        {
+            /* 1. Ambil invoice terfilter */
+                $sales = SalesGold::when($request->filled(['bulan','tahun']), function ($q) use ($request) {
+                    $q->whereMonth('created_at', $request->bulan)
+                    ->whereYear('created_at',  $request->tahun);
+            })
+            ->latest()
+            ->get();
+
+            /* 2. Flatten invoice → item */
+            $detailRows = collect();
+
+            foreach ($sales as $invoice) {
+                $items = json_decode($invoice->products, true) ?? [];
+
+                foreach ($items as $p) {
+                    $idProduk = is_array($p) ? $p['id'] : $p;
+                    $itemQty  = is_array($p) && isset($p['qty']) ? $p['qty'] : 1;   // ← qty
+
+                    $prod = Product::with(['category','karat'])->find($idProduk);
+                    if (!$prod) continue;
+
+                    $detailRows->push([
+                        'tanggal'   => $invoice->created_at->format('Y-m-d'),
+                        'kategori'  => optional($prod->category)->category_name ?: '-',
+                        'karat'     => optional($prod->karat)->name ?: '-',
+                        'berat'     => $prod->berat_emas * $itemQty,
+                        'qty'       => $itemQty,                 // ← simpan qty
+                        'total'     => $invoice->total           // (boleh prorata kalau perlu)
+                    ]);
+                }
+            }
+
+            /* 3. Group (tanggal, kategori) & agregat */
+            $rekap = $detailRows
+                ->groupBy(fn($r) => $r['tanggal'].'|'.$r['kategori'])
+                ->map(function ($rows) {
+                    $first = $rows->first();
+                    return [
+                        'tanggal'   => $first['tanggal'],
+                        'kategori'  => $first['kategori'],
+                        'karat'     => $rows->pluck('karat')->unique()->implode(', '),
+                        'berat'     => $rows->sum('berat'),
+                        'qty'       => $rows->sum('qty'),       // ← jumlah qty
+                        'total'     => $rows->sum('total'),
+                    ];
+                })
+                ->sortByDesc('tanggal')
+                ->values();
+
+            /* 4. Kirim ke DataTables */
+            return DataTables::of($rekap)
+                ->editColumn('tanggal', fn($r)=>Carbon::parse($r['tanggal'])->format('d/m/Y'))
+                ->editColumn('karat',   fn($r)=>$r['karat'])
+                ->editColumn('berat',   fn($r)=>number_format($r['berat'],2).' gr')
+                ->editColumn('qty',     fn($r)=>number_format($r['qty']))      // ← format qty
+                ->editColumn('total',   fn($r)=>'Rp '.number_format($r['total'],0,',','.'))
+                ->make(true);
+        }
 
 
+    public function summary(Request $request)
+        {
+            if (AdjustmentSetting::exists()) {
+                toast('Stock Opname sedang Aktif!', 'error');
+                return redirect()->back();
+            }
 
+            Cart::instance('sale')->destroy();
 
+            $karat = Karat::latest()->get();
+            $category = Category::latest()->get();
+            $group = Group::latest()->get();
+            $models = ProdukModel::latest()->get();
+            $customers = Customer::all();
+            $product_categories = Category::all();
+
+            // Ambil filter dari request
+            $bulan = $request->input('bulan', now()->month);
+            $tahun = $request->input('tahun', now()->year);
+
+            // Ambil data SalesGold berdasarkan filter (jika ada)
+            $salesGold = SalesGold::when($bulan, function ($query) use ($bulan) {
+                    return $query->whereMonth('created_at', $bulan);
+                })
+                ->when($tahun, function ($query) use ($tahun) {
+                    return $query->whereYear('created_at', $tahun);
+                })
+                ->get();
+
+            // Total nilai penjualan
+            $totalGoldSales = $salesGold->sum('total');
+
+            // Hitung berat dan jumlah produk
+            $totalGoldWeight = 0;
+            $allProducts = [];
+
+            foreach ($salesGold as $data) {
+                $arrayProducts = json_decode($data->products, true);
+                foreach ($arrayProducts as $product_id) {
+                    $allProducts[] = $product_id;
+                    $berat = Product::find($product_id)?->berat_emas ?? 0;
+                    $totalGoldWeight += $berat;
+                }
+            }
+
+            $totalGoldQuantity = count($allProducts);
+            $totalCustomer = $salesGold->count();
+
+            $module_title = $this->module_title;
+
+            return view('sale.summary', compact(
+                'module_title',
+                'karat',
+                'category',
+                'group',
+                'models',
+                'customers',
+                'product_categories',
+                'totalGoldSales',
+                'totalGoldWeight',
+                'totalGoldQuantity',
+                'totalCustomer',
+                'bulan',
+                'tahun'
+            ));
+        }
 
 
 

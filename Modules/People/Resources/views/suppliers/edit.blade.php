@@ -28,7 +28,7 @@
                     <div class="flex flex-row grid grid-cols-2 gap-2">
                         <div class="p-1">
                             <div class="form-group">
-                                <label class="mb-1" for="supplier_name">{{__('Supplier Name')}}  <span class="text-danger">*</span></label>
+                                <label class="mb-1" for="supplier_name">{{__('Supplier Name (PIC)')}}  <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" name="supplier_name" 
                                 value="{{ $supplier->supplier_name }}">
                             </div>

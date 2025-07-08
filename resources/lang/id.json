@@ -15,6 +15,7 @@
     "Products": "Produk",
     "City": "Kota",
     "Supplier Name": "Nama Supplier",
+    "Supplier Name (PIC)": "Nama Supplier (PIC)",
     "Settings": "Pengaturan",
     "Currencies": "Mata Uang",
     "Profit Loss Report": "Laporan Laba Rugi",
@@ -101,7 +102,6 @@
     "Return back": "Return back",
     "Save": "Simpan",
     "Cancel": "Batal",
-    "Create": "Tambah",
     "Created": "Dibuat",
     "Created at": "Dibuat",
     "Update": "Update",
@@ -112,6 +112,8 @@
     "Deleted at": "Dihapus pada",
     "Trash": "Trash",
     "Download": "Download",
+    "Config": "Konfigurasi",
+    "Invoice Config": "Konfigurasi Nota",
 
     "Activity Log": "Activity Log",
     "User Online": "Pengguna Online",
@@ -137,7 +139,6 @@
     "You have :count notifications": "ada :count Notifikasi",
     ":count unread": ":count unread",
     "Account": "Account",
-    "Settings": "Settings",
     "Logout": "Logout",
     "Displaing all the values of :module_name (Id: :id)": "Displaing all the values of <strong>:module_name (Id: :id)</strong>.",
     "Are you sure?": "Are you sure?",
@@ -149,7 +150,6 @@
     "File": "File",
     "Size": "Size",
     "Age": "Age",
-    "Download": "Download",
     "Download File": "Download File",
     "Delete ": "Delete ",
     "Delete File": "Delete File",
@@ -227,7 +227,6 @@
     "Category Description": "Deskripsi Kategori",
     "Expenses Count": "Hitungan Biaya",
     "Add Expense": "Tambah Biaya",
-    "Expenses": "Biaya",
     "Amount": "Jumlah",
     "Reference": "Referensi"
 }

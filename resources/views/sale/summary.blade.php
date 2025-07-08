@@ -113,31 +113,55 @@
                         </div>
                         <div id="buttons"></div>
                     </div>
+{{-- FILTER LAPORAN --}}
+<div class="container-fluid">
+    <div class="row g-3 align-items-end my-3">
 
-                    {{-- filter bulanan --}}
-                    <div class="row align-items-end mt-3">
-                        <div class="col-md-3 col-sm-6 mb-2">
-                            <label for="bulan" class="small">Bulan</label>
-                            <select id="bulan" class="form-control form-control-sm">
-                                {{-- <option value="">Semua</option> --}}
-                                @for ($i = 1; $i <= 12; $i++)
-                                    <option value="{{ $i }}" {{ $bulan == $i ? 'selected' : '' }}>{{ \Carbon\Carbon::create()->month($i)->format('F') }}</option>
-                                @endfor
-                            </select>
-                        </div>
-                        <div class="col-md-3 col-sm-6 mb-2">
-                            <label for="tahun" class="small">Tahun</label>
-                            <select id="tahun" class="form-control form-control-sm">
-                                {{-- <option value="">Semua</option> --}}
-                                @for ($i = now()->year; $i >= 2020; $i--)
-                                    <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>{{ $i }}</option>
-                                @endfor
-                            </select>
-                        </div>
-                        <div class="col-md-2 col-sm-6 mb-2">
-                            <button id="filterBtn" class="btn btn-sm btn-primary w-100 mt-2">Filter</button>
-                        </div>
-                    </div>
+        {{-- Bulan --}}
+        <div class="col-md-3 col-sm-6">
+            <label for="bulan" class="small">Bulan</label>
+            <select id="bulan" class="form-control form-control-sm">
+                @for ($i = 1; $i <= 12; $i++)
+                    <option value="{{ $i }}" {{ $bulan == $i ? 'selected' : '' }}>
+                        {{ \Carbon\Carbon::create()->month($i)->translatedFormat('F') }}
+                    </option>
+                @endfor
+            </select>
+        </div>
+
+        {{-- Tahun --}}
+        <div class="col-md-3 col-sm-6">
+            <label for="tahun" class="small">Tahun</label>
+            <select id="tahun" class="form-control form-control-sm">
+                @for ($i = now()->year; $i >= 2020; $i--)
+                    <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>
+                        {{ $i }}
+                    </option>
+                @endfor
+            </select>
+        </div>
+
+        {{-- Karat --}}
+        <div class="col-md-2 col-sm-6">
+            <label for="karat" class="small">Karat</label>
+            <select id="karat" class="form-control form-control-sm">
+                @foreach ($karat as $item)
+                    <option value="{{ $item->id }}">
+                        {{ $item->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        {{-- Tombol Filter --}}
+        <div class="col-md-2 col-sm-6">
+            <button id="filterBtn" class="btn btn-primary btn-sm w-100">
+                Filter
+            </button>
+        </div>
+    </div>
+</div>
+
 
                     <div class="clearfix"></div>
                     <div class="table-responsive mt-1">

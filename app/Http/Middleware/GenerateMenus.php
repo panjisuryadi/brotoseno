@@ -299,18 +299,18 @@ class GenerateMenus
 
             // ReturPembelians
 
-            $Products->add('<i class="c-sidebar-nav-icon  bi bi-box-seam text-sm"></i> ' . __('All Products'), [
-                'route' => 'products.all',
-                'class' => 'nav-item',
-            ])
-                ->data([
-                    'order'         => 77,
-                    'activematches' => ['returpembelians*'],
-                    'permission'    => ['access_returpembelians'],
-                ])
-                ->link->attr([
-                    'class' => 'c-sidebar-nav-link py-2',
-                ]);
+            // $Products->add('<i class="c-sidebar-nav-icon  bi bi-box-seam text-sm"></i> ' . __('All Products'), [
+            //     'route' => 'products.all',
+            //     'class' => 'nav-item',
+            // ])
+            //     ->data([
+            //         'order'         => 77,
+            //         'activematches' => ['returpembelians*'],
+            //         'permission'    => ['access_returpembelians'],
+            //     ])
+            //     ->link->attr([
+            //         'class' => 'c-sidebar-nav-link py-2',
+            //     ]);
 
 
             $Products->add('<i class="c-sidebar-nav-icon bi bi-truck text-sm"></i> ' . __('Barang Luar'), [
@@ -1393,6 +1393,34 @@ class GenerateMenus
             // REPORT - REKAP PENJUALAN
             $jual->add('<i class="c-sidebar-nav-icon bi-journal-text"></i> ' . 'Rekap Penjualan'. '', [
                 'route' => 'sale.recap',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 91,
+                    'activematches' => 'settings*',
+                    'permission'    => ['access_settings'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link',
+                ]);
+
+            // REPORT - REKAP PENERIMAAN BARANG
+            $jual->add('<i class="c-sidebar-nav-icon bi-journal-text"></i> ' . 'Rekap Penerimaan'. '', [
+                'route' => 'goodreceipt.recap',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 91,
+                    'activematches' => 'settings*',
+                    'permission'    => ['access_settings'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link',
+                ]);
+
+            // REPORT - REKAP PENJUALAN (SUMMARY)
+            $jual->add('<i class="c-sidebar-nav-icon bi-journal-text"></i> ' . 'Summary'. '', [
+                'route' => 'summary.recap',
                 'class' => 'nav-item',
             ])
                 ->data([
@@ -2635,8 +2663,21 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link',
                 ]);
 
-            $setting->add('<i class="c-sidebar-nav-icon bi bi-wallet2"></i> ' . __('Petty Cash') . '', [
-                'route' => 'pettycash.index',
+            // $setting->add('<i class="c-sidebar-nav-icon bi bi-wallet2"></i> ' . __('Petty Cash') . '', [
+            //     'route' => 'pettycash.index',
+            //     'class' => 'nav-item',
+            // ])
+            //     ->data([
+            //         'order'         => 91,
+            //         'activematches' => 'settings*',
+            //         'permission'    => ['access_settings'],
+            //     ])
+            //     ->link->attr([
+            //         'class' => 'c-sidebar-nav-link',
+            //     ]);
+
+            $setting->add('<i class="c-sidebar-nav-icon bi bi-wallet2"></i> ' . __('Modal') . '', [
+                'route' => 'modal.index',
                 'class' => 'nav-item',
             ])
                 ->data([

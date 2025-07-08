@@ -21,6 +21,8 @@ use Modules\GoodsReceipt\Models\GoodsReceiptItem;
 use Modules\Stok\Models\StockOffice;
 use App\Models\Harga;
 use App\Models\Baki;
+use App\Models\Modal;
+use App\Models\ModalData;
 use App\Models\StockOpname;
 use Yajra\DataTables\DataTables;
 use App\Models\ProductHistories;
@@ -164,6 +166,24 @@ class ProductController extends Controller
             'harga'         => $request->new_product_harga,
             'tanggal'       => date('Y-m-d'),
         ]);
+
+        // MODAL START
+        $modal      = Modal::where('status', 'A')->first();
+        if($modal){
+            $cash_out   = $modal->cash_out;
+            $current    = $modal->current;
+            $modal->cash_out= $cash_out+$request->new_product_harga;
+            $modal->current = $current-$request->new_product_harga;
+            $modal->save();
+            
+            $modalData  = ModalData::create([
+                'modal_id' => $modal->id,
+                'type'  => 'luar',
+                'nominal' => $request->new_product_harga,
+                'from' => 'kasir'
+            ]);
+        }
+        // MODAL END
 
         $luar   = array();
         $luar['nota']   = $nota;

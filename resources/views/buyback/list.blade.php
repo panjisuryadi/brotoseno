@@ -151,7 +151,7 @@
                         </div>
                             
                         <div class="col-12 mt-5">
-                            <table class="invoice-table">
+                            <table class="invoice-table" id="invoice-table" style="display: none;">
                                 <thead>
                                     <tr>
                                         <th>Img</th>
@@ -344,6 +344,8 @@ function change_harga(){
 
 function view_nota(){
     $("#btn_submit").hide();
+    $('#invoice-table').hide();
+
     let nota = $('#nota').val();
     let length = nota.length;
     $('#potongan').val(0);
@@ -393,6 +395,7 @@ function view_nota(){
                         $('#harga_label').val(rupiah);
                         $('#harga_awal').val(price);
                         $('#btn_submit').show();
+                        $('#invoice-table').show();
                     }else{
                         alert('Nota not valid');
                     }

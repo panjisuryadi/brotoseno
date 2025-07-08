@@ -18,6 +18,13 @@
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-bordered">
+                                <!-- <tr>
+                                    <th>{{ __('No.') }}</th>
+                                    @php
+                                    $customerIndex = 1;
+                                    @endphp
+                                    <td>{{ $customerIndex + 1 }}</td>
+                                </tr> -->
                                 <tr>
                                     <th>{{ __('Customer Name') }}</th>
                                     <td>{{ $customer->customer_name }}</td>

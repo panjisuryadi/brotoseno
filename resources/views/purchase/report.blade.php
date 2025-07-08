@@ -24,6 +24,15 @@
         font-size: 5rem;
         color: #bd4019 !important;
     }
+
+    #datatable tbody td:empty {
+        border-top: none !important;
+        border-bottom: none !important;
+    }
+
+    #datatable tbody tr td:first-child:empty {   /* kolom No yang kosong */
+        border-left: none !important;
+    }
 </style>
 @endsection
 @section('breadcrumb')
@@ -34,76 +43,6 @@
 @endsection
 @section('content')
 <div class="container-fluid">
-
-    @can('show_total_stats')
-        <div class="row">
-            <div class="col-md-6 col-lg-3">
-                <div class="card border-0">
-                    <div class="card-body p-0 d-flex align-items-center shadow-sm">
-                        <div class="bg-gradient-primary p-4 mfe-3 rounded-left">
-                            <i class="bi bi-cash font-2xl"></i>
-                        </div>
-                        <div>
-                            <div class="text-value text-primary">{{ format_currency($totalGoldSales) }}</div>
-                            <div class="text-muted text-uppercase font-weight-bold small">
-                           @lang('Sales')
-                        </div>
-                        {{-- <p class="text-muted font-weight-bold small">{{ $todayDate->format("d/m/Y") }}</p> --}}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="card border-0">
-                    <div class="card-body p-0 d-flex align-items-center shadow-sm">
-                        <div class="bg-gradient-warning p-4 mfe-3 rounded-left">
-                            <i class="bi bi-speedometer2 font-2xl"></i>
-                        </div>
-                        <div>
-                            <div class="text-value text-warning">{{ $totalGoldWeight }} Gram</div>
-                            <div class="text-muted text-uppercase font-weight-bold small">
-                          @lang('Sales Weight')
-                        </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="card border-0">
-                    <div class="card-body p-0 d-flex align-items-center shadow-sm">
-                        <div class="bg-gradient-success p-4 mfe-3 rounded-left">
-                            <i class="bi bi-arrow-return-right font-2xl"></i>
-                        </div>
-                        <div>
-                            <div class="text-value text-success">{{ $totalGoldQuantity }} Pcs</div>
-                            <div class="text-muted text-uppercase font-weight-bold small">
-                            @lang('Sales Quantity')
-                        </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="card border-0">
-                    <div class="card-body p-0 d-flex align-items-center shadow-sm">
-                        <div class="bg-gradient-info p-4 mfe-3 rounded-left">
-                            <i class="bi bi-people font-2xl"></i>
-                        </div>
-                        <div>
-                            <div class="text-value text-info">{{ $totalCustomer }} Orang</div>
-                            <div class="text-muted text-uppercase font-weight-bold small">
-                             @lang('Total Customer')
-                        </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endcan
-
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -114,17 +53,6 @@
                         </div>
                         <div id="buttons"></div>
                     </div>
-                    <form id="filterForm" class="form-inline mb-2" style="float: right;">
-                        <input type="date" name="startDate" id="startDate"
-                            class="form-control form-control-sm mx-1"
-                            placeholder="Dari" value="{{ request('startDate') }}">
-
-                        <input type="date" name="endDate" id="endDate"
-                            class="form-control form-control-sm mx-1"
-                            placeholder="Sampai" value="{{ request('endDate') }}">
-
-                        <button type="submit" class="btn btn-sm mx-1 btn-primary">Filter</button>
-                    </form>
                     {{-- <button type="button" id="resetFilter" class="btn btn-sm btn-secondary">Reset</button> --}}
                     <div class="clearfix"></div>
                     <div class="table-responsive mt-1">
@@ -133,14 +61,14 @@
                                 <tr>
                                     <th>No</th>
                                     <th>Code</th>
-                                    <th>No Faktur</th>
+                                    <th>Invoice</th>
                                     <th>Jam</th>
-                                    <th>Kode Barcode</th>
+                                    {{-- <th>Kode Barcode</th>
                                     <th>Kode Intern</th>
-                                    <th>Kode Sales</th>
-                                    <th>Nama Customer</th>
+                                    <th>Kode Sales</th> --}}
+                                    <th>Supplier</th>
                                     <th>Karat</th>
-                                    <th>Kadar</th>
+                                    {{-- <th>Kadar</th> --}}
                                     <th>Berat</th>
                                     <th>#</th>
                  <!-- <th style="width: 18%!important;" class="text-center">
@@ -196,103 +124,109 @@
         // (function($) {
         //     $(document).ready(function () {
 
-    let table = $('#datatable').DataTable({
-        processing: true,
-        serverSide: true,
-        autoWidth: true,
-        responsive: true,
-        lengthChange: true,
-        searching: true,
-        "oLanguage": {
-            "sSearch": "<i class='bi bi-search'></i> {{ __("labels.table.search") }} : ",
-            "sLengthMenu": "_MENU_ &nbsp;&nbsp;Data Per {{ __("labels.table.page") }} ",
-            "sInfo": "{{ __("labels.table.showing") }} _START_ s/d _END_ {{ __("labels.table.from") }} <b>_TOTAL_ data</b>",
-            "sInfoFiltered": "(filter {{ __("labels.table.from") }} _MAX_ total data)",
-            "sZeroRecords": "{{ __("labels.table.not_found") }}",
-            "sEmptyTable": "{{ __("labels.table.empty") }}",
-            "sLoadingRecords": "Harap Tunggu...",
-            "oPaginate": {
-                "sPrevious": "{{ __("labels.table.prev") }}",
-                "sNext": "{{ __("labels.table.next") }}"
-            }
-        },
-
-        // "aaSorting": [[ 0, "desc" ]],
-        order: [[1, 'asc']],
-        "columnDefs": [
+        let table = $('#datatable').DataTable({
+    processing: true,
+    serverSide: true,
+    autoWidth: true,
+    responsive: true,
+    lengthChange: true,
+    searching: true,
+    "oLanguage": {
+        "sSearch": "<i class='bi bi-search'></i> {{ __('labels.table.search') }} : ",
+        "sLengthMenu": "_MENU_ &nbsp;&nbsp;Data Per {{ __('labels.table.page') }} ",
+        "sInfo": "{{ __('labels.table.showing') }} _START_ s/d _END_ {{ __('labels.table.from') }} <b>_TOTAL_ data</b>",
+        "sInfoFiltered": "(filter {{ __('labels.table.from') }} _MAX_ total data)",
+        "sZeroRecords": "{{ __('labels.table.not_found') }}",
+        "sEmptyTable": "{{ __('labels.table.empty') }}",
+        "sLoadingRecords": "Harap Tunggu...",
+        "oPaginate": {
+            "sPrevious": "{{ __('labels.table.prev') }}",
+            "sNext": "{{ __('labels.table.next') }}"
+        }
+    },
+    rowsGroup: [1, 2],
+    "aaSorting": [[0, "desc"]],
+    "columnDefs": [
         {
             "targets": 'no-sort',
             "orderable": false,
         }
-        ],
-        "sPaginationType": "simple_numbers",
-        ajax: {
-            url: '/purchases/data_report',
+    ],
+    "sPaginationType": "simple_numbers",
+    ajax: {
+        url: '/purchases/data_report',
+    },
+    dom: 'Blfrtip',
+    buttons: [
+        {
+            extend: 'excel',
+            exportOptions: { columns: [0,1,2,3,4,5,6] }
         },
-        dom: 'Blfrtip',
-        buttons: [
-            {
-                    extend: 'excel',
-                    exportOptions: {
-                        columns: [ 0,1,2,3,4,5,6 ]
-                    }
-                },
-                {
-                    extend: 'pdf',
-                    exportOptions: {
-                        columns: [ 0,1,2,3,4,5,6 ]
-                    }
-                },
-                {
-                    extend: 'print',
-                    exportOptions: {
-                        columns: [ 0,1,2,3,4,5,6 ]
-                    }
-                }
-        ],
-        columns: [{
-            "data": 'id',
-            "sortable": false,
-            render: function(data, type, row, meta) {
+        {
+            extend: 'pdf',
+            exportOptions: { columns: [0,1,2,3,4,5,6] }
+        },
+        {
+            extend: 'print',
+            exportOptions: { columns: [0,1,2,3,4,5,6] }
+        }
+    ],
+    columns: [
+        {
+            data: 'id',
+            sortable: false,
+            render: function (data, type, row, meta) {
                 return meta.row + meta.settings._iDisplayStart + 1;
             }
         },
-        {data: 'code', name: 'code' },
-        {data: 'no_faktur', name: 'no_faktur' },
-        {data:'jam',           name:'jam'},
-        {data:'qty', name:'qty', visible: false}, // penting! meski disembunyikan
-        {data:'kode_barcode',  name:'kode_barcode'},
-        {data:'kode_intern',   name:'kode_intern'},
-        {data:'kode_sales',    name:'kode_sales'},
-        {data:'nama_customer', name:'nama_customer'},
-        {data:'karat',   name:'karat'},
-        {data:'kadar',         name:'kadar'},
-        {data:'berat',         name:'berat'},
+        {data: 'code',     name: 'code'},
+        {data: 'invoice',  name: 'invoice'},
+        {data: 'jam',      name: 'jam'},
+        {data: 'supplier', name: 'supplier'},
+        {data: 'karat',    name: 'karat'},
+        {data: 'berat',    name: 'berat'},
         {
             data: 'action',
             name: 'action',
             orderable: false,
             searchable: false
         }
-        ],
-        rowGroup: {
-            dataSrc: 'code',
-            endRender: function(rows, code){
-                const totalRows = rows.count();
-                const colCount  = this.api().columns().count(); // 12
+    ],
+    drawCallback: numberingByGroup
+});
 
-                return $('<tr/>').append(
-                $('<td/>')
-                    .attr('colspan', colCount)
-                    .addClass('fw-bold text-end')
-                    .html(`Total Code ${code}: ${totalRows} item`)
-                );
-            }
+function numberingByGroup(settings) {
+    const api = this.api();
+    let idx = 1;
+    let lastCode = null;
+    let prevCode = null;
+    let prevInvoice = null;
+
+    api.rows({ page: 'current' }).every(function (rowIdx) {
+        let data = this.data();
+        let codeCell = api.cell(rowIdx, 1).node();     // kolom ke-1 = code
+        let invoiceCell = api.cell(rowIdx, 2).node();  // kolom ke-2 = invoice
+
+        if (data.code === prevCode) $(codeCell).html('');
+        else prevCode = data.code;
+
+        if (data.invoice === prevInvoice) $(invoiceCell).html('');
+        else prevInvoice = data.invoice;
+    });
+
+    api.rows({ page: 'current' }).every(function (rowIdx) {
+        const data = this.data();
+        const noCell = api.cell(rowIdx, 0).node(); // kolom 'No'
+
+        if (data.code !== lastCode) {
+            $(noCell).html(idx++); // tampilkan nomor baru
+            lastCode = data.code;
+        } else {
+            $(noCell).html('');    // baris detail: kosongkan
         }
-    })
-    .buttons()
-    .container()
-    .appendTo("#buttons");
+    });
+}
+
 
 
 </script>

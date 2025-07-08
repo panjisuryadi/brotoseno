@@ -33,9 +33,13 @@
                                     <input type="email" class="form-control" name="customer_email">
                                 </div>
                                 <div class="form-group">
+                                    <label for="address">{{ __('Address') }}</label>
+                                    <input type="text" class="form-control" name="address">
+                                </div>
+                                {{-- <div class="form-group">
                                     <label for="country">{{ __('Country') }} </label>
                                     <input type="text" class="form-control" name="country">
-                                </div>
+                                </div> --}}
                             </div>
                             
                             <div class="px-2">
@@ -46,10 +50,6 @@
                                 <div class="form-group">
                                     <label for="city">{{ __('City') }}</label>
                                     <input type="text" class="form-control" name="city">
-                                </div>
-                                <div class="form-group">
-                                    <label for="address">{{ __('Address') }}</label>
-                                    <input type="text" class="form-control" name="address">
                                 </div>
                             </div>
                         </div>

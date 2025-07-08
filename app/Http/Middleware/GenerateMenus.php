@@ -2622,7 +2622,7 @@ class GenerateMenus
                 ]);
 
 
-            $setting->add('<i class="c-sidebar-nav-icon bi bi-sliders"></i> ' . __('Config') . '', [
+            $setting->add('<i class="c-sidebar-nav-icon bi bi-sliders"></i> ' . __('Invoice Config') . '', [
                 'route' => 'config.index',
                 'class' => 'nav-item',
             ])

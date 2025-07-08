@@ -18,10 +18,6 @@
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-bordered">
-                                  <tr>
-                                <th>{{ __('No.') }}</th>
-                                <td>{{ $customerIndex + 1 }}</td> <!-- Sequential Number -->
-                                </tr>
                                 <tr>
                                     <th>{{ __('Customer Name') }}</th>
                                     <td>{{ $customer->customer_name }}</td>
@@ -38,10 +34,10 @@
                                     <th>{{ __('City') }}</th>
                                     <td>{{ $customer->city }}</td>
                                 </tr>
-                                <tr>
+                                {{-- <tr>
                                     <th>{{ __('Country') }}</th>
                                     <td>{{ $customer->country }}</td>
-                                </tr>
+                                </tr> --}}
                                 <tr>
                                     <th>{{ __('Address') }}</th>
                                     <td>{{ $customer->address }}</td>
@@ -54,4 +50,3 @@
         </div>
     </div>
 @endsection
-

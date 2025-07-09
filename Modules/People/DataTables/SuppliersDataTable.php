@@ -56,7 +56,7 @@ class SuppliersDataTable extends DataTable
                 ->searchable(false),
 
             Column::make('supplier_name')
-                ->title(__('Supplier Name'))
+                ->title(__('Supplier Name (PIC)'))
                 ->className('text-center align-middle'),
 
             Column::make('toko')

@@ -43,7 +43,7 @@ $user = \App\Models\User::findOrFail(Auth::user()->id);
                             <i class="bi bi-speedometer2 font-2xl"></i>
                         </div>
                         <div>
-                            <div class="text-value text-warning">{{ $formattedTotalGoldWeight }} Gram</div>
+                            <div class="text-value text-warning">{{ $formattedTotalGoldWeight }}</div>
                             <div class="text-muted text-uppercase font-weight-bold small">
                           @lang('Sales Weight')
                         </div>

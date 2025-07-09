@@ -53,12 +53,12 @@
                                         <input type="text" class="form-control" name="city" value="{{ $customer->city }}">
                                     </div>
                                 </div>
-                                <div class="col-lg-4">
+                                {{-- <div class="col-lg-4">
                                     <div class="form-group">
                                         <label for="country">{{ __('Country') }} </label>
                                         <input type="text" class="form-control" name="country"  value="{{ $customer->country }}">
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
 
                             <div class="form-row">

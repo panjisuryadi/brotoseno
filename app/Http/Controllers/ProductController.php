@@ -234,6 +234,94 @@ class ProductController extends Controller
         );
     }
 
+    public function update_nota(Request $request)
+    {
+        $doc    = isset($request['document'][0]) ? $request['document'][0] : '';
+        if(empty($doc) && empty($request['webcam'])){
+            toast('Image Required', 'error');
+            return redirect()->back();
+        }
+        $gam                     = $this->getUploadedImage($request['webcam'], $doc);
+        if(!empty($gam)){
+            $gambar = $gam;
+        }
+
+        $i = 0;
+        $group  = Group::where('id', $request->new_product_group_id)->first();
+        $group_name = $group->name;
+        $model  = ProdukModel::where('id', $request->new_product_model_id)->first();
+        $model_name = $model->name;
+        $product_name   = $group_name.' '.$model_name;
+
+        // IMAGE
+        // if ($image = $request->file('image')) {
+        //     $gambar = 'products_'.date('YmdHis') . "." . $image->getClientOriginalExtension();
+        //     $normal = Image::make($image)->resize(600, null, function ($constraint) {
+        //                $constraint->aspectRatio();
+        //                })->encode();
+        //     $normalpath = 'uploads/' . $gambar;
+        //     if (config('app.env') === 'production') {$storage = 'public'; } else { $storage = 'public'; }
+        //     Storage::disk($storage)->put($normalpath, (string) $normal);
+        //     // $params['image'] = "$gambar";
+        //     $gambar = $gambar;
+        // }else{
+        //     $gambar = 'no_foto.png';
+        //     // $params['image'] = 'no_foto.png';
+        // }
+        // $gambar = 'products_20250522095614.png';
+
+        $berat  = str_replace(',', '.', $request->new_product_berat);
+        $stat   = 4; // pending
+        $baki_id    = $request->new_product_baki_id;
+        if(!empty($baki_id)){
+            $baki   = Baki::where('id', $baki_id)->first();
+            $posisi = $baki->posisi;
+            if($posisi == 'etalase'){
+                $stat   = 1;
+            }
+        }else{
+            $baki_id    = 0;
+        }
+        $product    = Product::create([
+            'category_id'       => $request->new_product_category_id,
+            'product_code'       => $request->new_product_code_id,
+            'product_name'       => $product_name,
+            'product_price'       => 0,
+            'product_barcode_symbology'       => 'C128',
+            'product_unit'       => 'Gram',
+            'karat_id'       => $request->new_product_karat_id,
+            'product_stock_alert'       => 5,
+            'status'       => $stat, // brankas
+            'images'       => $gambar,
+            'berat_emas'       => $berat,
+            'baki_id'       => $baki_id,
+            'status_id'       => $stat, // brankas
+            'group_id'       => $request->new_product_group_id,
+            'model_id'       => $request->new_product_model_id,
+            'goodreceipt_item_id' => 0,
+            'is_nota' => false,
+        ]);
+
+        $productItem    = ProductItem::create([
+            'product_id'       => $product->id,
+            'berat_total'       => $berat,
+            // 'berat_emas'       => $request->new_product_gold_weight,
+            'berat_emas'       => $berat,
+            'berat_accessories'       => $request->new_product_accessories_weight,
+            'tag_label'       => 0,
+            'berat_label'       => 0,
+        ]);
+
+        $product_history = ProductHistories::create([
+            'product_id'    => $product->id,
+            'status'        => 'P',
+            'keterangan'    => $request->new_product_keterangan,
+            'harga'         => 0,
+            'tanggal'       => date('Y-m-d'),
+        ]);
+
+        return redirect()->action([ProductController::class, 'list_nota']);
+    }
     public function insert_nota(Request $request)
     {
         // echo $gam;

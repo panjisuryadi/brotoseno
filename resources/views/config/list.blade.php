@@ -39,7 +39,7 @@ body {
     font-size: 18px;
     font-weight: bold;
 }
-.invoice-table {
+/* .invoice-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
@@ -54,7 +54,56 @@ body {
 }
 .invoice-table td {
     background-color: #fff;
-}
+} */
+
+
+/* ——— Invoice wrapper ——— */
+.invoice {
+        max-width: 900px;
+        padding: 24px 28px;
+        border: 1px solid #000;
+        background:#f9f9f9;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.45;
+    }
+
+    /* ——— Header ——— */
+    .invoice .header{
+        display:flex;
+        gap:20px;
+        align-items:center;
+        margin-bottom:16px;
+    }
+    .invoice .header img{width:100px;object-fit:contain}
+
+    /* ——— Meta (no & tanggal) ——— */
+    .invoice .meta{
+        display:flex;
+        justify-content:space-between;
+        margin-bottom:20px
+    }
+
+    /* ——— Items table ——— */
+    .items{width:100%;border-collapse:separate;border-spacing:0;margin-bottom:20px}
+    .item{display:flex;border-bottom:1px solid #ddd;padding:10px 0}
+    .item .photo{flex:0 0 150px}
+    .item .photo img{width:140px;height:auto;border:1px solid #ccc;border-radius:4px}
+    .item .desc{flex:1;padding-left:16px}
+    .item .desc strong{display:inline-block;width:80px}
+
+    /* ——— Total ——— */
+    .invoice .total{
+        display:flex;
+        justify-content:space-between;
+        font-weight:600;
+        font-size:16px;
+        margin-bottom:24px
+    }
+
+    /* ——— Footer ——— */
+    .invoice .footer{text-align:center;font-size:12px}
+
 </style>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css">
 @endsection
@@ -72,24 +121,24 @@ body {
                 <div class="card-body">
                     <div class="flex justify-between py-1 border-bottom">
                         <div>
+                            <div class="btn-group">
+                                <a href="#" class="px-3 btn btn-danger" data-toggle="modal" data-target="#createModal">
+                                    Create Config <i class="bi bi-plus"></i>
+                                </a>
+                            </div>
 
-                <div class="btn-group">
-                    <a href="#" class="px-3 btn btn-danger" data-toggle="modal" data-target="#createModal">
-                        Create Config <i class="bi bi-plus"></i>
-                    </a>
-                </div>
+                            </div>
+                                <div id="buttons"></div>
+                            </div>
 
-                    </div>
-                        <div id="buttons"></div>
-                    </div>
-
-                    <div class="invoice">
-                        <div class="header">
-                        <img src="./storage/uploads/logo.png" alt="Logo">
-<!-- <img src="logo.png" alt="Logo"> Replace with your actual logo -->
-                            <h2>{{$toko}}</h2>
-                            <p>{{ $alamat }}</p>
-                            <p>Telp: {{ $telp }}</p>
+                    {{-- <div class="invoice">
+                        <div class="header flex">
+                            <img src="./storage/uploads/logo.png" alt="Logo">
+                            <div class="">
+                                <h2>{{$toko}}</h2>
+                                <p>{{ $alamat }}</p>
+                                <p>Telp: {{ $telp }}</p>
+                            </div>
                         </div>
 
                         <div class="invoice-details">
@@ -104,27 +153,24 @@ body {
                         </div>
 
                         <table class="invoice-table">
-                            <thead>
-                                <tr>
-                                    <th>Img</th>
-                                    <th>Kode</th>
-                                    <th>Jenis</th>
-                                    <th>Deskripsi</th>
-                                    <th>Berat</th>
-                                    <th>Harga</th>
-                                </tr>
-                            </thead>
                             <tbody>
                                 <tr>
-                                    <td><img src="./storage/uploads/1742774180.png" order="0" width="70" class="img-thumbnail"></td>
-                                    <td>Aring F</td>
-                                    <td>Aring L6</td>
-                                    <td>Gold 1 ml Ruth</td>
-                                    <td>0.98 g</td>
-                                    <td>Rp. 1.360.000</td>
+                                    <td class="img-cell">
+                                        <img src="{{ asset('storage/uploads/1742774180.png') }}" alt="Produk">
+                                    </td>
+                                    <td class="data-cell" colspan="5">
+                                        <strong>Kode:</strong> ARF001<br>
+                                        <strong>Jenis:</strong> Cincin L6<br>
+                                        <strong>Deskripsi:</strong> Gold 1 ml Ruth<br>
+                                        <strong>Berat:</strong> 0,98 g<br>
+                                        <strong>Harga:</strong> Rp 1.360.000
+                                    </td>
                                 </tr>
+                                <!-- Tambahkan baris produk lain jika perlu -->
                             </tbody>
+
                         </table>
+
 
                         <div class="total">
                             <div><strong>Total:</strong></div>
@@ -142,6 +188,65 @@ body {
                                 </thead>
                             </table>
                         </div>
+                    </div> --}}
+
+                    <div class="invoice">
+
+                        <!-- Header -->
+                        <div class="header">
+                            <img src="{{ asset('storage/uploads/logo.png') }}" alt="Logo">
+                            <div>
+                                <h2 style="margin:0">{{$toko}}</h2>
+                                <div>{{ $alamat }}</div>
+                                <div>Telp: {{ $telp }}</div>
+                            </div>
+                        </div>
+
+                        <!-- Meta -->
+                        <div class="meta">
+                            <div>
+                                <strong>Faktur No:</strong> 222536<br>
+                                <strong>Tanggal:</strong> 15 April 2025
+                            </div>
+                            <div>
+                                <strong>Penerima:</strong> Aring F<br>
+                                <strong>Alamat:</strong> -
+                            </div>
+                        </div>
+
+                        <!-- Items -->
+                        <table class="items">
+                            <tbody>
+                                <tr class="item">
+                                    <td class="photo">
+                                        <img src="{{ asset('storage/uploads/1742774180.png') }}" alt="Produk">
+                                    </td>
+                                    <td class="desc">
+                                        <div><strong>Kode</strong> ARF001</div>
+                                        <div><strong>Jenis</strong> Cincin L6</div>
+                                        <div><strong>Deskripsi</strong> Gold 1 ml Ruth</div>
+                                        <div><strong>Berat</strong> 0,98 g</div>
+                                        <div><strong>Harga</strong> Rp 1.360.000</div>
+                                    </td>
+                                </tr>
+
+                                <!-- Tambah baris produk lain di sini -->
+                            </tbody>
+                        </table>
+
+                        <!-- Total -->
+                        <div class="total">
+                            <span>Total:</span>
+                            <span>Rp 1.360.000</span>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="footer">
+                            <p>Hormat Kami,</p>
+                            <p>Toko Emas Lovin Cahaya</p>
+                            <small>{{ $info }}</small>
+                        </div>
+
                     </div>
                 </div>
             </div>

@@ -649,7 +649,7 @@ class JualController extends Controller
         $config = Config::where('name', 'nota')->first();
         $value  = $config->value;
         $val    = json_decode($value, true);
-        $toko = $val['toko'];
+        $toko = $val['toko'] ?? '';
         $alamat = $val['alamat'];
         $telp   = $val['telp'];
         $info   = $val['info'];
@@ -845,7 +845,7 @@ class JualController extends Controller
                 $modal->cash_in = $cash_in+$cash;
                 $modal->current = $current+$cash;
                 $modal->save();
-                
+
                 $modalData  = ModalData::create([
                     'modal_id' => $modal->id,
                     'type'  => 'pos',

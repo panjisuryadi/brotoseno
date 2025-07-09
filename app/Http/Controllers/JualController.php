@@ -1062,12 +1062,7 @@ class JualController extends Controller
         if ($request->get('status')) {
             $$module_name = $$module_name->where('status_id', $request->get('status'));
         }
-        // if($id == 1){ // with nota
-        //     $$module_name->where('is_nota', true)->get();
-        // }
-        // if($id == 2){ // without nota
-        //     $$module_name->where('is_nota', false)->get();
-        // }
+        
         $$module_name = $$module_name->whereHas('baki', function ($query) {
             $query->where('status', 'A');
         });
@@ -1146,13 +1141,19 @@ class JualController extends Controller
                 $persen = isset($data->karat->persen) ? $data->karat->persen : 0;
                 $harga  = isset($data->harga) ? $data->harga : 0;
                 $berat  = isset($data->berat_emas) ? $data->berat_emas : 0;
-                $biaya  = $harga*$coef;
-                $har    = ceil($biaya/1000)*1000;
+
+                $biaya  = $harga*$coef; // harga x coef
+                $biaya  = ceil($biaya/1000)*1000; // rounded 
                 // $rounded = ceil($biaya / 1000) * 1000;
-                $har    = $har*$berat;
-                $price  = ($har)+($har*$persen/100);
-                $price  = ceil($price/1000);
-                $price  = $price*1000;
+                $price  = $biaya*$persen/100+$biaya; // x persen
+                $price  = ceil($price/1000)*1000; // x persen
+                $price  = $price*$berat; // berat
+                $price  = ceil($price/1000)*1000; // x berat
+
+                // $har    = $har*$berat;
+                // $price  = ($har)+($har*$persen/100);
+                // $price  = ceil($price/1000);
+                // $price  = $price*1000;
                 $tb = '<div class="items-center gap-x-2">
                                 <div class="text-sm text-center text-gray-500">
                                 Rp .' . @rupiah($price). ' <br>

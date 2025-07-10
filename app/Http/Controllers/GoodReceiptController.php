@@ -518,6 +518,43 @@ class GoodReceiptController extends Controller
         );
     }
 
+    public function products_all(Request $request){
+        $id = $request->id;
+        // $goodsreceipt   = GoodsReceipt::where('id', $id)->get();
+        // echo $goodsreceipt;
+        // exit();
+        // $products  = GoodsReceiptItem::where('id', $id)->get();
+        $products  = GoodsReceiptItem::where('goodsreceipt_id', $id)->get();
+        $product_categories = Category::all();  // Assuming Supplier model is set up
+        $models = ProdukModel::all();  // Assuming Supplier model is set up
+        $dataKarat = Karat::where('status', 'A')->whereNull('parent_id')->get();
+        $groups = Group::all();  // Assuming Supplier model is set up
+        $karats = Karat::where('id', $products[0]->karat_id)->first();
+        $nama   = $karats->name;
+        return view(
+            'goodsreceipts.details', // Path to your create view file
+            compact(
+                'id',
+                'products',
+                'nama',
+                // 'supplier',
+                'product_categories',
+                'groups',
+                'models',
+                // 'isLogamMulia',
+                // 'hari_ini',
+                'dataKarat',
+                // 'tipe_pembayaran',
+                // 'module_name',
+                // 'module_action',
+                // 'code',
+                // 'module_title',
+                // 'module_icon',
+                // 'module_model'
+            )
+        );
+    }
+
     public function insert(Request $request)
     {
         // echo json_encode($_POST);

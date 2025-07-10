@@ -408,6 +408,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/penerimaan-barangs/product/{id}', 'GoodReceiptController@products')
         ->name('penerimaan.product');
 
+    Route::get('/penerimaan-barangs/products/{id}', 'GoodReceiptController@products_all')
+        ->name('penerimaan.products');
+
     Route::post('/penerimaan-barangs/product', 'GoodReceiptController@product_update')
         ->name('penerimaan.product_update');
 

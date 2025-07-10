@@ -257,7 +257,7 @@ class ReportsController extends Controller
         return DataTables::of(collect($karatSummary))
             ->addIndexColumn()
             ->editColumn('total_berat', function ($data) { // mengedit kolom 'total_berat' dengan mengedit data yang ditampilkan
-                return number_format($data['total_berat'], 0, ',', '.') . ' gram';
+                return number_format($data['total_berat'], 2, ',', '.') . ' gram';
             })
             ->editColumn('total_penjualan', function ($data) {
                 return 'Rp. ' . number_format($data['total_penjualan'], 0, ',', '.');

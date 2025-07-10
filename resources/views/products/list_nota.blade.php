@@ -74,6 +74,85 @@
     </div>
 </div>
 
+<div class="modal fade" id="editModal" tabindex="1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-lg font-bold" id="addModalLabel">Edit Product</h3>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-4">
+                <form action="/products_update_nota" method="post" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" name="webcam" id="edithasilcapture">
+                    <div class="px-0 py-2">
+                        @php
+                        $number = 0;
+                        @endphp
+                        <div class="col-span-2 px-2">
+                            <div class="flex flex-row grid grid-cols-2 gap-1">
+                                <div class="form-group">
+                                    <div class="py-1">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="upload" id="editup2" checked>
+                                            <label class="form-check-label" for="up2">Upload</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="upload" id="editup1">
+                                            <label class="form-check-label" for="up1">Webcam</label>
+                                        </div>
+                                    </div>
+                                    <div id="editupload2" style="display: none !important;" class="align-items-center justify-content-center" wire:ignore>
+                                    @livewire('webcam', ['key' => 0], key('cam-'. 0))
+                                    </div>
+                                    <div id="editupload1" wire:ignore>
+                                        <div class="form-group">
+                                            <div class="dropzone d-flex flex-wrap align-items-center justify-content-center" id="document-dropzone">
+                                                <div class="dz-message" data-dz-message>
+                                                    <i class="bi bi-cloud-arrow-up"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @if ($errors->has('image'))
+                                        <span class="invalid feedback" role="alert">
+                                            <small class="text-danger">{{ $errors->first('image') }}</small class="text-danger">
+                                        </span>
+                                    @endif
+                                </div>
+                                <div class="form-group">
+                                    <label for="product_category">Product Category</label>
+                                    <select name="edit_category" id="edit_category" class="form-control" required>
+                                        <option value="">Semua Produk</option>
+                                        @foreach($product_categories as $category)
+                                        <option value="{{ $category->id }}" code="{{ $category->category_code }}">{{ $category->category_name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-lg font-bold" id="addModalLabel">Edit Product</h3>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
         <div class="modal-content">
@@ -275,23 +354,22 @@
     </div>
 </div>
 
-<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title text-lg font-bold" id="addModalLabel">Edit Product</h3>
+                <h3 class="modal-title text-lg font-bold" id="addModalLabel">Add Product Satuan</h3>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body p-4">
-                <form action="/products_update_nota" method="post" enctype="multipart/form-data">
+                <form action="/products_insert_nota" method="post" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="webcam" id="hasilcapture">
-                    <input type="hidden" name="id" id="edit_id">
                     <div class="px-0 py-2">
                                 @php
-                                $number = 1;
+                                $number = 0;
                                 @endphp
                                 <div class="col-span-2 px-2">
                                     <div class="flex flex-row grid grid-cols-2 gap-1">
@@ -331,7 +409,7 @@
                                             $field_id   = 'product_category_'.$number;
                                             ?>
                                             <label for="product_category">Product Category</label>
-                                            <select name="new_product_category_id" id="edit_category" class="form-control @error('new_product.product_category_id') is-invalid @enderror" required>
+                                            <select name="new_product_category_id" id="{{$field_id}}" class="form-control @error('new_product.product_category_id') is-invalid @enderror" required>
                                             <option value="">Semua Produk</option>
 
                                                 @foreach($product_categories as $category)
@@ -349,7 +427,7 @@
                                             $required = "required";
                                             ?>
                                             <label for="{{ $field_name }}">{{ $field_lable }}</label>
-                                            <select class="form-control @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="edit_model" required>
+                                            <select class="form-control @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_name }}" required>
                                                 <option value="" selected disabled>Pilih Model</option>
                                                 @foreach($models as $model)
                                                 <option value="{{$model->id}}">
@@ -369,7 +447,7 @@
                                             $required = "required";
                                             ?>
                                             <label for="{{ $field_name }}">@lang('Karat') <span class="text-danger">*</span></label>
-                                            <select class="form-control select2 @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="edit_karat" required>
+                                            <select class="form-control select2 @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}" required>
                                                 @foreach($dataKarat as $karat)
                                                     <option value="{{ $karat->id }}" >{{ $karat->label }}</option>
                                                 @endforeach
@@ -389,7 +467,7 @@
                                                 <span class="text-danger">*</span>
                                                 <span class="small">Jenis Perhiasan</span>
                                             </label>
-                                            <select class="form-control @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="edit_group" required>
+                                            <select class="form-control @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}" required>
                                                 <option value="" selected disabled>Pilih {{ $field_lable }}</option>
                                                 @foreach($groups as $group)
                                                 <option value="{{ $group->id }}">{{ $group->name }}</option>
@@ -408,11 +486,26 @@
                                             ?>
                                             <label for="{{ $field_name }}">{{ $field_lable }}<span class="text-danger">*</span></label>
                                             <div class="input-group">
-                                                <input type="text" id="edit_code" name="new_product_code_id" class="form-control @error($field_name) is-invalid @enderror" readonly required>
+                                                <input type="text" id="{{ $field_id }}" name="new_product_code_id" class="form-control @error($field_name) is-invalid @enderror" readonly required>
                                                 <span class="input-group-btn">
                                                     <button class="btn btn-info relative rounded-l-none" onclick="gencode({{ $number }});" type="button">Check</button>
                                                 </span>
                                             </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <?php
+                                            $field_name = 'new_product.keterangan';
+                                            $field_id   = 'keterangan_'.$number;
+                                            $field_lable = label_case('keterangan');
+                                            $field_placeholder = $field_lable;
+                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                            $required = "required";
+                                            ?>
+                                            <label for="{{ $field_name }}">{{ $field_lable }}<span class="text-danger">*</span></label>
+                                            <textarea id="{{ $field_id }}" name="new_product_keterangan" class="form-control"></textarea>
+                                            <!-- <div class="input-group">
+                                            </div> -->
                                         </div>
 
                                         <div class="form-group">
@@ -425,7 +518,7 @@
                                             $required = "required";
                                             ?>
                                             <label for="{{ $field_name }}">{{ $field_lable }} (gram)<span class="text-danger">*</span></label>
-                                            <input type="text" id="edit_berat" name="new_product_berat" class="form-control " required>
+                                            <input type="text" id="{{ $field_id }}" name="new_product_berat" class="form-control " required>
                                             <!-- <div class="input-group">
                                             </div> -->
                                         </div>
@@ -440,7 +533,7 @@
                                             $required = "required";
                                             ?>
                                             <label for="{{ $field_name }}">Baki</label>
-                                            <select name="{{ $field_name }}" id="edit_baki" class="form-control">
+                                            <select name="{{ $field_name }}" id="{{ $field_id }}" class="form-control">
                                                 <option value="">Select Baki</option>
                                                 @foreach($baki as $b)
                                                 <option value="{{$b->id}}">{{$b->posisi}} - {{$b->name}}</option>
@@ -462,6 +555,10 @@
     </div>
 </div>
 
+
+
+
+
 @endsection
 <x-library.datatable />
 @section('third_party_scripts')
@@ -482,13 +579,13 @@
         console.log(karat);
         console.log(berat);
         console.log(baki);
-        $("#edit_id").val(id);
-        $("#edit_category").val(category);
-        $("#edit_model").val(model);
-        $("#edit_group").val(group);
-        $("#edit_karat").val(karat);
-        $("#edit_berat").val(berat);
-        $("#edit_baki").val(baki);
+        // $("#edit_id").val(id);
+        // $("#edit_category").val(category);
+        // $("#edit_model").val(model);
+        // $("#edit_group").val(group);
+        // $("#edit_karat").val(karat);
+        // $("#edit_berat").val(berat);
+        // $("#edit_baki").val(baki);
     }
 
     function getotal(number){
@@ -758,6 +855,15 @@ $(document).on('click', '#Tambah,#QrCode,#Show, #Edit', function(e){
     $('#up2').change(function() {
         $('#upload1').toggle();
         $('#upload2').hide();
+    });
+
+    $('#editup1').change(function() {
+        $('#editupload2').toggle();
+        $('#editupload1').hide();
+    });
+    $('#editup2').change(function() {
+        $('#editupload1').toggle();
+        $('#editupload2').hide();
     });
     function configure(){
         Webcam.set({

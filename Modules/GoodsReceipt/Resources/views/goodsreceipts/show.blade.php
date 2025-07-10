@@ -160,10 +160,12 @@
                             <thead>
                                 <tr>
                                     <th class="text-center">No</th>
-                                    <th class="text-center">Kategori</th>
+                                    <th class="text-center">Coef</th>
                                     <th class="text-center">Karat</th>
                                     <th class="text-center">Berat Real</th>
                                     <th class="text-center">BeratKotor</th>
+                                    <th class="text-center">Qty</th>
+                                    <th class="text-center">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -180,13 +182,20 @@
                                     if(!empty($row->karat_id)) {
                                         $karat = $row->karat?->label;
                                     }
+
+                                    $stat   = 'Input Required';
+                                    if($row->status == 2){
+                                        $stat   = 'Sudah Input';
+                                    }
                                 @endphp
                                 <tr>
                                     <th class="text-center">{{$loop->iteration}}</th>
-                                    <td class="text-center"> {{@$row->mainkategori->name}}</td>
+                                    <td class="text-center"> {{@$row->karatberlians}}</td>
                                     <td class="text-center"> {{ $karat }} </td>
                                     <td class="text-center"> {{@$row->berat_real}}</td>
                                     <td class="text-center"> {{@$row->berat_kotor}}</td>
+                                    <td class="text-center"> {{@$row->qty}}</td>
+                                    <td class="text-center"> {{$stat}}</td>
                                 </tr>
                                 @empty
                                 <tr>

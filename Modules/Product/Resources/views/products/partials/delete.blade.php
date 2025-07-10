@@ -56,6 +56,13 @@ data-toggle="tooltip"
     </a>
 </div>
 
+<div class="btn-group">
+    <!-- edit_modal(id, image, category, model, group, karat, berat, baki) -->
+    <a href="#" class="px-3 btn btn-sm btn-info" data-toggle="modal" data-target="#detailModal" >
+        <i class="bi bi-pencil"></i>
+    </a>
+</div>
+
 
 <div class="modal fade" id="lihatModal_{{$data->id}}" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">

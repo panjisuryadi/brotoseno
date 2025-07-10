@@ -760,15 +760,17 @@
     });
 
     function renderPreview(data) {
-        // console.log(data);
         const previewArea = $('#preview-area');
-        // const harga = ((data.harga * data.karats.coef) + 
-        //        (data.harga * data.karats.coef * data.karats.persen / 100)) 
-        //        * data.berat_emas;
-
-        // const roundedHarga = Math.ceil(harga / 1000) * 1000;
-        const hargas      = ((data.harga*data.karats.coef)+(data.harga*data.karats.coef*data.karats.persen/100))*data.berat_emas;
-        const harga       = Math.ceil(hargas / 1000) * 1000;
+        const setHarga    = data.harga;
+        const coef        = data.karats.coef;
+        const margin      = data.karats.persen/100;
+        const roundAwal   = Math.ceil(setHarga*coef / 1000) * 1000;
+        const persen      = (roundAwal*margin)+roundAwal;
+        const roundPersen = Math.ceil(persen / 1000) * 1000;
+        const berat       = data.berat_emas;
+        const harga       = Math.ceil(roundPersen*berat / 1000) * 1000;
+        // const hargas      = ((data.harga*data.karats.coef)+(data.harga*data.karats.coef*data.karats.persen/100))*data.berat_emas;
+        // const harga       = Math.ceil(hargas / 1000) * 1000;
         const rekomendasi = formatRupiah(harga);
         const price       = (harga);
         const diskon      = Math.round((data.karats.diskon)*data.berat_emas);

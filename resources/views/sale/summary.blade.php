@@ -113,54 +113,83 @@
                         </div>
                         <div id="buttons"></div>
                     </div>
-{{-- FILTER LAPORAN --}}
-<div class="container-fluid">
-    <div class="row g-3 align-items-end my-3">
+                    {{-- FILTER LAPORAN --}}
+                    <div class="container-fluid">
+                        <div class="row g-3 align-items-end my-3">
 
-        {{-- Bulan --}}
-        <div class="col-md-3 col-sm-6">
-            <label for="bulan" class="small">Bulan</label>
-            <select id="bulan" class="form-control form-control-sm">
-                @for ($i = 1; $i <= 12; $i++)
-                    <option value="{{ $i }}" {{ $bulan == $i ? 'selected' : '' }}>
-                        {{ \Carbon\Carbon::create()->month($i)->translatedFormat('F') }}
-                    </option>
-                @endfor
-            </select>
-        </div>
+                            {{-- Bulan --}}
+                            {{-- <div class="col-md-3 col-sm-6">
+                                <label for="bulan" class="small">Bulan</label>
+                                <select id="bulan" class="form-control form-control-sm">
+                                    @for ($i = 1; $i <= 12; $i++)
+                                        <option value="{{ $i }}" {{ $bulan == $i ? 'selected' : '' }}>
+                                            {{ \Carbon\Carbon::create()->month($i)->translatedFormat('F') }}
+                                        </option>
+                                    @endfor
+                                </select>
+                            </div> --}}
 
-        {{-- Tahun --}}
-        <div class="col-md-3 col-sm-6">
-            <label for="tahun" class="small">Tahun</label>
-            <select id="tahun" class="form-control form-control-sm">
-                @for ($i = now()->year; $i >= 2020; $i--)
-                    <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>
-                        {{ $i }}
-                    </option>
-                @endfor
-            </select>
-        </div>
+                            {{-- Tahun --}}
+                            {{-- <div class="col-md-3 col-sm-6">
+                                <label for="tahun" class="small">Tahun</label>
+                                <select id="tahun" class="form-control form-control-sm">
+                                    @for ($i = now()->year; $i >= 2020; $i--)
+                                        <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>
+                                            {{ $i }}
+                                        </option>
+                                    @endfor
+                                </select>
+                            </div> --}}
 
-        {{-- Karat --}}
-        <div class="col-md-2 col-sm-6">
-            <label for="karat" class="small">Karat</label>
-            <select id="karat" class="form-control form-control-sm">
-                @foreach ($karat as $item)
-                    <option value="{{ $item->id }}">
-                        {{ $item->name }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
+                            {{-- Karat --}}
 
-        {{-- Tombol Filter --}}
-        <div class="col-md-2 col-sm-6">
-            <button id="filterBtn" class="btn btn-primary btn-sm w-100">
-                Filter
-            </button>
-        </div>
-    </div>
-</div>
+                            <form id="filterForm" class="mb-3">
+                                <div class="form-row align-items-end">
+                                    {{-- Start Date --}}
+                                    <div class="col-md-3 col-sm-6 mb-2">
+                                        <label for="startDate" class="small">Dari Tanggal</label>
+                                        <input type="date" name="startDate" id="startDate"
+                                               class="form-control form-control-sm"
+                                               value="{{ request('startDate') }}">
+                                    </div>
+
+                                    {{-- End Date --}}
+                                    <div class="col-md-3 col-sm-6 mb-2">
+                                        <label for="endDate" class="small">Sampai Tanggal</label>
+                                        <input type="date" name="endDate" id="endDate"
+                                               class="form-control form-control-sm"
+                                               value="{{ request('endDate') }}">
+                                    </div>
+
+                                    {{-- Karat --}}
+                                    <div class="col-md-3 col-sm-6 mb-2">
+                                        <label for="karat" class="small">Karat</label>
+                                        <select id="karat" name="karat" class="form-control form-control-sm">
+                                            <option value="0" {{ $karatTerpilih == 0 ? 'selected' : '' }}>Semua Karat</option>
+                                            @foreach ($karat as $item)
+                                                <option value="{{ encode_id($item->id) }}" {{ $karatTerpilih == $item->id ? 'selected' : '' }}>
+                                                    {{ $item->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    {{-- Tombol Filter --}}
+                                    <div class="col-md-3 col-sm-6 mb-2">
+                                        <label class="invisible d-block">Tombol</label>
+                                        <button type="submit" class="btn btn-primary btn-sm w-100">Filter</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            {{-- Tombol Filter --}}
+                            {{-- <div class="col-md-2 col-sm-6">
+                                <button id="filterBtn" class="btn btn-primary btn-sm w-100">
+                                    Filter
+                                </button>
+                            </div> --}}
+                        </div>
+                    </div>
 
 
                     <div class="clearfix"></div>
@@ -229,8 +258,11 @@
         ajax: {
             url: '/summary/recap/data',
             data: function(d) {
-                d.bulan = $('#bulan').val();
-                d.tahun = $('#tahun').val();
+                // d.bulan = $('#bulan').val();
+                // d.tahun = $('#tahun').val();
+                d.startDate = $('#startDate').val();
+                d.endDate = $('#endDate').val();
+                d.karat = $('#karat').val();
             },
             error: function (xhr, error, thrown) {
                 alert('Gagal memuat data dari server. Cek console untuk detail.');
@@ -303,24 +335,56 @@
     //     table.ajax.reload();
     // });
 
-    $('#filterBtn').on('click', function () {
-        const bulan = $('#bulan').val();
-        const tahun = $('#tahun').val();
-        const query = `?bulan=${bulan}&tahun=${tahun}`;
-        window.location.href = location.pathname + query;
-    });
+    // $('#filterBtn').on('click', function () {
+    //     const bulan = $('#bulan').val();
+    //     const tahun = $('#tahun').val();
+    //     const karat = $('#karat').val();
 
-    document.addEventListener('DOMContentLoaded', function () {
-        if (!window.location.search.includes('bulan')) {
-            const now = new Date();
-            document.getElementById('bulan').value = now.getMonth() + 1;
-        }
+    //     const query = `?bulan=${bulan}&tahun=${tahun}&karat=${karat}`;   // ⬅️ sertakan karat
+    //     window.location.href = location.pathname + query;
+    // });
 
-        if (!window.location.search.includes('tahun')) {
-            const now = new Date();
-            document.getElementById('tahun').value = now.getFullYear();
-        }
-    });
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     if (!window.location.search.includes('bulan')) {
+    //         const now = new Date();
+    //         document.getElementById('bulan').value = now.getMonth() + 1;
+    //     }
+
+    //     if (!window.location.search.includes('tahun')) {
+    //         const now = new Date();
+    //         document.getElementById('tahun').value = now.getFullYear();
+    //     }
+    // });
+
+    $('#startDate, #endDate').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            todayHighlight: true
+        });
+        console.log('script loaded');
+        $(document).ready(function() {
+            $('#startDate').val('');
+            $('#endDate').val('');
+            table.ajax.reload();
+        });
+        // $(document).on('click', '#resetFilter', function(e) {
+        //     console.log('reset clicked');
+        //     e.preventDefault();
+        // });
+
+        // Event onsubmit
+        $('#filterForm').on('submit', function(e) {
+            e.preventDefault();
+            const start = $('#startDate').val();
+            const end = $('#endDate').val();
+
+            if (start && end && start > end) {
+                alert('Tanggal awal tidak boleh lebih besar dari tanggal akhir.');
+                return;
+            }
+
+            table.ajax.reload();
+        });
 
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>

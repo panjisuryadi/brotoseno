@@ -303,6 +303,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/products_insert_nota', 'ProductController@insert_nota')
         ->name('products.insert_nota');
 
+    Route::post('/products_update_nota', 'ProductController@update_nota')
+        ->name('products.update_nota');
+
     Route::get('/products_pending', 'ProductController@list_pending')
         ->name('products.pending');
 

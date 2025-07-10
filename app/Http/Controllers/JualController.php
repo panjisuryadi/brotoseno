@@ -38,6 +38,7 @@ use Modules\Karat\Models\Karat;
 use Modules\ProdukModel\Models\ProdukModel;
 use Modules\DataBank\Models\DataBank;
 use Modules\DataRekening\Models\DataRekening;
+use Illuminate\Support\Facades\Crypt;
 
 
 class JualController extends Controller
@@ -164,7 +165,7 @@ class JualController extends Controller
                 $formattedRata2 = 'Rp. ' . number_format($hargaTotalProduk / $beratEmas, 0, ',', '.');
 
                 // format berat emas
-                $formattedBeratEmas = round($product->berat_emas, 2);
+                $formattedBeratEmas = number_format($product->berat_emas, 2, ',', '.');
 
                 $results[] = [
                     'id' => $sale->id,
@@ -351,6 +352,8 @@ class JualController extends Controller
             }
         }
 
+        $formattedStockWeight = number_format($totalGoldWeight, 2, ',', '.') . ' Gram';
+
         $totalGoldQuantity = count($allProducts); // menghitung total semua product / emas (berdasarkan product_id)
 
         return view(
@@ -363,7 +366,7 @@ class JualController extends Controller
                 'group',
                 'models',
                 'formattedTotalGoldSales',
-                'totalGoldWeight',
+                'formattedStockWeight',
                 'totalGoldQuantity',
                 'totalCustomer',
             )
@@ -486,15 +489,27 @@ class JualController extends Controller
         }
         public function summary_data(Request $request)
         {
-            /* 1. Ambil invoice terfilter */
-                $sales = SalesGold::when($request->filled(['bulan','tahun']), function ($q) use ($request) {
-                    $q->whereMonth('created_at', $request->bulan)
-                    ->whereYear('created_at',  $request->tahun);
-            })
-            ->latest()
-            ->get();
+            $karatHash = $request->input('karat', '0');
+            $karatId   = $karatHash === '0' ? 0 : (decode_id($karatHash) ?? 0);
 
-            /* 2. Flatten invoice → item */
+            $sales = SalesGold::query();
+
+            // $sales = SalesGold::when($request->filled(['bulan','tahun']), function ($q) use ($request) {
+            //                 $q->whereMonth('created_at', $request->bulan)
+            //                 ->whereYear('created_at',  $request->tahun);
+            //         })
+            //         ->latest()
+            //         ->get();
+
+            if ($request->filled('startDate') && $request->filled('endDate')) {
+                $sales->whereBetween('created_at', [
+                    Carbon::parse($request->startDate)->startOfDay(),
+                    Carbon::parse($request->endDate)->endOfDay()
+                ]);
+            }
+
+            $sales = $sales->latest()->get();
+
             $detailRows = collect();
 
             foreach ($sales as $invoice) {
@@ -502,7 +517,7 @@ class JualController extends Controller
 
                 foreach ($items as $p) {
                     $idProduk = is_array($p) ? $p['id'] : $p;
-                    $itemQty  = is_array($p) && isset($p['qty']) ? $p['qty'] : 1;   // ← qty
+                    $itemQty  = is_array($p) && isset($p['qty']) ? $p['qty'] : 1;
 
                     $prod = Product::with(['category','karat'])->find($idProduk);
                     if (!$prod) continue;
@@ -511,36 +526,39 @@ class JualController extends Controller
                         'tanggal'   => $invoice->created_at->format('Y-m-d'),
                         'kategori'  => optional($prod->category)->category_name ?: '-',
                         'karat'     => optional($prod->karat)->name ?: '-',
+                        'karat_id'  => $prod->karat_id,
                         'berat'     => $prod->berat_emas * $itemQty,
-                        'qty'       => $itemQty,                 // ← simpan qty
-                        'total'     => $invoice->total           // (boleh prorata kalau perlu)
+                        'qty'       => $itemQty,
+                        'total'     => $invoice->total
                     ]);
                 }
             }
 
-            /* 3. Group (tanggal, kategori) & agregat */
+            if ($karatId !== 0) {
+                $detailRows = $detailRows->where('karat_id', $karatId);
+            }
+
             $rekap = $detailRows
                 ->groupBy(fn($r) => $r['tanggal'].'|'.$r['kategori'])
                 ->map(function ($rows) {
                     $first = $rows->first();
                     return [
-                        'tanggal'   => $first['tanggal'],
-                        'kategori'  => $first['kategori'],
-                        'karat'     => $rows->pluck('karat')->unique()->implode(', '),
-                        'berat'     => $rows->sum('berat'),
-                        'qty'       => $rows->sum('qty'),       // ← jumlah qty
-                        'total'     => $rows->sum('total'),
+                        'tanggal'  => $first['tanggal'],
+                        'kategori' => $first['kategori'],
+                        'karat'    => $rows->pluck('karat')->unique()->implode(', '),
+                        'berat'    => $rows->sum('berat'),
+                        'qty'      => $rows->sum('qty'),
+                        'total'    => $rows->sum('total'),
                     ];
                 })
                 ->sortByDesc('tanggal')
                 ->values();
 
-            /* 4. Kirim ke DataTables */
             return DataTables::of($rekap)
                 ->editColumn('tanggal', fn($r)=>Carbon::parse($r['tanggal'])->format('d/m/Y'))
                 ->editColumn('karat',   fn($r)=>$r['karat'])
                 ->editColumn('berat',   fn($r)=>number_format($r['berat'],2).' gr')
-                ->editColumn('qty',     fn($r)=>number_format($r['qty']))      // ← format qty
+                ->editColumn('qty',     fn($r)=>number_format($r['qty']))
                 ->editColumn('total',   fn($r)=>'Rp '.number_format($r['total'],0,',','.'))
                 ->make(true);
         }
@@ -555,7 +573,7 @@ class JualController extends Controller
 
             Cart::instance('sale')->destroy();
 
-            $karat = Karat::latest()->get();
+            $karat = Karat::orderBy('name', 'asc')->get();
             $category = Category::latest()->get();
             $group = Group::latest()->get();
             $models = ProdukModel::latest()->get();
@@ -567,32 +585,78 @@ class JualController extends Controller
             $tahun = $request->input('tahun', now()->year);
 
             // Ambil data SalesGold berdasarkan filter (jika ada)
-            $salesGold = SalesGold::when($bulan, function ($query) use ($bulan) {
-                    return $query->whereMonth('created_at', $bulan);
-                })
-                ->when($tahun, function ($query) use ($tahun) {
-                    return $query->whereYear('created_at', $tahun);
-                })
-                ->get();
+            // $salesGold = SalesGold::when($bulan, function ($query) use ($bulan) {
+            //         return $query->whereMonth('created_at', $bulan);
+            //     })
+            //     ->when($tahun, function ($query) use ($tahun) {
+            //         return $query->whereYear('created_at', $tahun);
+            //     })
+            //     ->get();
+
+            $salesGold = SalesGold::query();
+
+            $karatId = (int) $request->input('karat', 0);
+            $karatTerpilih = $karatId;
+            $karatEncrypted = $karatId === 0 ? '0' : encode_id($karatId);
+
+            if ($request->filled('startDate') && $request->filled('endDate')) {
+                $salesGold->whereBetween('created_at', [
+                    Carbon::parse($request->startDate)->startOfDay(),
+                    Carbon::parse($request->endDate)->endOfDay()
+                ]);
+            }
+
+            $salesGold = $salesGold->get();
 
             // Total nilai penjualan
-            $totalGoldSales = $salesGold->sum('total');
+            // $totalGoldSales = $salesGold->sum('total');
 
             // Hitung berat dan jumlah produk
+            // $totalGoldWeight = 0;
+            // $allProducts = [];
+
+            // foreach ($salesGold as $data) {
+            //     $arrayProducts = json_decode($data->products, true);
+            //     foreach ($arrayProducts as $product_id) {
+            //         $allProducts[] = $product_id;
+            //         $berat = Product::find($product_id)?->berat_emas ?? 0;
+            //         $totalGoldWeight += $berat;
+            //     }
+            // }
+
+            $totalGoldSales = 0;
             $totalGoldWeight = 0;
             $allProducts = [];
+            $totalCustomer = 0;
 
             foreach ($salesGold as $data) {
                 $arrayProducts = json_decode($data->products, true);
+                $hasValidKarat = false;
+
                 foreach ($arrayProducts as $product_id) {
+                    $product = Product::find($product_id);
+                    if (!$product) continue;
+
+                    if ($karatId !== 0 && $product->karat_id != $karatId) {
+                        continue;
+                    }
+
                     $allProducts[] = $product_id;
-                    $berat = Product::find($product_id)?->berat_emas ?? 0;
-                    $totalGoldWeight += $berat;
+                    $totalGoldWeight += $product->berat_emas ?? 0;
+                    $hasValidKarat = true;
+                }
+
+                if ($karatId == 0 || $hasValidKarat) {
+                    $totalGoldSales += $data->total;
+                    $totalCustomer++;
                 }
             }
 
+
             $totalGoldQuantity = count($allProducts);
+
             $totalCustomer = $salesGold->count();
+
 
             $module_title = $this->module_title;
 
@@ -609,7 +673,9 @@ class JualController extends Controller
                 'totalGoldQuantity',
                 'totalCustomer',
                 'bulan',
-                'tahun'
+                'tahun',
+                'karatTerpilih',
+                'karatEncrypted',
             ));
         }
 
@@ -649,7 +715,7 @@ class JualController extends Controller
         $config = Config::where('name', 'nota')->first();
         $value  = $config->value;
         $val    = json_decode($value, true);
-        $toko = $val['toko'];
+        $toko = $val['toko'] ?? '';
         $alamat = $val['alamat'];
         $telp   = $val['telp'];
         $info   = $val['info'];
@@ -845,7 +911,7 @@ class JualController extends Controller
                 $modal->cash_in = $cash_in+$cash;
                 $modal->current = $current+$cash;
                 $modal->save();
-                
+
                 $modalData  = ModalData::create([
                     'modal_id' => $modal->id,
                     'type'  => 'pos',
@@ -1062,12 +1128,7 @@ class JualController extends Controller
         if ($request->get('status')) {
             $$module_name = $$module_name->where('status_id', $request->get('status'));
         }
-        // if($id == 1){ // with nota
-        //     $$module_name->where('is_nota', true)->get();
-        // }
-        // if($id == 2){ // without nota
-        //     $$module_name->where('is_nota', false)->get();
-        // }
+        
         $$module_name = $$module_name->whereHas('baki', function ($query) {
             $query->where('status', 'A');
         });
@@ -1146,13 +1207,19 @@ class JualController extends Controller
                 $persen = isset($data->karat->persen) ? $data->karat->persen : 0;
                 $harga  = isset($data->harga) ? $data->harga : 0;
                 $berat  = isset($data->berat_emas) ? $data->berat_emas : 0;
-                $biaya  = $harga*$coef;
-                $har    = ceil($biaya/1000)*1000;
+
+                $biaya  = $harga*$coef; // harga x coef
+                $biaya  = ceil($biaya/1000)*1000; // rounded 
                 // $rounded = ceil($biaya / 1000) * 1000;
-                $har    = $har*$berat;
-                $price  = ($har)+($har*$persen/100);
-                $price  = ceil($price/1000);
-                $price  = $price*1000;
+                $price  = $biaya*$persen/100+$biaya; // x persen
+                $price  = ceil($price/1000)*1000; // x persen
+                $price  = $price*$berat; // berat
+                $price  = ceil($price/1000)*1000; // x berat
+
+                // $har    = $har*$berat;
+                // $price  = ($har)+($har*$persen/100);
+                // $price  = ceil($price/1000);
+                // $price  = $price*1000;
                 $tb = '<div class="items-center gap-x-2">
                                 <div class="text-sm text-center text-gray-500">
                                 Rp .' . @rupiah($price). ' <br>

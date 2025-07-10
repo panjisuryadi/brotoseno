@@ -19,11 +19,11 @@
                         <div class="table-responsive">
                             <table class="table table-bordered">
                                 <tr>
-                                    <th>{{ __('Supplier Name') }}</th>
+                                    <th>{{ __('Supplier Name (PIC)') }}</th>
                                     <td>{{ $supplier->supplier_name }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Email</th>
+                                    <th>{{ __('Email') }}</th>
                                     <td>{{ $supplier->supplier_email }}</td>
                                 </tr>
                                 <tr>
@@ -50,4 +50,3 @@
         </div>
     </div>
 @endsection
-

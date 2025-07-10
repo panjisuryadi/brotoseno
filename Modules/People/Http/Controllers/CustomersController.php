@@ -34,7 +34,7 @@ class CustomersController extends Controller
             'customer_phone' => 'required|max:255',
             'customer_email' => 'max:255',
             'city'           => 'max:255',
-            'country'        => 'max:255',
+            // 'country'        => 'max:255',
             'address'        => 'max:500',
         ]);
 
@@ -43,7 +43,7 @@ class CustomersController extends Controller
             'customer_phone' => $request->customer_phone,
             'customer_email' => $request->customer_email,
             'city'           => $request->city,
-            'country'        => $request->country,
+            // 'country'        => $request->country,
             'address'        => $request->address
         ]);
 
@@ -84,7 +84,7 @@ class CustomersController extends Controller
             'customer_phone' => $request->customer_phone,
             'customer_email' => $request->customer_email,
             'city'           => $request->city,
-            'country'        => $request->country,
+            // 'country'        => $request->country,
             'address'        => $request->address
         ]);
 

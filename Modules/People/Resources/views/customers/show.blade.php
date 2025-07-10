@@ -41,10 +41,10 @@
                                     <th>{{ __('City') }}</th>
                                     <td>{{ $customer->city }}</td>
                                 </tr>
-                                <tr>
+                                {{-- <tr>
                                     <th>{{ __('Country') }}</th>
                                     <td>{{ $customer->country }}</td>
-                                </tr>
+                                </tr> --}}
                                 <tr>
                                     <th>{{ __('Address') }}</th>
                                     <td>{{ $customer->address }}</td>
@@ -57,4 +57,3 @@
         </div>
     </div>
 @endsection
-

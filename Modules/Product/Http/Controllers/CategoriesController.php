@@ -86,8 +86,9 @@ public function index_data()
                         ->addColumn('action', function ($data) {
                            $module_name = $this->module_name;
                             $module_model = $this->module_model;
+                            $count_product  = $data->products_count;
                             return view('product::categories.partials.actions',
-                            compact('module_name', 'data', 'module_model'));
+                            compact('module_name', 'data', 'module_model', 'count_product'));
                                 })
                           ->addColumn('image', function ($data) {
                                return view('product::categories.partials.image', compact('data'));

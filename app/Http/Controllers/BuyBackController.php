@@ -30,11 +30,13 @@ use App\Models\ProductHistories;
 use App\Models\SalesGold;
 use App\Models\SalesItem;
 use App\Models\StockOpname;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use PDF;
 
 class BuybackController extends Controller
 {
-    
+
     private $module_title;
     private $module_name;
     private $module_path;
@@ -75,9 +77,9 @@ class BuybackController extends Controller
             )
         );
     }
-    
+
     public function insert(Request $request)
-    {   
+    {
         // echo json_encode($_POST);
         // exit();
         $product = $request->product;
@@ -87,7 +89,7 @@ class BuybackController extends Controller
         // echo json_encode($products);
         // exit();
         // $id_product = $products;
-        $nota   = 'BUY-LUV-'.date('ymd').rand(100, 999);
+        $nota   = 'BUY-LUV-' . date('ymd') . rand(100, 999);
         $buyback    = Buyback::create([
             // 'nota'   => $request->nota,
             'nota'   => $nota,
@@ -103,7 +105,7 @@ class BuybackController extends Controller
         $id_buyback = $buyback->id;
 
         // UPDATE PRODUCT
-        $product= Product::where('id', $product)->firstOrFail();
+        $product = Product::where('id', $product)->firstOrFail();
         $name   = $product->product_name;
         $name   = $product->product_name;
         $desc   = $product->product_code;
@@ -119,21 +121,21 @@ class BuybackController extends Controller
         $product_history = ProductHistories::create([
             'product_id'    => $id_product,
             'status'        => 'B',
-            'keterangan'    => $request->payment.' | '.$request->kondisi.' | Potongan : '.number_format($potongan).' | Tambahan : '.number_format($tambahan),
+            'keterangan'    => $request->payment . ' | ' . $request->kondisi . ' | Potongan : ' . number_format($potongan) . ' | Tambahan : ' . number_format($tambahan),
             'harga'         => $request->harga,
             'tanggal'       => date('Y-m-d'),
         ]);
 
-        if($request->payment == 'cash'){
-            
+        if ($request->payment == 'cash') {
+
             $modal      = Modal::where('status', 'A')->first();
-            if($modal){
+            if ($modal) {
                 $cash_out   = $modal->cash_out;
                 $current    = $modal->current;
-                $modal->cash_out= $cash_out+$request->harga;
-                $modal->current = $current-$request->harga;
+                $modal->cash_out = $cash_out + $request->harga;
+                $modal->current = $current - $request->harga;
                 $modal->save();
-                
+
                 $modalData  = ModalData::create([
                     'modal_id' => $modal->id,
                     'type'  => 'buyback',
@@ -150,7 +152,7 @@ class BuybackController extends Controller
             // $pettycash->current = $current_current-$request->harga;
             // $pettycash->out     = $current_out+$request->harga;
             // $pettycash->save();
-            
+
             // $pettycashdata  = PettycashData::create([
             //     'petty_cash_id' => $id,
             //     'type'  => 'buyback',
@@ -163,7 +165,7 @@ class BuybackController extends Controller
         // return redirect()->action([BuyBackController::class, 'list']);
     }
 
-    public function index_data()
+    public function index_data(Request $request)
     {
         $module_title = $this->module_title;
         $module_name = $this->module_name;
@@ -171,52 +173,47 @@ class BuybackController extends Controller
         $module_icon = $this->module_icon;
         $module_model = $this->module_model;
         $module_name_singular = Str::singular($module_name);
-
         $module_action = 'List';
-        // $harga = Harga::where('tanggal', date('Y-m-d'))->first();
-        // $harga = ProductHistories::where('tanggal', date('Y-m-d'))->first();  
-        // if($harga == null){
-        //     $harga  = 0;
-        // }else{
-        //     $harga = $harga->harga;
-        // }     
-        // $harga  = 1000000;
-        $$module_name = Buyback::with('product')->latest()->get();
-        // echo $$module_name;        
-        $data = $$module_name;
-        return Datatables::of($data)
-                    ->addColumn('action', function ($data) {
-                        return view('buyback.action',
-                        compact('data'));
-                            })
+        // $$module_name = Buyback::with('product')->latest()->get();
+        // $data = $$module_name;
 
-                      ->editColumn('tanggal', function($data){
-                        $output = '';
-                            
-                       return '<div class="items-center text-center">' .($data->tanggal) . '</div>';
-                        }) 
-                        ->editColumn('harga', function($data){
-                            return number_format($data->harga);
-                        })
-                        ->editColumn('potongan', function($data){
-                            return number_format($data->potongan);
-                        }) 
-                        ->editColumn('tambahan', function($data){
-                            return number_format($data->tambahan);
-                        }) 
-                      ->editColumn('product', function($data){
-                            $output = '';
-                          
-                        // return '<div class="items-center text-center">
-                        //                      ' .($data->product->product_code ?? 'Admin').'
-                        //             </div>';
+        $query = BuyBack::leftJoin('products', 'buyback.product_id', '=', 'products.id')
+            ->select('buyback.*', 'products.product_code');
 
-                        return ($data->product->product_code ?? 'Admin');
+        if ($request->startDate && $request->endDate && !$request->resetFilter) {
+            $startDate = Carbon::parse($request->startDate)->startOfDay();
+            $endDate = Carbon::parse($request->endDate)->endOfDay();
+            $query->whereBetween('buyback.created_at', [$startDate, $endDate]);
+        }
 
-                        })   
-                      
-                        ->rawColumns(['harga', 'tanggal','user'])
-                        ->make(true);
+        $buybacks = $query->latest()->get();
+
+        return Datatables::of($buybacks)
+            ->addColumn('action', function ($data) {
+                return view(
+                    'buyback.action',
+                    compact('data')
+                );
+            })
+
+            ->editColumn('tanggal', function ($data) {
+                return '<div class="items-center text-center">' . ($data->tanggal) . '</div>';
+            })
+            ->editColumn('harga', function ($data) {
+                return 'Rp. ' . number_format($data->harga, 0, ',', '.');
+            })
+            ->editColumn('potongan', function ($data) {
+                return 'Rp. ' . number_format($data->potongan, 0, ',', '.');
+            })
+            ->editColumn('tambahan', function ($data) {
+                return 'Rp. ' . number_format($data->tambahan, 0, ',', '.');
+            })
+            ->editColumn('product', function ($data) {
+                return ($data->product_code ?? 'Admin');
+            })
+
+            ->rawColumns(['harga', 'tanggal', 'user'])
+            ->make(true);
     }
 
     public function update(Request $request)
@@ -234,6 +231,54 @@ class BuybackController extends Controller
         $harga = Harga::latest()->first();
         // echo json_encode($harga);
         // exit();
+
+        // mengecek apakah resetFilter true
+        if ($request->resetFilter) {
+            // jika true set kedua date menjadi today
+            $startDate = Carbon::today()->toDateString();
+            $endDate = Carbon::today()->toDateString();
+        } else {
+            // jika tidak ada mengambil yang dari request
+            $startDate = $request->startDate ?? Carbon::today()->toDateString();
+            $endDate = $request->endDate ?? Carbon::today()->toDateString();
+        }
+
+        // pengecekan jika startDate lebih besar dari endDate
+        if ($startDate > $endDate) {
+            toast('Tanggal awal tidak boleh lebih besar dari tanggal akhir!', 'error');
+            return redirect()->back();
+        }
+
+        // mengecek segalanya dan menjalankan query untuk buyback
+        if ($request->startDate && $request->endDate && !$request->resetFilter) {
+            // data buyback dengan created_at biasa
+            $buybacks = BuyBack::whereDate('created_at', '>=', $startDate)
+                ->whereDate('created_at', '<=', $endDate);
+
+            // data buyback dengan created_at spesifik
+            $specififBuybacks = BuyBack::whereDate('buyback.created_at', '>=', $startDate)
+                ->whereDate('buyback.created_at', '<=', $endDate);
+        } else {
+            // query jadi hari ini (today)
+            $buybacks = BuyBack::whereDate('created_at', Carbon::today());
+            $specififBuybacks = BuyBack::whereDate('buyback.created_at', Carbon::today());
+        }
+
+        // total harga dari buyback
+        $totalPrice = $buybacks->select('harga')->distinct()->get()->sum('harga');
+        $formattedTotalPrice = 'Rp. ' . number_format($totalPrice, 0, ',', '.');
+
+        // total berat emas buyback
+        $totalWeight = $specififBuybacks->leftJoin('products', 'buyback.product_id', '=', 'products.id')
+            ->select('products.berat_emas')
+            ->sum('products.berat_emas');
+        $formattedTotalWeight = number_format($totalWeight, 2, ',', '.') . ' Gram';
+
+        // total kuantitas buyback
+        $totalQuantity = $buybacks->select('product_id')->count();
+
+        // total pelanggan yang buyback
+        $totalCustomers = $buybacks->select('nota')->distinct()->get()->count();
 
         $module_title = $this->module_title;
         $module_name = $this->module_name;
@@ -257,11 +302,16 @@ class BuybackController extends Controller
                 'harga',
                 'potongan',
                 'tambahan',
+                'formattedTotalPrice',
+                'formattedTotalWeight',
+                'totalQuantity',
+                'totalCustomers',
             )
         );
     }
 
-    public function view_nota(Request $request){
+    public function view_nota(Request $request)
+    {
         $id   = $request->id;
         $salesGold  = SalesItem::where('nomor', $id)->where('product', '!=', 0)->first();
         if ($salesGold) {
@@ -271,7 +321,7 @@ class BuybackController extends Controller
             $total      = $salesGold->total;
             $product    = Product::where('id', $product)->first();
             $status     = $product->status_id;
-            if($status == 2){
+            if ($status == 2) {
                 return response()->json([
                     'product' => $product->id,
                     'image' => $product->images,
@@ -279,12 +329,12 @@ class BuybackController extends Controller
                     'jenis' => $product->product_name,
                     'berat' => $product->berat_emas,
                     'desc' => $desc,
-                    'harga' => 'Rp '.number_format($total),
+                    'harga' => 'Rp ' . number_format($total),
                     'price' => $total
                 ]);
             }
         }
-    
+
         return response()->json([
             'product' => '',
             'image' => '',
@@ -314,41 +364,41 @@ class BuybackController extends Controller
         // echo $$module_name;        
         $data = $$module_name;
         return Datatables::of($data)
-                    // ->addColumn('action', function ($data) {
-                    //    $module_name = $this->module_name;
-                    //     $module_model = $this->module_model;
-                    //     $module_path = $this->module_path;
-                    //     return view($module_name.'::'.$module_path.'.includes.action',
-                    //     compact('module_name', 'data', 'module_model'));
-                    //         })
-                         
-                        ->editColumn('harga', function($data){
-                            // $output = '';
-                            // if(is_null($data->parent_id)){
-                            //     $output = "{$data->name} {$data->kode}";
-                            // }else{
-                            //     $output = "{$data->parent->name} {$data->parent->kode} - {$data->name}";
-                            // }
-                            return '<div class="items-center text-center">
-                                            <h3 class="text-sm font-bold text-gray-800"> ' .number_format($data->harga) . '</h3>
+            // ->addColumn('action', function ($data) {
+            //    $module_name = $this->module_name;
+            //     $module_model = $this->module_model;
+            //     $module_path = $this->module_path;
+            //     return view($module_name.'::'.$module_path.'.includes.action',
+            //     compact('module_name', 'data', 'module_model'));
+            //         })
+
+            ->editColumn('harga', function ($data) {
+                // $output = '';
+                // if(is_null($data->parent_id)){
+                //     $output = "{$data->name} {$data->kode}";
+                // }else{
+                //     $output = "{$data->parent->name} {$data->parent->kode} - {$data->name}";
+                // }
+                return '<div class="items-center text-center">
+                                            <h3 class="text-sm font-bold text-gray-800"> ' . number_format($data->harga) . '</h3>
                                     </div>';
-                             })  
+            })
 
-                      ->editColumn('tanggal', function($data){
-                        $output = '';
-                            
-                       return '<div class="items-center text-center">' .($data->tanggal) . '</div>';
-                        }) 
-                    //   ->editColumn('user', function($data){
-                    //         $output = '';
-                          
-                    //     return '<div class="items-center text-center">
-                    //                         <span class="text-sm font-medium text-gray-800"> ' .($data->user->name ?? 'Admin').'</span>
-                    //                 </div>';
+            ->editColumn('tanggal', function ($data) {
+                $output = '';
 
-                    //     })   
-                      
-                        ->rawColumns(['harga', 'tanggal','user'])
-                        ->make(true);
+                return '<div class="items-center text-center">' . ($data->tanggal) . '</div>';
+            })
+            //   ->editColumn('user', function($data){
+            //         $output = '';
+
+            //     return '<div class="items-center text-center">
+            //                         <span class="text-sm font-medium text-gray-800"> ' .($data->user->name ?? 'Admin').'</span>
+            //                 </div>';
+
+            //     })   
+
+            ->rawColumns(['harga', 'tanggal', 'user'])
+            ->make(true);
     }
 }

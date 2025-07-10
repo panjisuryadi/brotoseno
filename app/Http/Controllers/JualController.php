@@ -165,7 +165,7 @@ class JualController extends Controller
                 $formattedRata2 = 'Rp. ' . number_format($hargaTotalProduk / $beratEmas, 0, ',', '.');
 
                 // format berat emas
-                $formattedBeratEmas = round($product->berat_emas, 2);
+                $formattedBeratEmas = number_format($product->berat_emas, 2, ',', '.');
 
                 $results[] = [
                     'id' => $sale->id,
@@ -352,6 +352,8 @@ class JualController extends Controller
             }
         }
 
+        $formattedStockWeight = number_format($totalGoldWeight, 2, ',', '.') . ' Gram';
+
         $totalGoldQuantity = count($allProducts); // menghitung total semua product / emas (berdasarkan product_id)
 
         return view(
@@ -364,7 +366,7 @@ class JualController extends Controller
                 'group',
                 'models',
                 'formattedTotalGoldSales',
-                'totalGoldWeight',
+                'formattedStockWeight',
                 'totalGoldQuantity',
                 'totalCustomer',
             )

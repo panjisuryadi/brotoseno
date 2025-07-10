@@ -115,6 +115,10 @@
     "Config": "Konfigurasi",
     "Invoice Config": "Konfigurasi Nota",
 
+    "BuyBack Purchases": "Pembelian BuyBack",
+    "BuyBack Weight": "Berat BuyBack",
+    "BuyBack Quantity": "Kuantitas BuyBack",
+
     "Activity Log": "Activity Log",
     "User Online": "Pengguna Online",
     "Log": "Log",

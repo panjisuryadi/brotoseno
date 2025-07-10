@@ -50,7 +50,6 @@
                                 <div class="text-muted text-uppercase font-weight-bold small">
                                     @lang('Sales')
                                 </div>
-                                {{-- <p class="text-muted font-weight-bold small">{{ $todayDate->format("d/m/Y") }}</p> --}}
                             </div>
                         </div>
                     </div>
@@ -63,7 +62,7 @@
                                 <i class="bi bi-speedometer2 font-2xl"></i>
                             </div>
                             <div>
-                                <div class="text-value text-warning">{{ $totalGoldWeight }} Gram</div>
+                                <div class="text-value text-warning">{{ $formattedStockWeight }}</div>
                                 <div class="text-muted text-uppercase font-weight-bold small">
                                     @lang('Sales Weight')
                                 </div>

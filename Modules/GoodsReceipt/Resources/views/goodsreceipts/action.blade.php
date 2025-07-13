@@ -31,6 +31,9 @@ data-toggle="tooltip"
     </a>
  --}}
     @can('delete_'.$module_name.'')
+    @if($product > 0)
+    <button class="btn btn-outline-danger btn-sm" onclick="alert('Tidak dapat hapus nota, terdapat {{$product}} product yang terelasi dengan nota berikut');">Delete</button>
+    @else
     <button id="delete" class="btn btn-outline-danger btn-sm" onclick="
         event.preventDefault();
         if (confirm('Are you sure? It will delete the data permanently!')) {
@@ -43,6 +46,8 @@ data-toggle="tooltip"
             @method('delete')
         </form>
     </button>
+    @endif
+    
 @endcan
 
 

@@ -177,6 +177,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/pettycash/insert', 'PettyCashController@insert')
         ->name('pettycash.insert');
 
+    Route::post('/pettycash/data', 'PettyCashController@data')
+        ->name('pettycash.data');
+
+    Route::post('/pettycash/modal', 'PettyCashController@modal')
+        ->name('pettycash.modal');
+
     Route::post('/pettycash/update', 'PettyCashController@update')
         ->name('pettycash.update');
 

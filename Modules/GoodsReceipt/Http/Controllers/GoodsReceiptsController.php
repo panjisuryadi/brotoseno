@@ -248,9 +248,19 @@ class GoodsReceiptsController extends Controller
                     $module_name = $this->module_name;
                     $module_model = $this->module_model;
                     $module_path = $this->module_path;
+                    $goodsreceiptItem   = GoodsReceiptItem::where('goodsreceipt_id', $data->id)->get();
+                    $goodsreceiptItemId = null;
+                    foreach($goodsreceiptItem as $g){
+                        $goodsreceiptItemId = $g['id'];
+                    }
+                    $product = Product::where('goodreceipt_item_id', $goodsreceiptItemId)
+                    // ->whereNotNull('deleted_at')
+                    ->count();
+
                     return view(
+                        // CEK ADA RELASI PRODUCT AVAILABLE
                         '' . $module_name . '::' . $module_path . '.action',
-                        compact('module_name', 'data', 'module_model')
+                        compact('module_name', 'data', 'module_model', 'product')
                     );
                 })
 
@@ -1613,6 +1623,14 @@ class GoodsReceiptsController extends Controller
         );
     }
 
+    public function delete_debts($id){
+        $goodsreceipt   = GoodsReceipt::where('id', $id)->first();
+        $goodsreceipt->status = 2; // deleted
+        $goodsreceipt->save();
+        return redirect()->action([GoodsReceiptsController::class, 'debts']);
+
+    }
+
     public function debts_data(Request $request)
     {
         $module_name = $this->module_name;
@@ -1621,6 +1639,7 @@ class GoodsReceiptsController extends Controller
 
         $data = $module_model::debts()
             ->where('tipe_pembayaran', '!=', 'lunas')
+            ->where('status', '!=', 2)
             ->where(function ($query) use ($kategoriproduk_id) {
                 $query->whereNull('kategoriproduk_id');
                 $query->orWhere('kategoriproduk_id', $kategoriproduk_id);

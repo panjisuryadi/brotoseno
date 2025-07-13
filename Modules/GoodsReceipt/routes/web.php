@@ -70,6 +70,7 @@ Route::group(['middleware' => 'auth'], function () {
   // Debts
   Route::get("$module_name/debts", ['as' => "$module_name.debts", 'uses' => "$controller_name@debts"]);
   Route::get("$module_name/debts-data", ['as' => "$module_name.debts_data", 'uses' => "$controller_name@debts_data"]);
+  Route::delete("$module_name/debts/delete/{id}", ['as' => "$module_name.debts_destroy", 'uses' => "$controller_name@delete_debts"]);
 
 
     Route::resource("$module_name", "$controller_name");

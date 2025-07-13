@@ -68,14 +68,14 @@ body {
 
 <div class="container-fluid">
 <div class="row">
-        <div class="col-md-6 col-lg-3">
+        <div class="col-md-6 col-lg-6">
             <div class="card border-0">
                 <div class="card-body p-0 d-flex align-items-center shadow-sm">
                     <div class="bg-gradient-primary p-4 mfe-3 rounded-left">
                         <i class="bi bi-bar-chart font-2xl"></i>
                     </div>
                     <div>
-                        <div class="text-value text-primary">Rp. {{number_format($pettycash->current)}}</div>
+                        <div class="text-value text-primary">Rp. {{number_format($current) ?? 0}}</div>
                         <div class="text-muted text-uppercase font-weight-bold small">
                         Petty Cash                        </div>
                     </div>
@@ -83,50 +83,22 @@ body {
             </div>
         </div>
 
-        <div class="col-md-6 col-lg-3">
-            <div class="card border-0">
-                <div class="card-body p-0 d-flex align-items-center shadow-sm">
-                    <div class="bg-gradient-warning p-4 mfe-3 rounded-left">
-                        <i class="bi bi-arrow-return-left font-2xl"></i>
-                    </div>
-                    <div>
-                        <div class="text-value text-warning">Rp. {{number_format($pettycash->in)}}</div>
-                        <div class="text-muted text-uppercase font-weight-bold small">
-                        Penjualan                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-3">
+        <div class="col-md-6 col-lg-6">
             <div class="card border-0">
                 <div class="card-body p-0 d-flex align-items-center shadow-sm">
                     <div class="bg-gradient-success p-4 mfe-3 rounded-left">
                         <i class="bi bi-arrow-return-right font-2xl"></i>
                     </div>
                     <div>
-                        <div class="text-value text-success">Rp. {{number_format($buyback)}}</div>
+                        <div class="text-value text-success">Rp. {{number_format($cash_out) ?? 0}}</div>
                         <div class="text-muted text-uppercase font-weight-bold small">
-                        Buyback                        </div>
+                        Cash Out                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-6 col-lg-3">
-            <div class="card border-0">
-                <div class="card-body p-0 d-flex align-items-center shadow-sm">
-                    <div class="bg-gradient-info p-4 mfe-3 rounded-left">
-                        <i class="bi bi-trophy font-2xl"></i>
-                    </div>
-                    <div>
-                        <div class="text-value text-info">Rp. {{number_format($luar)}}</div>
-                        <div class="text-muted text-uppercase font-weight-bold small">
-                            Barang Luar                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        
     </div>
     <div class="row">
         <div class="col-12">
@@ -137,6 +109,15 @@ body {
                         <div class="btn-group">
                             <a href="#" class="px-3 btn btn-danger" data-toggle="modal" data-target="#createModal">
                                 Create Petty Cash <i class="bi bi-plus"></i>
+                            </a>
+                        </div>
+                        
+                    </div>
+                    @else
+                    <div class="flex justify-between py-1 border-bottom">
+                        <div class="btn-group">
+                            <a href="#" class="px-3 btn btn-info" data-toggle="modal" data-target="#createPetty">
+                                Data Petty Cash <i class="bi bi-plus"></i>
                             </a>
                         </div>
                     </div>
@@ -151,21 +132,17 @@ body {
                                     <th style="width: 10%!important;">
                                         Tanggal
                                     </th>
-                                    <th style="width: 10%!important;">
-                                        Modal
-                                    </th>
-                                      
                                      <th style="width: 10%!important;" class="text-center">
-                                        Cash In
+                                        Current
                                     </th>  
                                     <th style="width: 10%!important;" class="text-center">
-                                        Cash Out
+                                        Cash In
                                     </th> 
                                     <th style="width: 10%!important;" class="text-center">
-                                        Current
+                                        Cash Out
                                     </th>
                                     <th style="width: 10%!important;" class="text-center">
-                                        Sisa
+                                        Setor
                                     </th>
                                     <th style="width: 18%!important;" class="text-center">
                                         Keterangan
@@ -197,8 +174,8 @@ body {
                 <form action="/pettycash/insert" method="post">
                     @csrf
                     <div class="form-group">
-                        <label for="">Modal</label>
-                        <input type="number" name="modal" class="form-control" required>
+                        <label for="">Nominal</label>
+                        <input type="number" name="nominal" class="form-control" required>
                     </div>
                     <br>
                     <button class="btn btn-sm btn-success">Submit</button>
@@ -208,7 +185,7 @@ body {
     </div>
 </div>
 
-<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -218,12 +195,11 @@ body {
                 </button>
             </div>
             <div class="modal-body p-4">
-                <form action="/pettycash/update" method="post">
+                <form action="/pettycash/modal" method="post">
                     @csrf
                     <div class="form-group">
-                        <label for="">Modal</label>
-                        <input type="hidden" name="id" id="id" required>
-                        <input type="number" name="modal" class="form-control" required>
+                        <label for="">Nominal</label>
+                        <input type="number" name="nominal" class="form-control" required>
                     </div>
                     <br>
                     <button class="btn btn-sm btn-success">Submit</button>
@@ -233,7 +209,35 @@ body {
     </div>
 </div>
 
-<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="createPetty" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-lg font-bold" id="addModalLabel">Petty Cash</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-4">
+                <form action="/pettycash/data" method="post">
+                    @csrf
+                    <div class="form-group" id="div_keterangan">
+                        <label for="">Keterangan</label>
+                        <textarea name="keterangan" id="keterangan" class="form-control"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="">Nominal</label>
+                        <input type="number" name="nominal" class="form-control" required>
+                    </div>
+                    <br>
+                    <button class="btn btn-sm btn-success">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="closeModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -246,7 +250,7 @@ body {
                 <form action="/pettycash/close" method="post">
                     @csrf
                     <div class="form-group">
-                        <label for="">Sisa</label>
+                        <label for="">Sisa/Setor Nominal</label>
                         <input type="hidden" name="id" id="id_close" required>
                         <input type="number" name="sisa" class="form-control" required>
                     </div>
@@ -272,6 +276,13 @@ body {
 
         function close_modal(id){
             document.getElementById('id_close').value = id;
+        }
+        function change_keterangan(){
+            $("#div_keterangan").hidden();
+            let type = $("#type").val();
+            if(type == 'cash_out'){
+                $("#div_keterangan").show();
+            }
         }
     </script>
 
@@ -325,18 +336,14 @@ body {
                     name: 'tanggal'
                 },
                 {
-                    data: 'modal',
-                    name: 'modal'
-                },
-                {
                     data: 'current',
                     name: 'current'
                 },{
-                    data: 'in',
-                    name: 'in'
+                    data: 'cash_in',
+                    name: 'cash_in'
                 },{
-                    data: 'out',
-                    name: 'out'
+                    data: 'cash_out',
+                    name: 'cash_out'
                 },{
                     data: 'final',
                     name: 'final'

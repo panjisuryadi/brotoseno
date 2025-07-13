@@ -83,7 +83,7 @@ body {
                                         Tanggal
                                     </th>
                                     <th style="width: 20%!important;">
-                                        From
+                                        Keterangan
                                     </th>
                                     <th style="width: 25%!important;" class="text-center">
                                         Cash In
@@ -134,7 +134,7 @@ body {
                 }
             ],
             "sPaginationType": "simple_numbers",
-            ajax: '{{ route("pettycash.detail_data", ["id" => <?=$id;?>]) }}'
+            ajax: '/pettycash/detail_data/<?=$id;?>',
             dom: 'Blfrtip',
             buttons: [
                 'excel',
@@ -154,8 +154,8 @@ body {
                     name: 'tanggal'
                 },
                 {
-                    data: 'type',
-                    name: 'type'
+                    data: 'keterangan',
+                    name: 'keterangan'
                 },
                 {
                     data: 'cash_in',

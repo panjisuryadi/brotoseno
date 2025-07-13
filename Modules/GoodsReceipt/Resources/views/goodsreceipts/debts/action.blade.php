@@ -14,4 +14,18 @@
      class="btn btn-outline-info btn-sm py-1">
         @lang('Detail')
     </a> 
+    
+    <button id="delete" class="btn btn-outline-danger btn-sm" onclick="
+        event.preventDefault();
+        if (confirm('Are you sure? It will delete the data permanently!')) {
+        document.getElementById('destroy{{ $data->id }}').submit()
+        }
+        ">
+        @lang('Hapus')
+        <form id="destroy{{ $data->id }}" class="d-none" action="{{ route(''.$module_name.'.debts_destroy', $data->id) }}" method="POST">
+            @csrf
+            @method('delete')
+        </form>
+    </button>
+
 </div>

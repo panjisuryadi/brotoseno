@@ -8,15 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class PettyCash extends Model
 {
     use HasFactory;
-    protected $table    = 'petty_cash';
+    protected $table    = 'petty_cashs';
     protected $fillable = [
         'tanggal',
-        'modal',
         'current',
-        'in',
-        'out',
+        'cash_in',
+        'cash_out',
+        'final',
         'keterangan',
         'status',
-        'final',
     ];
 }

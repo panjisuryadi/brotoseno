@@ -1,13 +1,13 @@
 @if($data->status == 'A')
 <div class="btn-group">
-    <a href="#" class="px-3 btn btn-danger" data-toggle="modal" data-target="#editModal" onclick="detail_modal('{{$data->id}}');">
+    <a href="#" class="px-3 btn btn-warning" data-toggle="modal" data-target="#addModal">
         +<i class="bi bi-add"></i>
     </a>
 </div>
 
 <div class="btn-group">
-    <a href="#" class="px-3 btn btn-warning" data-toggle="modal" data-target="#closeModal" onclick="close_modal('{{$data->id}}');">
-        x<i class="bi bi-close"></i>
+    <a href="#" class="px-3 btn btn-danger" data-toggle="modal" data-target="#closeModal">
+        X<i class="bi bi-close"></i>
     </a>
 </div>
 

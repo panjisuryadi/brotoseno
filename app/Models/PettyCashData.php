@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class PettyCashData extends Model
 {
     use HasFactory;
-    protected $table    = 'petty_cash_data';
+    protected $table    = 'petty_cash_datas';
     protected $fillable = [
         'petty_cash_id',
-        'type',
-        'nominal',
-        'from',
+        'cash_in',
+        'cash_out',
+        'keterangan',
     ];
 }

@@ -99,28 +99,24 @@ class PettyCashController extends Controller
         $module_icon = $this->module_icon;
         $module_model = $this->module_model;
 
-        $pettycash  = PettyCash::latest()->first();
-        $status     = $pettycash->status;
-        $id         = $pettycash->id;
-
-        $pettycashdata  = PettyCashData::where('petty_cash_id', $id)->latest()->get();
-        $buyback        = 0;
-        $luar           = 0;
-        foreach($pettycashdata as $p){
-            if($p->from == 'buyback'){
-                $buyback    = $buyback+$p->nominal;
-            }
-            elseif($p->from == 'luar'){
-                $luar    = $luar+$p->nominal;
-            }
+        $status = 'B';
+        $current    = 0;
+        $cash_out   = 0;
+        
+        $pettycash  = PettyCash::where('status', 'A')->latest()->first();
+        if($pettycash){
+            $status     = $pettycash->status;
+            $id         = $pettycash->id;
+            $current    = $pettycash->current;
+            $cash_out   = $pettycash->cash_out;
         }
 
         return view(
             'petty_cash.list', // Path to your create view file
             compact(
                 'pettycash',
-                'buyback',
-                'luar',
+                'current',
+                'cash_out',
                 'status',
                 'module_title',
                 'module_name',
@@ -156,10 +152,6 @@ class PettyCashController extends Controller
                 return '<div class="items-center text-center">' .($data->tanggal) . '</div>';
             }) 
 
-            ->editColumn('modal', function($data){
-                return number_format($data->modal);
-            })
-            
             ->editColumn('current', function($data){
                 return number_format($data->current);
             })
@@ -168,12 +160,12 @@ class PettyCashController extends Controller
                 return number_format($data->final);
             })
 
-            ->editColumn('in', function($data){
-                return number_format($data->in);
+            ->editColumn('cash_in', function($data){
+                return number_format($data->cash_in);
             })
 
-            ->editColumn('out', function($data){
-                return number_format($data->out);
+            ->editColumn('cash_out', function($data){
+                return number_format($data->cash_out);
             })
             ->editColumn('status', function($data){
                 $stat   = 'Aktif';
@@ -213,19 +205,11 @@ class PettyCashController extends Controller
             }) 
 
             ->editColumn('cash_in', function($data){
-                $cash_in    = 0;
-                if($data->type == 'modal' || $data->type == 'pos'){
-                    $cash_in = $data->nominal;
-                }
-                return number_format($cash_in);
+                return number_format($data->cash_in);
             })
 
             ->editColumn('cash_out', function($data){
-                $cash_out    = 0;
-                if($data->type == 'buyback' || $data->type == 'luar'){
-                    $cash_out = $data->nominal;
-                }
-                return number_format($cash_out);
+                return number_format($data->cash_out);
             })
 
             ->rawColumns(['harga', 'tanggal','user'])
@@ -233,19 +217,63 @@ class PettyCashController extends Controller
     }
 
     public function insert(Request $request){
-        $modal = $request->modal;
+        $pet    = PettyCash::where('status', 'A')->first();
+        if($pet){
+            toast('Ada Petty Cash Active', 'error');
+            return redirect()->back();
+        }
+        $nominal = $request->nominal;
         
         $pettycash = PettyCash::create([
             'tanggal'   => date('Y-m-d'),
-            'modal'     => $modal,
-            'current'   => $modal,
+            'current'   => $nominal,
+            'cash_in'   => $nominal,
+            'cash_out'  => 0,
+            'final'     => 0,
+            'status'     => 'A',
+            'keterangan'  => '',
         ]);
         $id = $pettycash->id;
         $pettycashdata  = PettycashData::create([
             'petty_cash_id' => $id,
-            'type'  => 'modal',
-            'nominal' => $modal,
-            'from' => 'admin'
+            'cash_in' => $nominal,
+            'cash_out' => 0,
+            'keterangan' => 'modal',
+        ]);
+        return redirect()->action([PettyCashController::class, 'list']);
+    }
+
+    public function data(Request $request){
+        $pettycash  = PettyCash::where('status', 'A')->first();
+        $pettycash_id   = $pettycash->id;
+        $pettycash->current     = $pettycash->current-$request->nominal;
+        $pettycash->cash_out    = $pettycash->cash_out+$request->nominal;
+        $pettycash->save();
+        
+        $pettycashdata  = PettycashData::create([
+            'petty_cash_id' => $pettycash_id,
+            'cash_in' => 0,
+            'cash_out' => $request->nominal,
+            'keterangan' => $request->keterangan
+        ]);
+
+        return redirect()->action([PettyCashController::class, 'list']);
+    }
+
+    public function modal(Request $request){
+        $pettycash          = PettyCash::where('status', 'A')->first();
+        if($pettycash){
+            $pettycash_id   = $pettycash->id;
+            $pettycash->current = $pettycash->current+$request->nominal;
+            $pettycash->cash_in = $pettycash->cash_in+$request->nominal;
+            $pettycash->save();
+        }
+        
+        $pettycashdata  = PettycashData::create([
+            'petty_cash_id' => $pettycash_id,
+            'cash_in' => $request->nominal,
+            'cash_out' => 0,
+            'keterangan' => 'modal'
         ]);
         return redirect()->action([PettyCashController::class, 'list']);
     }
@@ -277,11 +305,12 @@ class PettyCashController extends Controller
         $sisa = $request->sisa;
         $keterangan = $request->keterangan;
         
-        $pettycash          = PettyCash::where('id', $id)->firstOrFail();
+        $pettycash          = PettyCash::where('status', 'A')->firstOrFail();
         $current_modal      = $pettycash->modal;
         $current_current    = $pettycash->current;
-        $pettycash->sisa   = $sisa;
+        $pettycash->final   = $sisa;
         $pettycash->keterangan = $keterangan;
+        $pettycash->status = 'B';
         $pettycash->save();
         
         return redirect()->action([PettyCashController::class, 'list']);

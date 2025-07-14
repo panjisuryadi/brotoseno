@@ -453,6 +453,8 @@ class JualController extends Controller
             // Total nilai penjualan
             $totalGoldSales = $salesGold->sum('total');
 
+            $formattedTotalGoldSales = 'Rp. ' . number_format($totalGoldSales, 0, ',', '.');
+
             // Hitung berat dan jumlah produk
             $totalGoldWeight = 0;
             $allProducts = [];
@@ -465,6 +467,8 @@ class JualController extends Controller
                     $totalGoldWeight += $berat;
                 }
             }
+
+            $formattedTotalGoldWeight = number_format($totalGoldWeight, 2, ',', '.') . ' Gram';
 
             $totalGoldQuantity = count($allProducts);
             $totalCustomer = $salesGold->count();
@@ -479,8 +483,8 @@ class JualController extends Controller
                 'models',
                 'customers',
                 'product_categories',
-                'totalGoldSales',
-                'totalGoldWeight',
+                'formattedTotalGoldSales',
+                'formattedTotalGoldWeight',
                 'totalGoldQuantity',
                 'totalCustomer',
                 'bulan',
@@ -652,6 +656,8 @@ class JualController extends Controller
                 }
             }
 
+            $formattedTotalGoldSales = 'Rp. ' . number_format($totalGoldSales, 0, ',', '.');
+            $formattedTotalGoldWeight = number_format($totalGoldWeight, 2, ',', '.') . ' Gram';
 
             $totalGoldQuantity = count($allProducts);
 
@@ -668,8 +674,8 @@ class JualController extends Controller
                 'models',
                 'customers',
                 'product_categories',
-                'totalGoldSales',
-                'totalGoldWeight',
+                'formattedTotalGoldSales',
+                'formattedTotalGoldWeight',
                 'totalGoldQuantity',
                 'totalCustomer',
                 'bulan',

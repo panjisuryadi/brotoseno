@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Report Sale')
+@section('title', 'Report Sales Recap')
 @section('third_party_stylesheets')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css">
 <style type="text/css">
@@ -29,7 +29,7 @@
 @section('breadcrumb')
 <ol class="breadcrumb border-0 m-0">
     <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-    <li class="breadcrumb-item active">Report Recap</li>
+    <li class="breadcrumb-item active">{{ __("Sales Recap") }}</li>
 </ol>
 @endsection
 @section('content')
@@ -44,7 +44,7 @@
                             <i class="bi bi-cash font-2xl"></i>
                         </div>
                         <div>
-                            <div class="text-value text-primary">{{ format_currency($totalGoldSales) }}</div>
+                            <div class="text-value text-primary">{{ $formattedTotalGoldSales }}</div>
                             <div class="text-muted text-uppercase font-weight-bold small">
                                 @lang('Sales')
                             </div>
@@ -60,7 +60,7 @@
                             <i class="bi bi-speedometer2 font-2xl"></i>
                         </div>
                         <div>
-                            <div class="text-value text-warning">{{ $totalGoldWeight }} Gram</div>
+                            <div class="text-value text-warning">{{ $formattedTotalGoldWeight }}</div>
                             <div class="text-muted text-uppercase font-weight-bold small">
                           @lang('Sales Weight')
                         </div>

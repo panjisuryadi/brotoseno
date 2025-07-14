@@ -991,6 +991,44 @@ class JualController extends Controller
             //         ';
         }
         foreach ($request->product as $p) {
+            // $product= Product::where('id', $p)->firstOrFail();
+            // $gram   = $product->berat_emas;
+            // $karat_id   = $product->karat_id;
+            // $harga  = $request->harga[$number];
+            // // GET COEF
+            // $karat  = Karat::where('id', $karat_id)->first();
+            // $coef   = $karat->coef;
+            // $margin = $karat->margin;
+            // $persen = $karat->persen;
+            // $harga_1    = $coef*$set_harga;
+            // echo $harga_1;
+            // echo '<br>';
+            // $round_1    = ceil($harga_1/1000)*1000;
+            // echo $margin;
+            // echo '<br>';
+            // $persen1    = ($round_1+$margin/100)+$round_1;
+            // echo $persen1;
+            // echo '<br>';
+            // $round_p    = ceil($persen1/1000)*1000;
+            // echo $round_p;
+            // echo '<br>';
+            // $total_real = ceil($round_p*(float)$gram/1000)*1000;
+            // echo $total_real;
+            // echo '<br>';
+            // $total_real = $total_real-($request->diskon[$number])+($request->ongkos[$number]);
+            // echo $total_real;
+            // echo '<br>';
+
+            // const setHarga    = data.harga;
+            // const coef        = data.karats.coef;
+            // const margin      = data.karats.persen/100;
+            // const roundAwal   = Math.ceil(setHarga*coef / 1000) * 1000;
+            // const persen      = (roundAwal*margin)+roundAwal;
+            // const roundPersen = Math.ceil(persen / 1000) * 1000;
+            // const berat       = data.berat_emas;
+            // const harga       = Math.ceil(roundPersen*berat / 1000) * 1000;
+            // echo $total_real;
+            // exit();
             if($p == 0){ // SERVICE NON PRODUCT
                 $services[] = $p;
             }else{
@@ -1129,14 +1167,31 @@ class JualController extends Controller
                 $karat  = Karat::where('id', $karat_id)->first();
                 $coef   = $karat->coef;
                 $margin = $karat->margin;
+                $persen = $karat->persen;
                 $diskon = $karat->diskon;
 
                 // $price  = ($coef*$harga*$berat)+($coef*$harga*$berat*$persen/100);
                 // $price  = ceil($price/1000);
                 // $price  = $price*1000;
 
-                $total_real = ($coef*$set_harga*$gram)+($coef*$harga*$gram*$margin/100)-$request->diskon[$number]+$request->ongkos[$number];
+                // $total_real = ($coef*$set_harga*$gram)+($coef*$harga*$gram*$margin/100)-$request->diskon[$number]+$request->ongkos[$number];
+                $harga_1    = $coef*$set_harga;
+                $round_1    = ($harga_1);
+                $persen1    = ($harga*$persen/100)+$round_1;
+                $round_p    = ($persen1);
+                $total_real = ($round_p*$gram);
+                $total_real = $total_real-($request->diskon[$number])+($request->ongkos[$number]);
 
+                // echo $total_real
+
+                // const setHarga    = data.harga;
+                // const coef        = data.karats.coef;
+                // const margin      = data.karats.persen/100;
+                // const roundAwal   = Math.ceil(setHarga*coef / 1000) * 1000;
+                // const persen      = (roundAwal*margin)+roundAwal;
+                // const roundPersen = Math.ceil(persen / 1000) * 1000;
+                // const berat       = data.berat_emas;
+                // const harga       = Math.ceil(roundPersen*berat / 1000) * 1000;
 
                 $product->status_id = 2;
                 $product->status = 2;

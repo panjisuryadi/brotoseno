@@ -255,7 +255,12 @@
             </div>
 
             <div class="col-3">
-                <img src="{{ $imageSrc }}" alt="Logo">
+                @php
+                    $qr = DNS2D::getBarcodePNG($product['name'], 'QRCODE');
+                @endphp
+
+                <img src="data:image/png;base64,{{ $qr }}" alt="QR Code" style="width: 100px;">
+
             </div>
         </div>
 

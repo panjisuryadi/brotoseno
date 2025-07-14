@@ -115,6 +115,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/summary/report/recap', 'JualController@summary')
     ->name('summary.recap');
 
+    Route::get('/summary/excel', 'JualController@excel')
+    ->name('summary.excel');
+
     Route::get('/summary/recap/data', 'JualController@summary_data')
     ->name('summary.data_recap');
 

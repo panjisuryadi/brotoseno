@@ -825,6 +825,135 @@ class JualController extends Controller
         // return $pdf->stream('invoice.pdf');
     }
 
+    public function excel(Request $request){
+        // $product    = 
+        // echo json_encode($_GET);
+        // exit();
+
+
+        $karatHash = $request->input('karat', '0');
+        $karatId   = $karatHash === '0' ? 0 : (decode_id($karatHash) ?? 0);
+
+        $sales = SalesGold::query();
+
+        // $sales = SalesGold::when($request->filled(['bulan','tahun']), function ($q) use ($request) {
+        //                 $q->whereMonth('created_at', $request->bulan)
+        //                 ->whereYear('created_at',  $request->tahun);
+        //         })
+        //         ->latest()
+        //         ->get();
+
+        if ($request->filled('startDate') && $request->filled('endDate')) {
+            $sales->whereBetween('created_at', [
+                Carbon::parse($request->startDate)->startOfDay(),
+                Carbon::parse($request->endDate)->endOfDay()
+            ]);
+        }
+
+        $sales = $sales->latest()->get();
+
+        $detailRows = collect();
+
+        foreach ($sales as $invoice) {
+            $items = json_decode($invoice->products, true) ?? [];
+
+            foreach ($items as $p) {
+                $idProduk = is_array($p) ? $p['id'] : $p;
+                $itemQty  = is_array($p) && isset($p['qty']) ? $p['qty'] : 1;
+
+                $prod = Product::with(['category','karat'])->find($idProduk);
+                if (!$prod) continue;
+
+                $detailRows->push([
+                    'tanggal'   => $invoice->created_at->format('Y-m-d'),
+                    'kategori'  => optional($prod->category)->category_name ?: '-',
+                    'karat'     => optional($prod->karat)->name ?: '-',
+                    'karat_id'  => $prod->karat_id,
+                    'berat'     => $prod->berat_emas * $itemQty,
+                    'qty'       => $itemQty,
+                    'total'     => $invoice->total
+                ]);
+            }
+        }
+
+        if ($karatId !== 0) {
+            $detailRows = $detailRows->where('karat_id', $karatId);
+        }
+
+        $rekap = $detailRows
+            ->groupBy(fn($r) => $r['tanggal'].'|'.$r['kategori'])
+            ->map(function ($rows) {
+                $first = $rows->first();
+                return [
+                    'tanggal'  => $first['tanggal'],
+                    'kategori' => $first['kategori'],
+                    'karat'    => $rows->pluck('karat')->unique()->implode(', '),
+                    'berat'    => $rows->sum('berat'),
+                    'qty'      => $rows->sum('qty'),
+                    'total'    => $rows->sum('total'),
+                ];
+            })
+            ->sortByDesc('tanggal')
+            ->values();
+
+        header("Content-Type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; filename=rekap_penjualan.xls");
+
+        echo '<table border="1">';
+        echo '<thead>
+            <tr>
+                <th>Tanggal</th>
+                <th>Kategori</th>
+                <th>Karat</th>
+                <th>Berat (gr)</th>
+                <th>Qty</th>
+                <th>Total (Rp)</th>
+            </tr>
+        </thead>
+        <tbody>';
+
+        $total_berat    = 0;
+        $total_qty      = 0;
+        $total_rupiah   = 0;
+
+        foreach ($rekap as $row) {
+            echo '<tr>';
+            echo '<td>' . \Carbon\Carbon::parse($row['tanggal'])->format('d/m/Y') . '</td>';
+            echo '<td>' . htmlspecialchars($row['kategori']) . '</td>';
+            echo '<td>' . htmlspecialchars($row['karat']) . '</td>';
+            echo '<td align="right">' . number_format($row['berat'], 2) . '</td>';
+            echo '<td align="right">' . number_format($row['qty']) . '</td>';
+            echo '<td align="right">Rp ' . number_format($row['total'], 0, ',', '.') . '</td>';
+            echo '</tr>';
+
+            $total_berat    = $total_berat+$row['berat'];
+            $total_qty      = $total_qty+$row['qty'];
+            $total_rupiah   = $total_rupiah+$row['total'];
+        }
+
+        echo '
+        <tfoot>
+        <tr>
+        <td colspan="3">Total</td>
+        <td align="right">'.number_format($total_berat, 2).'</td>
+        <td align="right">'.number_format($total_qty).'</td>
+        <td align="right">Rp '.number_format($total_rupiah, 0, ',', '.').'</td>
+        <tr>
+        </tfoot>
+        ';
+
+        echo '</tbody></table>';
+        exit;
+
+        // return DataTables::of($rekap)
+        //     ->editColumn('tanggal', fn($r)=>Carbon::parse($r['tanggal'])->format('d/m/Y'))
+        //     ->editColumn('karat',   fn($r)=>$r['karat'])
+        //     ->editColumn('berat',   fn($r)=>number_format($r['berat'],2).' gr')
+        //     ->editColumn('qty',     fn($r)=>number_format($r['qty']))
+        //     ->editColumn('total',   fn($r)=>'Rp '.number_format($r['total'],0,',','.'))
+        //     ->make(true);
+    }
+
     public function insert(Request $request){
         // echo json_encode($_POST);
         // exit();

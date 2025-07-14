@@ -177,7 +177,13 @@
                                     {{-- Tombol Filter --}}
                                     <div class="col-md-3 col-sm-6 mb-2">
                                         <label class="invisible d-block">Tombol</label>
-                                        <button type="submit" class="btn btn-primary btn-sm w-100">Filter</button>
+                                        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                                        @php
+                                        $startDate = $_GET['startDate'] ?? date('Y-m-d', strtotime('-30 days'));
+                                        $endDate    = $_GET['endDate'] ?? date('Y-m-d');
+                                        $karats     = $_GET['karat'] ?? 0;
+                                        @endphp
+                                        <a href="/summary/excel?endDate={{$endDate}}&karat={{$karats}}&startDate={{$startDate}}" class="btn btn-sm btn-success">Excel</a>
                                     </div>
                                 </div>
                             </form>

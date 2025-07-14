@@ -192,6 +192,33 @@
             text-align: right;
         }
 
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-right: -15px;
+            margin-left: -15px;
+        }
+
+        [class^="col-"] {
+            padding-right: 15px;
+            padding-left: 15px;
+            box-sizing: border-box;
+        }
+
+        /* 12-column layout */
+        .col-1  { flex: 0 0 8.333%; max-width: 8.333%; }
+        .col-2  { flex: 0 0 16.666%; max-width: 16.666%; }
+        .col-3  { flex: 0 0 25%; max-width: 25%; }
+        .col-4  { flex: 0 0 33.333%; max-width: 33.333%; }
+        .col-5  { flex: 0 0 41.666%; max-width: 41.666%; }
+        .col-6  { flex: 0 0 50%; max-width: 50%; }
+        .col-7  { flex: 0 0 58.333%; max-width: 58.333%; }
+        .col-8  { flex: 0 0 66.666%; max-width: 66.666%; }
+        .col-9  { flex: 0 0 75%; max-width: 75%; }
+        .col-10 { flex: 0 0 83.333%; max-width: 83.333%; }
+        .col-11 { flex: 0 0 91.666%; max-width: 91.666%; }
+        .col-12 { flex: 0 0 100%; max-width: 100%; }
+
     </style>
 </head>
 
@@ -216,26 +243,21 @@
         }
         @endphp
     <div class="invoice">
-        <div class="header">
-            <!-- Left side: Logo -->
-            <img src="{{ $imageSrc }}" alt="Logo">
-
-            <!-- Centered: Toko Emas Cahaya -->
-
-            <h3>Toko Emas Lovin Cahaya</h3>
-            <p>{{ $product['alamat'] }}</p>
-            <p>{{ $product['telp'] }}</p>
-        </div>
-
-        <!-- <div class="row">
-            <div class="col-6">
-                <p>Hormat</p>
-                <p>Toko</p>
+        <div class="header row">
+            <div class="col-3">
+                <img src="{{ $imageSrc }}" alt="Logo">
             </div>
-            <div class="col-2"><p></p><p></p><p></p></div>
-            <div class="col-2"><p>total: Rp</p><p>Ongkos: Rp</p><p>Grand: Rp</p></div>
-            <div class="col-2"><p> 4.510.000</p><p> 150.000</p><p> 4.660.000</p></div>
-        </div> -->
+
+            <div class="col-6">
+                <h3 style="text-align: center;">{{ $product['toko'] }}</h3>
+                <p>{{ $product['alamat'] }}</p>
+                <p>{{ $product['telp'] }}</p>
+            </div>
+
+            <div class="col-3">
+                <img src="{{ $imageSrc }}" alt="Logo">
+            </div>
+        </div>
 
         <!-- Invoice Details table -->
         <table class="invoice-details">
@@ -259,10 +281,7 @@
                     <th>Harga</th>
                 @else
                     <th>Pic</th>
-                    <th>Kode</th>
-                    <th>Jenis</th>
-                    <th>Berat</th>
-                    <th>Harga</th>
+                    <th>Product</th>
                 @endif
                 </tr>
             </thead>
@@ -274,11 +293,14 @@
                     <td>{{ $product['gram'] }}</td>
                     <td>Rp {{ number_format($product['harga'], 0, ',', '.') }}</td>
                 @else
-                    <td><img src="{{ $isrc }}" style="width: 65px;" alt="Image"></td>
-                    <td>{{ $product['desc'] }}</td>
-                    <td>{{ $product['name'] }}</td>
-                    <td>{{ $product['gram'] }}</td>
-                    <td>Rp {{ number_format($product['harga'], 0, ',', '.') }}</td>
+                    <td><img src="{{ $isrc }}" style="width: 150px;" alt="Image"></td>
+                    <td>
+                        {{ $product['desc'] }}<br>
+                        {{ $product['name'] }}<br>
+                        {{ $product['gram'] }} gr<br>
+                        Rp {{ number_format($product['harga'], 0, ',', '.') }}
+                    
+                    </td>
                 @endif
                 </tr>
             </tbody>

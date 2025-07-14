@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Report Sale')
+@section('title', 'Report Purchases Recap')
 @section('third_party_stylesheets')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css">
 <style type="text/css">
@@ -29,7 +29,7 @@
 @section('breadcrumb')
 <ol class="breadcrumb border-0 m-0">
     <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-    <li class="breadcrumb-item active">Report Recap</li>
+    <li class="breadcrumb-item active">{{ __("Purchases Recap") }}</li>
 </ol>
 @endsection
 @section('content')

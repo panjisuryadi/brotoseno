@@ -2636,18 +2636,18 @@ class GenerateMenus
 
             // Submenu: Users
 
-            $setting->add('<i class="c-sidebar-nav-icon bi bi-currency-exchange"></i> ' . __('currencies') . '', [
-                'route' => 'currencies.index',
-                'class' => 'nav-item',
-            ])
-                ->data([
-                    'order'         => 91,
-                    'activematches' => 'currencies*',
-                    'permission'    => ['access_currencies'],
-                ])
-                ->link->attr([
-                    'class' => 'c-sidebar-nav-link',
-                ]);
+            // $setting->add('<i class="c-sidebar-nav-icon bi bi-currency-exchange"></i> ' . __('currencies') . '', [
+            //     'route' => 'currencies.index',
+            //     'class' => 'nav-item',
+            // ])
+            //     ->data([
+            //         'order'         => 91,
+            //         'activematches' => 'currencies*',
+            //         'permission'    => ['access_currencies'],
+            //     ])
+            //     ->link->attr([
+            //         'class' => 'c-sidebar-nav-link',
+            //     ]);
 
 
             $setting->add('<i class="c-sidebar-nav-icon bi bi-sliders"></i> ' . __('Invoice Config') . '', [

@@ -393,6 +393,14 @@ class StockopnameController extends Controller
             ->editColumn('created', function ($data) {
                 return ($data->created_at);
             })
+            ->editColumn('gram', function ($data) {
+                $gram   = Product::where('baki_id', $data->baki_id)->whereIn('status', [1])->sum('berat_emas');
+                return ($gram);
+            })
+            ->editColumn('used', function ($data) {
+                $used   = Product::where('baki_id', $data->baki_id)->whereIn('status', [1])->count();
+                return ($used);
+            })
             ->editColumn('status', function ($data) {
                 $stat   = 'Waiting';
                 if($data->status == 'D'){

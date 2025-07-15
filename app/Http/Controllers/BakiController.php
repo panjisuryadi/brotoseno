@@ -113,7 +113,7 @@ class BakiController extends Controller
             })
 
             ->editColumn('used', function ($data) {
-                $count  = Product::where('baki_id', $data->id)->count();
+                $count  = Product::where('baki_id', $data->id)->where('status', 2)->where('status_id', 2)->count();
                 return ($count);
             })
                 

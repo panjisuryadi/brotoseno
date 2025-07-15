@@ -42,6 +42,9 @@
                                     <th style="width: 10%!important;" class="text-center">
                                         Used
                                     </th>  
+                                    <th style="width: 10%!important;" class="text-center">
+                                        Gram
+                                    </th>  
                                 </tr>
                             </thead>
                         </table>
@@ -126,10 +129,10 @@
                     data: 'used',
                     name: 'used'
                 },
-                // {
-                //     data: 'status',
-                //     name: 'status'
-                // },
+                {
+                    data: 'gram',
+                    name: 'gram'
+                },
                 // {
                 //     data: 'action',
                 //     name: 'action',

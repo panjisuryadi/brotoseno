@@ -1491,13 +1491,33 @@ class JualController extends Controller
         $module_name_singular = Str::singular($module_name);
 
         $module_action = 'List';
-        $module_name = Product::with('category', 'karats', 'baki');
+        // $module_name = Product::with('category', 'karats', 'baki');
         // $module_name = Product::query();
         // $$module_name = Product::with('category', 'karats');
         // $$module_name = Product::with('karats');
-        $module_name->whereIn('status_id', [1, 3, 4]);
+        // $module_name->whereIn('status_id', [1, 3, 4]);
         // $$module_name->where('baki_id', '!=', $id);
-        $module_name->whereRaw('baki_id != ?', [$id]);
+        // $module_name->whereRaw('baki_id != ?', [$id]);
+        // $module_name = Product::with('category', 'karats', 'baki')
+        // ->whereIn('status_id', [1, 3, 4])
+        // ->where(function ($query) use ($id) {
+        //     $query->where('baki_id', '!=', $id)
+        //         ->orWhere(function ($query) use ($id) {
+        //             $query->where('baki_id', $id)
+        //                     ->where('status_id', '!=', 1);
+        //         });
+        // });
+
+        $subQuery = Product::select('id')
+            ->where('baki_id', $id)    // $id = 10, or your chosen value
+            ->where('status_id', 1);
+
+        $module_name = Product::with('category', 'karats', 'baki')
+            ->whereIn('status_id', [1, 3, 4])
+            ->whereNotIn('id', $subQuery);
+
+
+
         // $final_sql  = $$module_name->toSql();
         // dd($final_sql);
         $module_name = $module_name->latest()->get();
@@ -1631,7 +1651,7 @@ class JualController extends Controller
             $$module_name = $$module_name->where('status_id', $request->get('status'));
         }
 
-        $$module_name = $$module_name->where('status_id', '!=', 2);
+        $$module_name = $$module_name->where('status_id', '=', 1);
         $$module_name->where('baki_id', $id)->get();
         // $$module_name->where('status_id', 1)->get();
 

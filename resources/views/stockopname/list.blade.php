@@ -40,6 +40,9 @@
                                     </th>  
                                     <th style="width: 10%!important;" class="text-center">
                                         Used
+                                    </th> 
+                                    <th style="width: 10%!important;" class="text-center">
+                                        Gram
                                     </th>  
                                     <th style="width: 10%!important;" class="text-center">
                                         Status
@@ -129,6 +132,10 @@
                 },{
                     data: 'used',
                     name: 'used'
+                },
+                {
+                    data: 'gram',
+                    name: 'gram'
                 },
                 {
                     data: 'status',

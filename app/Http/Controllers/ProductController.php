@@ -466,6 +466,8 @@ class ProductController extends Controller
 
 
             }
+        }else{
+            $products->baki_id      = 0;
         }
         // exit();
         $products->save();
@@ -524,8 +526,11 @@ class ProductController extends Controller
         $product = $request->product;
         // UPDATE STATUS PRODUCT
         $products   = Product::where('id', $id)->firstOrFail();
-        $products->status_id   = $request->status;
-        $products->status   = $request->status;
+        $products->status_id    = $request->status;
+        $products->status       = $request->status;
+        if($request->status != 1){
+            $products->baki_id      = 0;
+        }
         $products->save();
         // INSERT HISTORY
         $stat[1] = 'O';
@@ -572,8 +577,11 @@ class ProductController extends Controller
             $products->status   = $request->status;
         }
         else{
+            $products->baki_id  = 0;
             $products->status   = $request->status;
         }
+
+
         $products->save();
         // INSERT HISTORY
         $stat[1] = 'O';

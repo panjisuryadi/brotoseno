@@ -34,6 +34,7 @@
 @endsection
 @section('content')
 <div class="container-fluid">
+    
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -48,7 +49,38 @@
                             <i class="bi bi-plus"></i> &nbsp; <span class="text-lg font-semibold"> List Produk Satuan</span>
                         </div>
                         <div id="buttons"></div>
+                        
                     </div>
+
+                    <!-- FILTER -->
+                    <div class="row">
+                        <form id="filterForm" class="mb-3">
+                            <div class="form-row align-items-end">
+                                <div class="col-md-3 col-sm-6 mb-2">
+                                    <label for="category" class="small">Category</label>
+                                    <select id="category" name="category" class="form-control form-control-sm">
+                                        <option value="0" selected="">All Category</option>
+                                        @foreach ($product_categories as $cat)      
+                                            @if ($cat->id == $cat_id)
+                                            <option value="{{$cat->id}}" selected>{{$cat->category_name}}</option>
+                                            
+                                            @else
+                                            <option value="{{$cat->id}}">{{$cat->category_name}}</option>
+
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-3 col-sm-6 mb-2">
+                                    <label class="invisible d-block">Tombol</label>
+                                    <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- END FILTER -->
+
                     <div class="table-responsive mt-1">
                         <table id="datatable" style="width: 100%" class="table table-bordered table-hover table-responsive-sm">
                             <thead>
@@ -623,7 +655,7 @@
         ],
         "sPaginationType": "simple_numbers",
         // ajax: '{{ route("$module_name.index_data") }}',
-        ajax: '/products_datanota',
+        ajax: '/products_datanota/{{$cat_id}}',
         dom: 'Blfrtip',
         buttons: [
             {

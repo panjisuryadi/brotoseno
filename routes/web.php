@@ -303,7 +303,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/products/data_pembelian', 'ProductController@data_pembelian')
         ->name('products.data_pembelian');
 
-    Route::get('/products_datanota', 'ProductController@datanota')
+    Route::get('/products_datanota/{id}', 'ProductController@datanota')
         ->name('products.datanota');
 
     Route::post('/products_insert_luar', 'ProductController@insert_luar')

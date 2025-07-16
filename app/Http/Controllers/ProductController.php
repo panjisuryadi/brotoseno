@@ -701,6 +701,10 @@ class ProductController extends Controller
         $hari_ini = new DateTime();
         $hari_ini = $hari_ini->format('Y-m-d');
         $isLogamMulia   = true;
+
+        $cat_id    = $request->category ?? 0;
+        // echo $cat;
+        // exit();
         // $harga = Harga::where('tanggal', date('Y-m-d'))->first();
         // echo json_encode($harga);
         // exit();
@@ -721,6 +725,7 @@ class ProductController extends Controller
                 'module_path',
                 'module_icon',
                 'module_model',
+                'cat_id',
                 'product_categories',
                 'groups',
                 'models',
@@ -1589,6 +1594,17 @@ class ProductController extends Controller
         if ($request->get('status')) {
             $$module_name = $$module_name->where('status_id', $request->get('status'));
         }
+
+        // FILTER CATEGORY
+        if($id != 0){
+            $$module_name = $$module_name->whereHas('category', function ($query) use ($id) {
+                $query->where('id', $id);
+            });
+        }
+        // END FILTER
+
+
+
         // if($id == 1){ // with nota
         //     $$module_name->where('is_nota', true)->get();
         // }

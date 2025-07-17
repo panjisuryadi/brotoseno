@@ -4,11 +4,13 @@ namespace Modules\Reports\Http\Controllers;
 
 use App\Models\Harga;
 use App\Models\SalesGold;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Modules\Karat\Models\Karat;
+use Modules\People\Entities\Customer;
 use Modules\Product\Entities\Category;
 use Modules\Product\Entities\Product;
 use Yajra\DataTables\DataTables;
@@ -77,6 +79,7 @@ class ReportsController extends Controller
         return view('reports::purchases-return.index');
     }
 
+    ///// REPORT STOK
     // menampilkan laporan stok yang masih ada dan stok yang sudah terjual
     public function stockReport()
     {
@@ -199,8 +202,9 @@ class ReportsController extends Controller
             // ->rawColumns(['action'])
             ->make(true);
     }
+    /// END REPORT STOK
 
-    // menampilkan laporan stok yang masih ada dan stok yang sudah terjual
+    ///// PENJUALAN UNIT
     public function salesUnitReport()
     {
         abort_if(Gate::denies('access_reports'), 403);
@@ -208,7 +212,6 @@ class ReportsController extends Controller
         return view('reports::sales-unit.index');
     }
 
-    // data untuk table Laporan Sales pada halaman stock/report
     public function salesUnitReportData()
     {
         $salesGold = SalesGold::select('products', 'total')->get(); // ambil kolom products dan total dari salesGold
@@ -269,4 +272,190 @@ class ReportsController extends Controller
             // ->rawColumns(['action'])
             ->make(true);
     }
+    /// END PENJUALAN UNIT
+
+    ///// PENJUALAN PER PELANGGAN
+    public function salesCustomersReport()
+    {
+        abort_if(Gate::denies('access_reports'), 403);
+
+        return view('reports::sales-customers.index');
+    }
+
+    public function salesCustomersReportData()
+    {
+        // $salesPerCustomers = SalesGold::leftJoin('customers', 'sales_gold.customer', '=', 'customers.id')
+        //     ->select(
+        //         'customers.id as customer_id',
+        //         'customers.customer_name',
+        //         DB::raw('SUM(sales_gold.total) as total_pembelian'),
+        //         DB::raw('SUM(JSON_LENGTH(sales_gold.products)) as total_kuantitas')
+        //     )
+        //     ->groupBy('customers.id', 'customers.customer_name')
+        //     ->orderBy('customers.customer_name', 'desc')
+        //     ->get();
+
+        // return DataTables::of($salesPerCustomers)
+        //     ->addIndexColumn()
+        //     ->editColumn('customer_name', function ($data) {
+        //         return $data->customer_name ?? '-';
+        //     })
+        //     ->editColumn('total_pembelian', function ($data) {
+        //         return 'Rp. ' . number_format($data->total_pembelian, 0, ',', '.');
+        //     })
+        //     ->addColumn('action', function ($data) {
+        //         return view('reports::sales-customers.action', compact('data'));
+        //     })
+        //     ->make(true);
+
+        ///// WORKING AREA
+        $sales = SalesGold::with('pelanggan')->get();
+
+        $results = [];
+
+        foreach ($sales->groupBy('pelanggan.id') as $customerId => $salesGroup) {
+            $customerName = optional($salesGroup->first()->pelanggan)->customer_name ?? '-';
+            $totalPembelian = $salesGroup->sum('total');
+            $totalKuantitas = 0;
+
+            foreach ($salesGroup as $sale) {
+                $productIds = json_decode($sale->products, true) ?? [];
+
+                $validProductCount = Product::whereIn('id', $productIds)
+                    ->whereNull('deleted_at')
+                    ->count();
+
+                $totalKuantitas += $validProductCount;
+            }
+
+            $results[] = [
+                'customer_id' => $customerId,
+                'customer_name' => $customerName,
+                'total_pembelian' => $totalPembelian,
+                'total_kuantitas' => $totalKuantitas,
+            ];
+        };
+
+        $sortedResult = collect($results)->sortByDesc('customer_name')->values();
+
+        return DataTables::of($sortedResult)
+            ->addIndexColumn()
+            ->editColumn('customer_name', function ($data) {
+                return $data['customer_name'];
+            })
+            ->editColumn('total_pembelian', function ($data) {
+                return 'Rp. ' . number_format($data['total_pembelian'], 0, ',', '.');
+            })
+            ->addColumn('action', function ($data) {
+                return view('reports::sales-customers.action', compact('data'));
+            })
+            ->make(true);
+        /// END WORKING AREA
+    }
+
+    public function salesCustomersReportDetail($customer_id)
+    {
+        $customer_id = decode_id($customer_id);
+        abort_if(Gate::denies('access_reports'), 403);
+
+        $customer_name = Customer::where('id', $customer_id)->first()->customer_name;
+
+        return view('reports::sales-customers.detail', compact('customer_id', 'customer_name'));
+    }
+
+    public function salesCustomersReportDetailData(Request $request, $customer_id)
+    {
+        $query = SalesGold::with('pelanggan');
+
+        if (!empty($request->startDate) && !empty($request->endDate)) {
+            $start = Carbon::parse($request->startDate)->startOfDay();
+            $end = Carbon::parse($request->endDate)->endOfDay();
+            $query->whereBetween('created_at', [$start, $end]);
+        }
+
+        $sales = $query->where('customer', $customer_id)->latest()->get();
+
+        // dump($sales);
+
+        $hargaEmas = Harga::latest()->first()->harga;
+
+        $results = [];
+
+        foreach ($sales as $sale) {
+            $productIds = json_decode($sale->products, true);
+
+            // dump($productIds);
+            if (!is_array($productIds)) continue;
+
+            $products = Product::whereIn('id', $productIds)
+                ->with('category')
+                ->with('karats')
+                ->get();
+
+            foreach ($products as $product) {
+
+                // KOMPONEN UNTUK HARGA JUAL:
+                $coef = $product->karats->coef;
+                $persenMargin = $product->karats->persen;
+                $beratEmas = $product->berat_emas;
+
+                // MEMBUAT HARGA JUAL PRODUK
+                $hargaCoef = $coef * $hargaEmas;
+                $hargaJual = $hargaCoef + ($hargaCoef * ($persenMargin / 100));
+                $hargaTotalProduk = ceil($hargaJual * $beratEmas / 1000) * 1000;
+
+                // format angka rupiah
+                $formattedCash = 'Rp. ' . number_format($sale->cash, 0, ',', '.');
+                $formattedTransfer = 'Rp. ' . number_format($sale->transfer, 0, ',', '.');
+                $formattedEdc = 'Rp. ' . number_format($sale->edc, 0, ',', '.');
+                $formattedQr = 'Rp. ' . number_format($sale->qr, 0, ',', '.');
+                $formattedTotal = 'Rp. ' . number_format($sale->total, 0, ',', '.');
+                $formattedHargaTotalProduk = 'Rp. ' . number_format($hargaTotalProduk, 0, ',', '.');
+                $formattedRata2 = 'Rp. ' . number_format($hargaTotalProduk / $beratEmas, 0, ',', '.');
+
+                // format berat emas
+                $formattedBeratEmas = number_format($product->berat_emas, 2, ',', '.');
+                $tanggal = Carbon::parse($sale->created_at)->translatedFormat('d F Y');
+                $jam = $sale->created_at->format('H:i');
+
+                $results[] = [
+                    'id' => $sale->id,
+                    'nomor_transaksi' => $sale->nomor,
+                    // 'jam' => $sale->created_at->format('H:i'),
+                    'waktu' => $tanggal . " | " . $jam,
+                    'sales' => '-',
+                    'customer_name' => $sale->pelanggan->customer_name ?? '-',
+                    'category_code' => $product->category->category_code ?? '-',
+                    'product_name' => $product->product_name,
+                    'berat_emas' => $formattedBeratEmas,
+                    'karat' => $product->karats->name,
+                    'h_jual' => $formattedHargaTotalProduk,
+                    'ongkos' => '-',
+                    'total' => $formattedTotal,
+                    'cash' => $sale->cash ? $formattedCash : '-',
+                    'transfer' => $sale->transfer ? $formattedTransfer : '-',
+                    'edc' => $sale->edc ? $formattedEdc : '-',
+                    'qr' => $sale->qr ? $formattedQr : '-',
+                    'rata_rata' => $formattedRata2,
+                    'keterangan' => '-',
+                ];
+            }
+        }
+
+        // dump($results);
+        // dd("END");
+
+        return Datatables::of($results)
+            ->addColumn('action', function ($data) {
+                $module_name = 'sales';
+                $module_model = "Modules\Sale\Entities\Sale";
+                return view(
+                    'sale.aksi',
+                    compact('module_name', 'data', 'module_model')
+                );
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+    /// END PENJUALAN PER PELANGGAN
 }

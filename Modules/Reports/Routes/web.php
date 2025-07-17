@@ -54,4 +54,17 @@ Route::group(['middleware' => 'auth'], function () {
     // Sales Unit Report Data
     Route::get('/sales-unit/report/data', 'ReportsController@salesUnitReportData')
         ->name('sales-unit-report-data.index');
+
+    // Sales Per Customers Page
+    Route::get('/sales-customers/report', 'ReportsController@salesCustomersReport')
+        ->name('sales-customers-report.index');
+    // Sales Per Customers Data
+    Route::get('/sales-customers/report/data', 'ReportsController@salesCustomersReportData')
+        ->name('sales-customers-report-data.index');
+    // Sales Per Customers Detail Page
+    Route::get('/sales-customers/report/{id}', 'ReportsController@salesCustomersReportDetail')
+        ->name('sales-customers-report-detail.index');
+    // Sales Per Customers Detail Data
+    Route::get('/sales-customers/report/data/{id}', 'ReportsController@salesCustomersReportDetailData')
+        ->name('sales-customers-report-detail-data.index');
 });

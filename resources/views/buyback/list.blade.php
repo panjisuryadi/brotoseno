@@ -129,6 +129,11 @@
                                 placeholder="Sampai" value="{{ request('endDate') }}">
 
                             <button type="submit" class="btn btn-sm mx-1 btn-primary">Filter</button>
+                            @php
+                            $startDate = $_GET['startDate'] ?? date('Y-m-d', strtotime('-30 days'));
+                            $endDate    = $_GET['endDate'] ?? date('Y-m-d');
+                            @endphp
+                            <a href="/buyback/excel?endDate={{$endDate}}&startDate={{$startDate}}" class="btn btn-sm btn-success">Excel</a>
                         </form>
 
                         <div class="table-responsive mt-1">

@@ -216,6 +216,90 @@ class BuybackController extends Controller
             ->make(true);
     }
 
+    public function excel(Request $request){
+        $query = BuyBack::leftJoin('products', 'buyback.product_id', '=', 'products.id')
+            ->select('buyback.*', 'products.product_code');
+
+        if ($request->startDate && $request->endDate && !$request->resetFilter) {
+            $startDate = Carbon::parse($request->startDate)->startOfDay();
+            $endDate = Carbon::parse($request->endDate)->endOfDay();
+            $query->whereBetween('buyback.created_at', [$startDate, $endDate]);
+        }
+
+        $buybacks = $query->latest()->get();
+
+        header("Content-Type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; filename=buyback.xls");
+
+        echo '<table border="1">';
+        echo '<thead>
+            <tr>
+                <th>Tanggal</th>
+                <th>Product Code</th>
+                <th>Nota</th>
+                <th>Kondisi</th>
+                <th>Cash</th>
+                <th>Transfer</th>
+                <th>Potongan</th>
+                <th>Tambahan</th>
+            </tr>
+        </thead>
+        <tbody>';
+
+        $total_cash     = 0;
+        $total_transfer = 0;
+        $total_potongan = 0;
+        $total_tambahan = 0;
+
+        foreach ($buybacks as $row) {
+            $cash   = 0;
+            $transfer   = 0;
+            if($row['payment'] == 'cash'){
+                $cash = $row['harga'];
+            }else{
+                $transfer = $row['harga'];
+            }
+            echo '<tr>';
+            echo '<td>' . \Carbon\Carbon::parse($row['tanggal'])->format('d/m/Y') . '</td>';
+            echo '<td>' . htmlspecialchars($row['product_code']) . '</td>';
+            echo '<td>' . htmlspecialchars($row['nota']) . '</td>';
+            echo '<td>' . htmlspecialchars($row['kondisi']) . '</td>';
+            echo '<td align="right">Rp ' . number_format($cash, 0, ',', '.') . '</td>';
+            echo '<td align="right">Rp ' . number_format($transfer, 0, ',', '.') . '</td>';
+            echo '<td align="right">Rp ' . number_format($row['potongan'], 0, ',', '.') . '</td>';
+            echo '<td align="right">Rp ' . number_format($row['tambahan'], 0, ',', '.') . '</td>';
+            echo '</tr>';
+
+            $total_cash     = $total_cash+$cash;
+            $total_transfer = $total_transfer+$transfer;
+            $total_potongan = $total_potongan+$row['potongan'];
+            $total_tambahan = $total_tambahan+$row['tambahan'];
+        }
+
+        echo '
+        <tfoot>
+        <tr>
+        <td colspan="4">Total</td>
+        <td align="right">Rp '.number_format($total_cash, 0, ',', '.').'</td>
+        <td align="right">Rp '.number_format($total_transfer, 0, ',', '.').'</td>
+        <td align="right">Rp '.number_format($total_potongan, 0, ',', '.').'</td>
+        <td align="right">Rp '.number_format($total_tambahan, 0, ',', '.').'</td>
+        <tr>
+        </tfoot>
+        ';
+
+        echo '</tbody></table>';
+        exit;
+
+        // return DataTables::of($rekap)
+        //     ->editColumn('tanggal', fn($r)=>Carbon::parse($r['tanggal'])->format('d/m/Y'))
+        //     ->editColumn('karat',   fn($r)=>$r['karat'])
+        //     ->editColumn('berat',   fn($r)=>number_format($r['berat'],2).' gr')
+        //     ->editColumn('qty',     fn($r)=>number_format($r['qty']))
+        //     ->editColumn('total',   fn($r)=>'Rp '.number_format($r['total'],0,',','.'))
+        //     ->make(true);
+    }
+
     public function update(Request $request)
     {
         $harga = Harga::where('tanggal', date('Y-m-d'))->firstOrFail();

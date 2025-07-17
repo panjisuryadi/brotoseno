@@ -1390,6 +1390,20 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link',
                 ]);
 
+            // REPORT - PENJUALAN PER PELANGGAN
+            $jual->add('<i class="c-sidebar-nav-icon bi-cash-stack"></i> ' . __('Sales Per Customers') . '', [
+                'route' => 'sales-customers-report.index',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 91,
+                    'activematches' => 'settings*',
+                    'permission'    => ['access_settings'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link',
+                ]);
+
             // REPORT - REKAP PENJUALAN
             $jual->add('<i class="c-sidebar-nav-icon bi-journal-text"></i> ' . 'Rekap Penjualan'. '', [
                 'route' => 'sale.recap',

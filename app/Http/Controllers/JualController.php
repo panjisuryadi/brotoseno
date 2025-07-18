@@ -19,6 +19,7 @@ use App\Models\Service;
 use App\Models\Harga;
 use App\Models\Config;
 use App\Models\Modal;
+use App\Models\Buyback;
 use App\Models\ModalData;
 use App\Models\ProductHistories;
 use App\Models\StockOpname;
@@ -958,6 +959,251 @@ class JualController extends Controller
         //     ->editColumn('qty',     fn($r)=>number_format($r['qty']))
         //     ->editColumn('total',   fn($r)=>'Rp '.number_format($r['total'],0,',','.'))
         //     ->make(true);
+    }
+
+    public function all_excel(Request $request){
+        $buy = BuyBack::
+            leftJoin('products', 'buyback.product_id', '=', 'products.id')->
+            leftJoin('categories', 'products.category_id', '=', 'categories.id')->
+            leftJoin('karats', 'products.karat_id', '=', 'karats.id')->
+            leftJoin('groups', 'products.group_id', '=', 'products.id')
+            ->select('buyback.*', 'products.product_code', 'products.berat_emas', 'categories.category_name', 'karats.name', 'groups.code');
+
+        // $luar = BuyBack::
+        //     leftJoin('products', 'buyback.product_id', '=', 'products.id')->
+        //     leftJoin('categories', 'products.category_id', '=', 'categories.id')->
+        //     leftJoin('karats', 'products.karat_id', '=', 'karats.id')->
+        //     leftJoin('groups', 'products.group_id', '=', 'products.id')
+        //     ->select('buyback.*', 'products.product_code', 'products.berat_emas', 'categories.category_name', 'karats.name', 'groups.code');
+
+        $pos = SalesItem::
+            leftJoin('products', 'sales_items.product', '=', 'products.id')->
+            leftJoin('categories', 'products.category_id', '=', 'categories.id')->
+            leftJoin('karats', 'products.karat_id', '=', 'karats.id')->
+            leftJoin('groups', 'products.group_id', '=', 'products.id')
+            ->select('sales_items.*', 'products.product_code', 'products.berat_emas', 'categories.category_name', 'categories.category_code', 'karats.name', 'groups.code');
+
+
+        if ($request->startDate && $request->endDate && !$request->resetFilter) {
+            $startDate = Carbon::parse($request->startDate)->startOfDay();
+            $endDate = Carbon::parse($request->endDate)->endOfDay();
+            $buy->whereBetween('buyback.created_at', [$startDate, $endDate]);
+            $pos->whereBetween('sales_items.created_at', [$startDate, $endDate]);
+        }
+
+        $buybacks = $buy->latest()->get();
+        $poss = $pos->latest()->get();
+        $data = array();
+        $number = 0;
+        foreach($buybacks as $b){
+            $pemasukan_lm           = 0;
+            $pemasukan_perhiasan    = 0;
+            $barang_luar            = 0;
+            $cash                   = 0;
+            $transfer               = 0;
+            $edc                    = 0;
+            $qr                     = 0;
+            $cc                     = 0;
+            if($b->payment == 'cash'){
+                $cash   = $b->harga;
+            }else{
+                $transfer   = $b->harga;
+            }
+            $data[$number]['from'] = 'buyback';
+            $data[$number]['tanggal'] = $b->created_at;
+            $data[$number]['trx'] = $b->nota;
+            $data[$number]['category'] = $b->category_name;
+            $data[$number]['barang'] = $b->product_code;
+            $data[$number]['berat'] = $b->berat_emas;
+            $data[$number]['karat'] = $b->created_at;
+            $data[$number]['pemasukan_lm'] = $pemasukan_lm;
+            $data[$number]['pemasukan_perhiasan'] = $pemasukan_perhiasan;
+            $data[$number]['buyback'] = $b->harga;
+            $data[$number]['barang_luar'] = $barang_luar;
+            $data[$number]['count'] = 1;
+            $data[$number]['cash'] = $cash;
+            $data[$number]['transfer'] = $transfer;
+            $data[$number]['edc'] = $edc;
+            $data[$number]['qr'] = $qr;
+            $data[$number]['cc'] = $cc;
+            $number++;
+        }
+
+        $inv    = '';
+
+        foreach($poss as $b){
+            $pemasukan_lm           = 0;
+            $pemasukan_perhiasan    = 0;
+            $buyback                = 0;
+            $barang_luar            = 0;
+            $cash                   = 0;
+            $transfer               = 0;
+            $edc                    = 0;
+            $qr                     = 0;
+            $cc                     = 0;
+            if($inv == $b->nomor){
+                $count  = 0;
+            }else{
+                $inv    = $b->nomor;
+                $salesGold  = SalesGold::where('nomor', $inv)->first();
+                if($salesGold){
+                    $prod   = $salesGold->products;
+                    $prods  = json_decode($prod, true);
+                    $count  = count($prods);
+                    $cash       = $salesGold->cash;
+                    $transfer   = $salesGold->transfer;
+                    $edc        = $salesGold->edc;
+                    $qr         = $salesGold->qr;
+                    $cc         = $salesGold->cc;
+                }
+            }
+
+            if($b->category_code == 'LM'){
+                $pemasukan_lm   = $b->total;
+            }else{
+                $pemasukan_perhiasan    = $b->total;
+            }
+
+            $data[$number]['from'] = 'pos';
+            $data[$number]['tanggal'] = $b->created_at;
+            $data[$number]['trx'] = $b->nomor;
+            $data[$number]['category'] = $b->category_name;
+            $data[$number]['barang'] = $b->product_code;
+            $data[$number]['berat'] = $b->berat_emas;
+            $data[$number]['karat'] = $b->created_at;
+            $data[$number]['pemasukan_lm'] = $pemasukan_lm;
+            $data[$number]['pemasukan_perhiasan'] = $pemasukan_perhiasan;
+            $data[$number]['buyback'] = $buyback;
+            $data[$number]['barang_luar'] = $barang_luar;
+            $data[$number]['count'] = $count;
+            $data[$number]['cash'] = $cash;
+            $data[$number]['transfer'] = $transfer;
+            $data[$number]['edc'] = $edc;
+            $data[$number]['qr'] = $qr;
+            $data[$number]['cc'] = $cc;
+            $number++;
+        }
+        usort($data, function($a, $b) {
+            $dateA = strtotime($a['tanggal']);
+            $dateB = strtotime($b['tanggal']);
+            
+            if ($dateA == $dateB) {
+                return 0;
+            }
+            return ($dateA < $dateB) ? -1 : 1;
+        });
+        // echo json_encode($data);
+        // exit();
+
+
+        header("Content-Type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; filename=global.xls");
+
+        echo '<table border="1">';
+        echo '<thead>
+            <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>ID Trx</th>
+                <th>Kategori</th>
+                <th>Barang</th>
+                <th>Karat</th>
+                <th>Berat</th>
+                <th>Pemasukan LM</th>
+                <th>Pemasukan Perhiasan</th>
+                <th>Buyback</th>
+                <th>Barang Luar</th>
+                <th>Cash</th>
+                <th>Transfer</th>
+                <th>EDC</th>
+                <th>QR</th>
+                <th>CC</th>
+            </tr>
+        </thead>
+        <tbody>';
+
+        $total_berat                = 0;
+        $total_pemasukan_lm         = 0;
+        $total_pemasukan_perhiasan  = 0;
+        $total_buyback              = 0;
+        $total_barang_luar          = 0;
+        $total_cash                 = 0;
+        $total_transfer             = 0;
+        $total_edc                  = 0;
+        $total_qr                   = 0;
+        $total_cc                   = 0;
+
+        $no = 1;
+
+        foreach ($data as $row) {
+            echo '<tr>';
+            echo '<td>' . $no++ . '</td>';
+            echo '<td>' . \Carbon\Carbon::parse($row['tanggal'])->format('d/m/Y') . '</td>';
+            echo '<td>' . htmlspecialchars($row['trx']) . '</td>';
+            echo '<td>' . htmlspecialchars($row['category']) . '</td>';
+            echo '<td>' . htmlspecialchars($row['barang']) . '</td>';
+            echo '<td>' . htmlspecialchars($row['karat']) . '</td>';
+            echo '<td align="right">' . number_format($row['berat'], 2) . '</td>';
+            echo '<td align="right">Rp ' . number_format($row['pemasukan_lm'], 0, ',', '.') . '</td>';
+            echo '<td align="right">Rp ' . number_format($row['pemasukan_perhiasan'], 0, ',', '.') . '</td>';
+            echo '<td align="right">Rp ' . number_format($row['buyback'], 0, ',', '.') . '</td>';
+            echo '<td align="right">Rp ' . number_format($row['barang_luar'], 0, ',', '.') . '</td>';
+            if($row['count'] == 0){
+                
+            }else{
+                echo '<td align="right" rowspan="'.$row['count'].'">Rp ' . number_format($row['cash'], 0, ',', '.') . '</td>';
+                echo '<td align="right" rowspan="'.$row['count'].'">Rp ' . number_format($row['transfer'], 0, ',', '.') . '</td>';
+                echo '<td align="right" rowspan="'.$row['count'].'">Rp ' . number_format($row['edc'], 0, ',', '.') . '</td>';
+                echo '<td align="right" rowspan="'.$row['count'].'">Rp ' . number_format($row['qr'], 0, ',', '.') . '</td>';
+                echo '<td align="right" rowspan="'.$row['count'].'">Rp ' . number_format($row['cc'], 0, ',', '.') . '</td>';
+            }
+            echo '</tr>';
+
+            if($row['from'] == 'pos'){
+                $total_berat                = $total_berat+$row['berat'];
+                $total_pemasukan_lm         = $total_pemasukan_lm+$row['pemasukan_lm'];
+                $total_pemasukan_perhiasan  = $total_pemasukan_perhiasan+$row['pemasukan_perhiasan'];
+                $total_buyback              = $total_buyback+$row['buyback'];
+                $total_barang_luar          = $total_barang_luar+$row['barang_luar'];
+                $total_cash                 = $total_cash+$row['cash'];
+                $total_transfer             = $total_transfer+$row['transfer'];
+                $total_edc                  = $total_edc+$row['edc'];
+                $total_qr                   = $total_qr+$row['qr'];
+                $total_cc                   = $total_cc+$row['cc'];
+            }else{
+                $total_berat                = $total_berat-$row['berat'];
+                $total_pemasukan_lm         = $total_pemasukan_lm-$row['pemasukan_lm'];
+                $total_pemasukan_perhiasan  = $total_pemasukan_perhiasan-$row['pemasukan_perhiasan'];
+                $total_buyback              = $total_buyback-$row['buyback'];
+                $total_barang_luar          = $total_barang_luar-$row['barang_luar'];
+                $total_cash                 = $total_cash-$row['cash'];
+                $total_transfer             = $total_transfer-$row['transfer'];
+                $total_edc                  = $total_edc-$row['edc'];
+                $total_qr                   = $total_qr-$row['qr'];
+                $total_cc                   = $total_cc-$row['cc'];
+            }
+        }
+
+        echo '
+        <tfoot>
+        <tr>
+        <td colspan="6">Total</td>
+        <td align="right">'.number_format($total_berat, 2).'</td>
+        <td align="right">Rp '.number_format($total_pemasukan_lm, 0, ',', '.').'</td>
+        <td align="right">Rp '.number_format($total_pemasukan_perhiasan, 0, ',', '.').'</td>
+        <td align="right">Rp '.number_format($total_buyback, 0, ',', '.').'</td>
+        <td align="right">Rp '.number_format($total_barang_luar, 0, ',', '.').'</td>
+        <td align="right">Rp '.number_format($total_cash, 0, ',', '.').'</td>
+        <td align="right">Rp '.number_format($total_transfer, 0, ',', '.').'</td>
+        <td align="right">Rp '.number_format($total_edc, 0, ',', '.').'</td>
+        <td align="right">Rp '.number_format($total_qr, 0, ',', '.').'</td>
+        <td align="right">Rp '.number_format($total_cc, 0, ',', '.').'</td>
+        <tr>
+        </tfoot>
+        ';
+
+        echo '</tbody></table>';
+        exit;
     }
 
     public function insert(Request $request){

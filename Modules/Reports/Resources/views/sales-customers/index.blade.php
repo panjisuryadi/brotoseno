@@ -59,7 +59,9 @@
                                     <tr>
                                         <th style="width: 5%!important;">NO</th>
                                         <th style="width: 10%!important;">Nama Customer</th>
+                                        <th style="width: 10%!important;">Nomor Hp Customer</th>
                                         <th style="width: 10%!important;">Total Pembelian</th>
+                                        <th style="width: 10%!important;">Total Berat</th>
                                         <th style="width: 5%!important;">Total Kuantitas</th>
                                         <th style="width: 5%!important;">Aksi</th>
                                     </tr>
@@ -151,8 +153,16 @@
                         name: 'customer_name'
                     },
                     {
+                        data: 'customer_phone',
+                        name: 'customer_phone'
+                    },
+                    {
                         data: 'total_pembelian',
                         name: 'total_pembelian'
+                    },
+                    {
+                        data: 'total_berat',
+                        name: 'total_berat'
                     },
                     {
                         data: 'total_kuantitas',

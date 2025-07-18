@@ -284,58 +284,59 @@ class ReportsController extends Controller
 
     public function salesCustomersReportData()
     {
-        // $salesPerCustomers = SalesGold::leftJoin('customers', 'sales_gold.customer', '=', 'customers.id')
-        //     ->select(
-        //         'customers.id as customer_id',
-        //         'customers.customer_name',
-        //         DB::raw('SUM(sales_gold.total) as total_pembelian'),
-        //         DB::raw('SUM(JSON_LENGTH(sales_gold.products)) as total_kuantitas')
-        //     )
-        //     ->groupBy('customers.id', 'customers.customer_name')
-        //     ->orderBy('customers.customer_name', 'desc')
-        //     ->get();
-
-        // return DataTables::of($salesPerCustomers)
-        //     ->addIndexColumn()
-        //     ->editColumn('customer_name', function ($data) {
-        //         return $data->customer_name ?? '-';
-        //     })
-        //     ->editColumn('total_pembelian', function ($data) {
-        //         return 'Rp. ' . number_format($data->total_pembelian, 0, ',', '.');
-        //     })
-        //     ->addColumn('action', function ($data) {
-        //         return view('reports::sales-customers.action', compact('data'));
-        //     })
-        //     ->make(true);
-
-        ///// WORKING AREA
         $sales = SalesGold::with('pelanggan')->get();
 
+        // inisialisasi array results
         $results = [];
 
+        // mengloop data sales_gold dengan mengambil customer_idnya dan juga datanya menjadi $salesGroup
         foreach ($sales->groupBy('pelanggan.id') as $customerId => $salesGroup) {
+            // mengambil customer_name dan jika tidak ada maka "-"
             $customerName = optional($salesGroup->first()->pelanggan)->customer_name ?? '-';
+            // mengambil customer_phone dan jika tidak ada maka "-"
+            $customerPhone = optional($salesGroup->first()->pelanggan)->customer_phone ?? '-';
+            // mengakumulasikan semua total
             $totalPembelian = $salesGroup->sum('total');
+            // inisialisasi totalBerat dan totalKuantitas
+            $totalBerat = 0;
             $totalKuantitas = 0;
 
             foreach ($salesGroup as $sale) {
+                // mengubah data dari products menjadi array
                 $productIds = json_decode($sale->products, true) ?? [];
 
-                $validProductCount = Product::whereIn('id', $productIds)
-                    ->whereNull('deleted_at')
-                    ->count();
+                // mengecek apakah data beneran array
+                if (is_array($productIds)) {
+                    // mengambil semua berat emas dari setiap product
+                    $products = Product::whereIn('id', $productIds)
+                        ->select('berat_emas')
+                        ->get();
 
-                $totalKuantitas += $validProductCount;
+                    // mengloop dan mengakumulasikan semua berat emas
+                    foreach ($products as $product) {
+                        $totalBerat += $product->berat_emas;
+                    }
+                }
+
+                // menghitung banyak produk
+                $hitungProduct = Product::whereIn('id', $productIds)
+                    ->count();
+                // mengakumulasikan semua produk
+                $totalKuantitas += $hitungProduct;
             }
 
+            // menyimpan semua data di dalam array
             $results[] = [
                 'customer_id' => $customerId,
                 'customer_name' => $customerName,
+                'customer_phone' => $customerPhone,
                 'total_pembelian' => $totalPembelian,
+                'total_berat' => $totalBerat,
                 'total_kuantitas' => $totalKuantitas,
             ];
         };
 
+        // sort array berdasarkan customer_name
         $sortedResult = collect($results)->sortByDesc('customer_name')->values();
 
         return DataTables::of($sortedResult)
@@ -346,11 +347,13 @@ class ReportsController extends Controller
             ->editColumn('total_pembelian', function ($data) {
                 return 'Rp. ' . number_format($data['total_pembelian'], 0, ',', '.');
             })
+            ->editColumn('total_berat', function ($data) {
+                return number_format($data['total_berat'], 2, ',', '.') . ' gram';
+            })
             ->addColumn('action', function ($data) {
                 return view('reports::sales-customers.action', compact('data'));
             })
             ->make(true);
-        /// END WORKING AREA
     }
 
     public function salesCustomersReportDetail($customer_id)
@@ -375,8 +378,6 @@ class ReportsController extends Controller
 
         $sales = $query->where('customer', $customer_id)->latest()->get();
 
-        // dump($sales);
-
         $hargaEmas = Harga::latest()->first()->harga;
 
         $results = [];
@@ -384,7 +385,6 @@ class ReportsController extends Controller
         foreach ($sales as $sale) {
             $productIds = json_decode($sale->products, true);
 
-            // dump($productIds);
             if (!is_array($productIds)) continue;
 
             $products = Product::whereIn('id', $productIds)
@@ -421,7 +421,6 @@ class ReportsController extends Controller
                 $results[] = [
                     'id' => $sale->id,
                     'nomor_transaksi' => $sale->nomor,
-                    // 'jam' => $sale->created_at->format('H:i'),
                     'waktu' => $tanggal . " | " . $jam,
                     'sales' => '-',
                     'customer_name' => $sale->pelanggan->customer_name ?? '-',
@@ -441,9 +440,6 @@ class ReportsController extends Controller
                 ];
             }
         }
-
-        // dump($results);
-        // dd("END");
 
         return Datatables::of($results)
             ->addColumn('action', function ($data) {

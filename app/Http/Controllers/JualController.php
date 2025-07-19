@@ -197,7 +197,6 @@ class JualController extends Controller
         }
 
         return Datatables::of($results)
-        // COMMENT DULU
             ->addColumn('action', function ($data) {
                 $module_name = $this->module_name;
                 $module_model = $this->module_model;
@@ -961,7 +960,30 @@ class JualController extends Controller
         //     ->make(true);
     }
 
-    public function all_excel(Request $request){
+    public function all(Request $request){
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $dataKarat  = Karat::whereNull('parent_id')->get();
+        $config     = Config::where('name', 'buyback')->first();
+        $configs    = json_decode($config->value, true);
+        $potongan   = $configs['potongan'];
+        $tambahan   = $configs['tambahan'];
+        return view(
+            'sale.global', // Path to your create view file
+            compact(
+                'module_title',
+                'module_name',
+                'module_path',
+                'module_icon',
+                'module_model',
+            )
+        );
+    }
+
+    public function index_global(Request $request){
         $buy = BuyBack::
             leftJoin('products', 'buyback.product_id', '=', 'products.id')->
             leftJoin('categories', 'products.category_id', '=', 'categories.id')->
@@ -978,11 +1000,11 @@ class JualController extends Controller
 
         $pos = SalesItem::
             leftJoin('products', 'sales_items.product', '=', 'products.id')->
+            leftJoin('services', 'sales_items.sales_gold_id', '=', 'services.sales')->
             leftJoin('categories', 'products.category_id', '=', 'categories.id')->
             leftJoin('karats', 'products.karat_id', '=', 'karats.id')->
             leftJoin('groups', 'products.group_id', '=', 'products.id')
-            ->select('sales_items.*', 'products.product_code', 'products.berat_emas', 'categories.category_name', 'categories.category_code', 'karats.name', 'groups.code');
-
+            ->select('sales_items.*', 'products.product_code', 'products.berat_emas', 'categories.category_name', 'categories.category_code', 'karats.name', 'groups.code', 'services.name as service_name', 'services.desc');
 
         if ($request->startDate && $request->endDate && !$request->resetFilter) {
             $startDate = Carbon::parse($request->startDate)->startOfDay();
@@ -1015,7 +1037,7 @@ class JualController extends Controller
             $data[$number]['category'] = $b->category_name;
             $data[$number]['barang'] = $b->product_code;
             $data[$number]['berat'] = $b->berat_emas;
-            $data[$number]['karat'] = $b->created_at;
+            $data[$number]['karat'] = $b->name;
             $data[$number]['pemasukan_lm'] = $pemasukan_lm;
             $data[$number]['pemasukan_perhiasan'] = $pemasukan_perhiasan;
             $data[$number]['buyback'] = $b->harga;
@@ -1048,8 +1070,11 @@ class JualController extends Controller
                 $salesGold  = SalesGold::where('nomor', $inv)->first();
                 if($salesGold){
                     $prod   = $salesGold->products;
+                    $ser    = $salesGold->services;
                     $prods  = json_decode($prod, true);
-                    $count  = count($prods);
+                    $sers   = json_decode($ser, true);
+                    // $count  = count($prods);
+                    $count  = count($prods) + count($sers);
                     $cash       = $salesGold->cash;
                     $transfer   = $salesGold->transfer;
                     $edc        = $salesGold->edc;
@@ -1058,19 +1083,25 @@ class JualController extends Controller
                 }
             }
 
+            $kategori   = $b->category_name;
+            $barang   = $b->product_code;
             if($b->category_code == 'LM'){
                 $pemasukan_lm   = $b->total;
             }else{
                 $pemasukan_perhiasan    = $b->total;
             }
+            if($b->product == 0){
+                $kategori   = $b->service_name;
+                $barang   = $b->desc;
+            }
 
             $data[$number]['from'] = 'pos';
             $data[$number]['tanggal'] = $b->created_at;
             $data[$number]['trx'] = $b->nomor;
-            $data[$number]['category'] = $b->category_name;
-            $data[$number]['barang'] = $b->product_code;
+            $data[$number]['category'] = $kategori;
+            $data[$number]['barang'] = $barang;
             $data[$number]['berat'] = $b->berat_emas;
-            $data[$number]['karat'] = $b->created_at;
+            $data[$number]['karat'] = $b->name;
             $data[$number]['pemasukan_lm'] = $pemasukan_lm;
             $data[$number]['pemasukan_perhiasan'] = $pemasukan_perhiasan;
             $data[$number]['buyback'] = $buyback;
@@ -1090,7 +1121,190 @@ class JualController extends Controller
             if ($dateA == $dateB) {
                 return 0;
             }
-            return ($dateA < $dateB) ? -1 : 1;
+            return ($dateA > $dateB) ? -1 : 1; // Change the comparison to descending
+        });
+
+
+        return Datatables::of($data)
+
+            ->editColumn('tanggal', function ($data) {
+                return tgljam($data['tanggal']);
+            })
+            ->editColumn('pemasukan_lm', function ($data) {
+                return number_format($data['pemasukan_lm']);
+            })
+            ->editColumn('pemasukan_perhiasan', function ($data) {
+                return number_format($data['pemasukan_perhiasan']);
+            })
+            ->editColumn('buyback', function ($data) {
+                return number_format($data['buyback']);
+            })
+            ->editColumn('barang_luar', function ($data) {
+                return number_format($data['barang_luar']);
+            })
+            ->editColumn('cash', function ($data) {
+                return number_format($data['cash']);
+            })
+            ->editColumn('transfer', function ($data) {
+                return number_format($data['transfer']);
+            })
+            ->editColumn('edc', function ($data) {
+                return number_format($data['edc']);
+            })
+            ->editColumn('qr', function ($data) {
+                return number_format($data['qr']);
+            })
+            ->editColumn('cc', function ($data) {
+                return number_format($data['cc']);
+            })
+            
+            
+            ->rawColumns([
+                'tanggal', 'product_image', 'rounded', 'rekomendasi', 'weight', 'status', 'tracking',
+                'product_name', 'karat', 'cabang', 'action'
+            ])
+            ->make(true);
+    }
+
+    public function all_excel(Request $request){
+        $buy = BuyBack::
+            leftJoin('products', 'buyback.product_id', '=', 'products.id')->
+            leftJoin('categories', 'products.category_id', '=', 'categories.id')->
+            leftJoin('karats', 'products.karat_id', '=', 'karats.id')->
+            leftJoin('groups', 'products.group_id', '=', 'products.id')
+            ->select('buyback.*', 'products.product_code', 'products.berat_emas', 'categories.category_name', 'karats.name', 'groups.code');
+
+        // $luar = BuyBack::
+        //     leftJoin('products', 'buyback.product_id', '=', 'products.id')->
+        //     leftJoin('categories', 'products.category_id', '=', 'categories.id')->
+        //     leftJoin('karats', 'products.karat_id', '=', 'karats.id')->
+        //     leftJoin('groups', 'products.group_id', '=', 'products.id')
+        //     ->select('buyback.*', 'products.product_code', 'products.berat_emas', 'categories.category_name', 'karats.name', 'groups.code');
+
+        $pos = SalesItem::
+            leftJoin('products', 'sales_items.product', '=', 'products.id')->
+            leftJoin('services', 'sales_items.sales_gold_id', '=', 'services.sales')->
+            leftJoin('categories', 'products.category_id', '=', 'categories.id')->
+            leftJoin('karats', 'products.karat_id', '=', 'karats.id')->
+            leftJoin('groups', 'products.group_id', '=', 'products.id')
+            ->select('sales_items.*', 'products.product_code', 'products.berat_emas', 'categories.category_name', 'categories.category_code', 'karats.name', 'groups.code', 'services.name as service_name', 'services.desc');
+
+        if ($request->startDate && $request->endDate && !$request->resetFilter) {
+            $startDate = Carbon::parse($request->startDate)->startOfDay();
+            $endDate = Carbon::parse($request->endDate)->endOfDay();
+            $buy->whereBetween('buyback.created_at', [$startDate, $endDate]);
+            $pos->whereBetween('sales_items.created_at', [$startDate, $endDate]);
+        }
+
+        $buybacks = $buy->latest()->get();
+        $poss = $pos->latest()->get();
+        $data = array();
+        $number = 0;
+        foreach($buybacks as $b){
+            $pemasukan_lm           = 0;
+            $pemasukan_perhiasan    = 0;
+            $barang_luar            = 0;
+            $cash                   = 0;
+            $transfer               = 0;
+            $edc                    = 0;
+            $qr                     = 0;
+            $cc                     = 0;
+            if($b->payment == 'cash'){
+                $cash   = $b->harga;
+            }else{
+                $transfer   = $b->harga;
+            }
+            $data[$number]['from'] = 'buyback';
+            $data[$number]['tanggal'] = $b->created_at;
+            $data[$number]['trx'] = $b->nota;
+            $data[$number]['category'] = $b->category_name;
+            $data[$number]['barang'] = $b->product_code;
+            $data[$number]['berat'] = $b->berat_emas;
+            $data[$number]['karat'] = $b->name;
+            $data[$number]['pemasukan_lm'] = $pemasukan_lm;
+            $data[$number]['pemasukan_perhiasan'] = $pemasukan_perhiasan;
+            $data[$number]['buyback'] = $b->harga;
+            $data[$number]['barang_luar'] = $barang_luar;
+            $data[$number]['count'] = 1;
+            $data[$number]['cash'] = $cash;
+            $data[$number]['transfer'] = $transfer;
+            $data[$number]['edc'] = $edc;
+            $data[$number]['qr'] = $qr;
+            $data[$number]['cc'] = $cc;
+            $number++;
+        }
+
+        $inv    = '';
+
+        foreach($poss as $b){
+            $pemasukan_lm           = 0;
+            $pemasukan_perhiasan    = 0;
+            $buyback                = 0;
+            $barang_luar            = 0;
+            $cash                   = 0;
+            $transfer               = 0;
+            $edc                    = 0;
+            $qr                     = 0;
+            $cc                     = 0;
+            if($inv == $b->nomor){
+                $count  = 0;
+            }else{
+                $inv    = $b->nomor;
+                $salesGold  = SalesGold::where('nomor', $inv)->first();
+                if($salesGold){
+                    $prod   = $salesGold->products;
+                    $ser    = $salesGold->services;
+                    $prods  = json_decode($prod, true);
+                    $sers   = json_decode($ser, true);
+                    // $count  = count($prods);
+                    $count  = count($prods) + count($sers);
+                    $cash       = $salesGold->cash;
+                    $transfer   = $salesGold->transfer;
+                    $edc        = $salesGold->edc;
+                    $qr         = $salesGold->qr;
+                    $cc         = $salesGold->cc;
+                }
+            }
+
+            $kategori   = $b->category_name;
+            $barang   = $b->product_code;
+            if($b->category_code == 'LM'){
+                $pemasukan_lm   = $b->total;
+            }else{
+                $pemasukan_perhiasan    = $b->total;
+            }
+            if($b->product == 0){
+                $kategori   = $b->service_name;
+                $barang   = $b->desc;
+            }
+
+            $data[$number]['from'] = 'pos';
+            $data[$number]['tanggal'] = $b->created_at;
+            $data[$number]['trx'] = $b->nomor;
+            $data[$number]['category'] = $kategori;
+            $data[$number]['barang'] = $barang;
+            $data[$number]['berat'] = $b->berat_emas;
+            $data[$number]['karat'] = $b->name;
+            $data[$number]['pemasukan_lm'] = $pemasukan_lm;
+            $data[$number]['pemasukan_perhiasan'] = $pemasukan_perhiasan;
+            $data[$number]['buyback'] = $buyback;
+            $data[$number]['barang_luar'] = $barang_luar;
+            $data[$number]['count'] = $count;
+            $data[$number]['cash'] = $cash;
+            $data[$number]['transfer'] = $transfer;
+            $data[$number]['edc'] = $edc;
+            $data[$number]['qr'] = $qr;
+            $data[$number]['cc'] = $cc;
+            $number++;
+        }
+        usort($data, function($a, $b) {
+            $dateA = strtotime($a['tanggal']);
+            $dateB = strtotime($b['tanggal']);
+            
+            if ($dateA == $dateB) {
+                return 0;
+            }
+            return ($dateA > $dateB) ? -1 : 1; // Change the comparison to descending
         });
         // echo json_encode($data);
         // exit();
@@ -1174,8 +1388,8 @@ class JualController extends Controller
                 $total_berat                = $total_berat-$row['berat'];
                 $total_pemasukan_lm         = $total_pemasukan_lm-$row['pemasukan_lm'];
                 $total_pemasukan_perhiasan  = $total_pemasukan_perhiasan-$row['pemasukan_perhiasan'];
-                $total_buyback              = $total_buyback-$row['buyback'];
-                $total_barang_luar          = $total_barang_luar-$row['barang_luar'];
+                $total_buyback              = $total_buyback+$row['buyback'];
+                $total_barang_luar          = $total_barang_luar+$row['barang_luar'];
                 $total_cash                 = $total_cash-$row['cash'];
                 $total_transfer             = $total_transfer-$row['transfer'];
                 $total_edc                  = $total_edc-$row['edc'];

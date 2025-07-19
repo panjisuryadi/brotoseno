@@ -109,6 +109,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/sale/report/recap', 'JualController@recap')
     ->name('sale.recap');
 
+    Route::get('/sale/global', 'JualController@all')
+    ->name('sale.global');
+
+    Route::get('/sale/index_global', 'JualController@index_global')
+    ->name('sale.index_global');
+
     Route::get('/sale/recap/data', 'JualController@data_recap')
     ->name('sale.data_recap');
 

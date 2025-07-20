@@ -5,6 +5,7 @@ namespace Modules\Product\Entities;
 use App\Models\LookUp;
 use App\Models\Baki;
 use App\Models\ProductHistories;
+use App\Models\SalesItem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Product\Notifications\NotifyQuantityAlert;
@@ -79,6 +80,10 @@ class Product extends Model implements HasMedia
     }
     public function pembelian() {
         return $this->belongsTo(GoodsReceipt::class, 'goodsreceipt_id', 'id');
+    }
+
+    public function sales_items() {
+        return $this->belongsTo(SalesItem::class, 'id', 'product');
     }
 
     public function detailProduksi() {

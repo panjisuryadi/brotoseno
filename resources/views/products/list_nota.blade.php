@@ -56,7 +56,7 @@
                     <div class="row">
                         <form id="filterForm" class="mb-3">
                             <div class="form-row align-items-end">
-                                <div class="col-md-3 col-sm-6 mb-2">
+                                <div class="col-md-6 ml-5 col-sm-6 mb-2">
                                     <label for="category" class="small">Category</label>
                                     <select id="category" name="category" class="form-control form-control-sm">
                                         <option value="0" selected="">All Category</option>

@@ -4,6 +4,7 @@ namespace Modules\Reports\Http\Controllers;
 
 use App\Models\Harga;
 use App\Models\SalesGold;
+use App\Models\SalesItem;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -212,10 +213,68 @@ class ReportsController extends Controller
         return view('reports::sales-unit.index');
     }
 
-    public function salesUnitReportData()
-    {
-        $salesGold = SalesGold::select('products', 'total')->get(); // ambil kolom products dan total dari salesGold
+    public function salesUnitReportData(Request $request){
+        $product = Product::join('karats', 'products.karat_id', '=', 'karats.id')
+            ->join('sales_items', 'products.id', '=', 'sales_items.product')
+            ->select('products.berat_emas', 'products.karat_id', 'karats.name as karat_name', 'sales_items.total')
+            ->where(function ($query) {
+                $query->where('products.status', 2)
+                    ->orWhere('products.status_id', 2);
+            });
 
+        if ($request->startDate && $request->endDate) {
+            $startDate = Carbon::parse($request->startDate)->startOfDay();
+            $endDate = Carbon::parse($request->endDate)->endOfDay();
+            $product->whereBetween('sales_items.created_at', [$startDate, $endDate]);
+        }
+        $product = $product->get();
+        $karatSummary = [];
+
+        foreach($product as $p){
+            $karatId    = $p->karat_id;
+            $karatName    = $p->karat_name;
+            $berat      = $p->berat_emas;
+            $total      = $p->total;
+            $karatSummary[$karatId]['karat_id'] = $karatId;
+            $karatSummary[$karatId]['karat_name'] = $karatName;
+            if(isset($karatSummary[$karatId]['total_produk'])){
+                $karatSummary[$karatId]['total_produk'] += 1;
+            }else{
+                $karatSummary[$karatId]['total_produk'] = 1;
+            }
+            if(isset($karatSummary[$karatId]['total_berat'])){
+                $karatSummary[$karatId]['total_berat'] += $berat;
+            }else{
+                $karatSummary[$karatId]['total_berat'] = $berat;
+            }
+            if(isset($karatSummary[$karatId]['total_penjualan'])){
+                $karatSummary[$karatId]['total_penjualan'] += $total;
+            }else{
+                $karatSummary[$karatId]['total_penjualan'] = $total;
+            }
+        }
+
+        return DataTables::of(collect($karatSummary))
+        ->addIndexColumn()
+        ->editColumn('total_berat', function ($data) { // mengedit kolom 'total_berat' dengan mengedit data yang ditampilkan
+            return number_format($data['total_berat'], 2, ',', '.') . ' gram';
+        })
+        ->editColumn('total_penjualan', function ($data) {
+            return 'Rp. ' . number_format($data['total_penjualan'], 0, ',', '.');
+        })
+        // KAYANYA BELUM PERLU ACTION
+        // ->addColumn('action', function($row){
+        //     return '<a class="btn btn-sm btn-primary">Edit</a>';
+        // })
+        // ->rawColumns(['action'])
+        ->make(true);
+    }
+
+    public function salesUnitReportData_()
+    {
+        $salesGold = SalesGold::select('id', 'products', 'total')->get(); // ambil kolom products dan total dari salesGold
+        echo json_encode($salesGold);
+        exit();
         $karatSummary = []; // siapkan array kosong untuk data karats
 
         // loop data salesGold
@@ -225,10 +284,13 @@ class ReportsController extends Controller
             // memastikan bahwa productIds berupa array
             if (is_array($productIds)) {
                 $products = Product::whereIn('id', $productIds) // ambil semua product berdasarkan id product yang didapat dari salesGold
+                    ->where('status', 2)
+                    ->where('status_id', 2)
                     ->select('id', 'karat_id', 'berat_emas')
                     ->get();
 
                 // loop semua products nya
+                $number = 1;
                 foreach ($products as $product) {
                     $karatId = $product->karat_id; // ambil karat_id nya dari tiap 1 product
 
@@ -241,10 +303,15 @@ class ReportsController extends Controller
                             'total_penjualan' => 0
                         ];
                     }
-
+                    
                     $karatSummary[$karatId]['total_berat'] += $product->berat_emas; // diisi dengan berat emas, akan ditambahkan seiring data masuk
                     $karatSummary[$karatId]['total_produk'] += 1;  // menghitung banyak produk yang, bertambah seiring waktu
-                    $karatSummary[$karatId]['total_penjualan'] += $sale->total;  // diisi dengan total, akan ditambahkan seiring data masuk
+                    // $karatSummary[$karatId]['total_penjualan'] += $sale->total;  // diisi dengan total, akan ditambahkan seiring data masuk
+                    $karatSummary[$karatId]['total_penjualan'] += $sale->id;  // diisi dengan total, akan ditambahkan seiring data masuk
+                    // $karatSummary[$karatId]['total_penjualan'] += $sale->total;  // diisi dengan total, akan ditambahkan seiring data masuk
+                    if($number == 0){
+                    }
+                    // $number++;
                 }
             }
         }

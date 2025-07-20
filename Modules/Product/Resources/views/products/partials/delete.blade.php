@@ -89,7 +89,10 @@ data-toggle="tooltip"
                                                 
                                     <div class="form-group">
                                         <label for="product_category">Product Category</label>
-                                        <input type="text" class="form-control" value="{{$data->category->category_name}}" readonly>
+                                        @php
+                                        $category   = $data->category->category_name ?? '-';
+                                        @endphp
+                                        <input type="text" class="form-control" value="{{$category}}" readonly>
                                     </div>
                                     <div class="form-group">
                                         <label for="product_category">Product Model</label>

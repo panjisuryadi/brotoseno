@@ -39,7 +39,82 @@
                                 <h1 class="text-lg font-semibold">Laporan Penjualan Unit</h1>
                             </div>
                             <div id="buttons"></div>
+
                         </div>
+<!-- filter -->
+                            {{-- FILTER LAPORAN --}}
+                            <div class="container-fluid">
+                                <div class="row g-3 align-items-end my-3">
+
+                                    {{-- Bulan --}}
+                                    {{-- <div class="col-md-3 col-sm-6">
+                                        <label for="bulan" class="small">Bulan</label>
+                                        <select id="bulan" class="form-control form-control-sm">
+                                            @for ($i = 1; $i <= 12; $i++)
+                                                <option value="{{ $i }}" {{ $bulan == $i ? 'selected' : '' }}>
+                                                    {{ \Carbon\Carbon::create()->month($i)->translatedFormat('F') }}
+                                                </option>
+                                            @endfor
+                                        </select>
+                                    </div> --}}
+
+                                    {{-- Tahun --}}
+                                    {{-- <div class="col-md-3 col-sm-6">
+                                        <label for="tahun" class="small">Tahun</label>
+                                        <select id="tahun" class="form-control form-control-sm">
+                                            @for ($i = now()->year; $i >= 2020; $i--)
+                                                <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>
+                                                    {{ $i }}
+                                                </option>
+                                            @endfor
+                                        </select>
+                                    </div> --}}
+
+                                    {{-- Karat --}}
+
+                                    <form id="filterForm" class="mb-3">
+                                        <div class="form-row align-items-end">
+                                            {{-- Start Date --}}
+                                            <div class="col-md-3 col-sm-6 mb-2">
+                                                <label for="startDate" class="small">Dari Tanggal</label>
+                                                <input type="date" name="startDate" id="startDate"
+                                                    class="form-control form-control-sm"
+                                                    value="{{ request('startDate') }}">
+                                            </div>
+
+                                            {{-- End Date --}}
+                                            <div class="col-md-3 col-sm-6 mb-2">
+                                                <label for="endDate" class="small">Sampai Tanggal</label>
+                                                <input type="date" name="endDate" id="endDate"
+                                                    class="form-control form-control-sm"
+                                                    value="{{ request('endDate') }}">
+                                            </div>
+
+
+                                            {{-- Tombol Filter --}}
+                                            <div class="col-md-3 col-sm-6 mb-2">
+                                                <label class="invisible d-block">Tombol</label>
+                                                <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                                                @php
+                                                $startDate = $_GET['startDate'] ?? date('Y-m-d', strtotime('-30 days'));
+                                                $endDate    = $_GET['endDate'] ?? date('Y-m-d');
+                                                $karats     = $_GET['karat'] ?? 0;
+                                                @endphp
+                                                <a href="/summary/excel?endDate={{$endDate}}&karat={{$karats}}&startDate={{$startDate}}" class="btn btn-sm btn-success">Excel</a>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                    {{-- Tombol Filter --}}
+                                    {{-- <div class="col-md-2 col-sm-6">
+                                        <button id="filterBtn" class="btn btn-primary btn-sm w-100">
+                                            Filter
+                                        </button>
+                                    </div> --}}
+                                </div>
+                            </div>
+                            <!-- endfilter -->
+
                         <div class="table-responsive mt-1">
                             <table id="salesUnitTable" style="width: 100%"
                                 class="table table-striped table-hover table-bordered table-responsive-sm">
@@ -95,7 +170,20 @@
                     "orderable": false,
                 }],
                 "sPaginationType": "simple_numbers",
-                ajax: '{{ route('sales-unit-report-data.index') }}',
+                ajax: {
+                    url: '{{ route('sales-unit-report-data.index') }}',
+                    data: function(d) {
+                        // d.bulan = $('#bulan').val();
+                        // d.tahun = $('#tahun').val();
+                        d.startDate = $('#startDate').val();
+                        d.endDate = $('#endDate').val();
+                    },
+                    error: function (xhr, error, thrown) {
+                        alert('Gagal memuat data dari server. Cek console untuk detail.');
+                        console.error(xhr.responseText);
+                    }
+                },
+                // ajax: '{{ route('sales-unit-report-data.index') }}',
                 dom: 'Blrtip',
                 buttons: [
 

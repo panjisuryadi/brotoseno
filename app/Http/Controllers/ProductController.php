@@ -26,6 +26,7 @@ use App\Models\ModalData;
 use App\Models\StockOpname;
 use Yajra\DataTables\DataTables;
 use App\Models\ProductHistories;
+use Carbon\Carbon;
 use Image;
 use Illuminate\Support\Facades\Storage;
 
@@ -636,6 +637,61 @@ class ProductController extends Controller
         $module_icon = $this->module_icon;
         $module_model = $this->module_model;
         $dataKarat = Karat::whereNull('parent_id')->get();
+
+        // mengecek apakah resetFilter true
+        if ($request->resetFilter) {
+            // jika true set kedua date menjadi today
+            $startDate = Carbon::today()->toDateString();
+            $endDate = Carbon::today()->toDateString();
+        } else {
+            // jika tidak ada mengambil yang dari request
+            $startDate = $request->startDate ?? Carbon::today()->toDateString();
+            $endDate = $request->endDate ?? Carbon::today()->toDateString();
+        }
+
+        // pengecekan jika startDate lebih besar dari endDate
+        if ($startDate > $endDate) {
+            toast('Tanggal awal tidak boleh lebih besar dari tanggal akhir!', 'error');
+            return redirect()->back();
+        }
+
+        $$module_name = $module_model::with('category', 'product_item', 'product_history');
+        if ($request->get('status')) {
+            $$module_name = $$module_name->where('status_id', $request->get('status'));
+        }
+        $$module_name->where('product_price', '>', 0)->get();
+
+        $harga = Harga::latest()->first();
+        if($harga == null){
+            $harga  = 0;
+        }else{
+            $harga = $harga->harga;
+        }
+
+        if ($request->startDate && $request->endDate && !$request->resetFilter) {
+            $$module_name = $$module_name->whereDate('created_at', '>=', $startDate)
+            ->whereDate('created_at', '<=', $endDate)->get();
+        } else {
+            $$module_name = $$module_name->whereDate('created_at', Carbon::today())->get();
+        }
+
+        $$module_name->each(function ($item) use ($harga) {
+            $item->harga = $harga; // Add the harga attribute to the model
+        });
+        $data = $$module_name;
+
+        $totalBerat = 0;
+        $totalKuantitas = $data->count();
+        $totalPembelian = 0;
+
+        foreach ($data as $product) {
+            $totalBerat += $product->berat_emas;
+            $totalPembelian += $product->product_price;
+        }
+
+        $formattedTotalBerat = number_format($totalBerat, 2, ',', '.') . ' Gram';
+        $formattedTotalPembelian = 'Rp. ' . number_format($totalPembelian, 0, ',', '.');
+
         return view(
             'products.list_luar', // Path to your create view file
             compact(
@@ -651,6 +707,9 @@ class ProductController extends Controller
                 'hari_ini',
                 // 'inputs',
                 'dataKarat',
+                'formattedTotalBerat',
+                'totalKuantitas',
+                'formattedTotalPembelian',
             )
         );
     }
@@ -1474,6 +1533,13 @@ class ProductController extends Controller
             $harga = $harga->harga;
         }
         // $harga  = 1000000;
+
+        if (!empty($request->startDate) && !empty($request->endDate)) {
+            $start = Carbon::parse($request->startDate)->startOfDay();
+            $end = Carbon::parse($request->endDate)->endOfDay();
+            $$module_name->whereBetween('created_at', [$start, $end]);
+        }
+
         $$module_name = $$module_name->latest()->get();
         $$module_name->each(function ($item) use ($harga) {
             $item->harga = $harga; // Add the harga attribute to the model
@@ -1483,7 +1549,10 @@ class ProductController extends Controller
         // echo json_encode($data);
         // exit();
 
-        return Datatables::of($$module_name)
+        ///// WORKING AREA
+        /// END WORKING AREA
+
+        return Datatables::of($data)
             // ->addColumn('action', function ($data) {
             //     $module_name = $this->module_name;
             //     $module_model = $this->module_model;
@@ -1558,7 +1627,7 @@ class ProductController extends Controller
                 $tb = '<div class="items-center gap-x-2">
                                 <div class="text-sm text-center text-gray-500">
                                 <b>' . @$data->karat->label . ' </b><br>
-                                Rp .' . @rupiah($data->product_price) . ' <br>
+                                Rp. ' . @rupiah($data->product_price) . ' <br>
                                 </div>
                                 </div>';
                 return $tb;

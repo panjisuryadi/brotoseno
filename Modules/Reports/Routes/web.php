@@ -55,6 +55,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/sales-unit/report/data', 'ReportsController@salesUnitReportData')
         ->name('sales-unit-report-data.index');
 
+    Route::get('/sales-unit/report/excel', 'ReportsController@salesUnitReportExcel')
+        ->name('sales-unit-report-data.excel');
+
     // Sales Per Customers Page
     Route::get('/sales-customers/report', 'ReportsController@salesCustomersReport')
         ->name('sales-customers-report.index');

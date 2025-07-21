@@ -496,7 +496,8 @@ class JualController extends Controller
             $karatHash = $request->input('karat', '0');
             $karatId   = $karatHash === '0' ? 0 : (decode_id($karatHash) ?? 0);
 
-            $sales = SalesGold::query();
+            // $sales = SalesGold::query();
+            $sales = SalesItem::query();
 
             // $sales = SalesGold::when($request->filled(['bulan','tahun']), function ($q) use ($request) {
             //                 $q->whereMonth('created_at', $request->bulan)
@@ -517,25 +518,71 @@ class JualController extends Controller
             $detailRows = collect();
 
             foreach ($sales as $invoice) {
-                $items = json_decode($invoice->products, true) ?? [];
+                // $items = json_decode($invoice->products, true) ?? [];
+                $items = $invoice->product;
+                $number = 1;
 
-                foreach ($items as $p) {
-                    $idProduk = is_array($p) ? $p['id'] : $p;
-                    $itemQty  = is_array($p) && isset($p['qty']) ? $p['qty'] : 1;
-
-                    $prod = Product::with(['category','karat'])->find($idProduk);
-                    if (!$prod) continue;
-
-                    $detailRows->push([
-                        'tanggal'   => $invoice->created_at->format('Y-m-d'),
-                        'kategori'  => optional($prod->category)->category_name ?: '-',
-                        'karat'     => optional($prod->karat)->name ?: '-',
-                        'karat_id'  => $prod->karat_id,
-                        'berat'     => $prod->berat_emas * $itemQty,
-                        'qty'       => $itemQty,
-                        'total'     => $invoice->total
-                    ]);
+                $prod = Product::with(['category','karat'])->find($items);
+                if (!$prod) continue;
+                if(isset($prod->id)){
+                    if($number == 1){
+                        $detailRows->push([
+                            'tanggal'   => $invoice->created_at->format('Y-m-d'),
+                            'kategori'  => optional($prod->category)->category_name ?: '-',
+                            'karat'     => optional($prod->karat)->name ?: '-',
+                            'karat_id'  => $prod->karat_id,
+                            'berat'     => $prod->berat_emas,
+                            'qty'       => 1,
+                            'total'     => $invoice->total
+                        ]);
+                    }else{
+                        $detailRows->push([
+                            'tanggal'   => $invoice->created_at->format('Y-m-d'),
+                            'kategori'  => optional($prod->category)->category_name ?: '-',
+                            'karat'     => optional($prod->karat)->name ?: '-',
+                            'karat_id'  => $prod->karat_id,
+                            'berat'     => $prod->berat_emas,
+                            'qty'       => 1,
+                            'total'     => 0
+                        ]);
+                    }
+                    $number++;
                 }
+
+                // foreach ($items as $p) {
+                //     $idProduk = is_array($p) ? $p['id'] : $p;
+                //     $itemQty  = is_array($p) && isset($p['qty']) ? $p['qty'] : 1;
+
+                //     $prod = Product::with(['category','karat'])->find($idProduk);
+                //     if (!$prod) continue;
+                //     if(isset($prod->id)){
+                //         if($number == 1){
+                //             $detailRows->push([
+                //                 'tanggal'   => $invoice->created_at->format('Y-m-d'),
+                //                 'kategori'  => optional($prod->category)->category_name ?: '-',
+                //                 'karat'     => optional($prod->karat)->name ?: '-',
+                //                 'karat_id'  => $prod->karat_id,
+                //                 'berat'     => $prod->berat_emas * $itemQty,
+                //                 'qty'       => $itemQty,
+                //                 'total'     => $invoice->total
+                //             ]);
+                //         }else{
+                //             $detailRows->push([
+                //                 'tanggal'   => $invoice->created_at->format('Y-m-d'),
+                //                 'kategori'  => optional($prod->category)->category_name ?: '-',
+                //                 'karat'     => optional($prod->karat)->name ?: '-',
+                //                 'karat_id'  => $prod->karat_id,
+                //                 'berat'     => $prod->berat_emas * $itemQty,
+                //                 'qty'       => $itemQty,
+                //                 'total'     => 0
+                //             ]);
+                //         }
+                //         $number++;
+                //     }
+                //     // if(!empty($idProduk) || $idProduk != '' || $idProduk != 0){
+                        
+                //     // }
+                // }
             }
 
             if ($karatId !== 0) {
@@ -840,7 +887,8 @@ class JualController extends Controller
         $karatHash = $request->input('karat', '0');
         $karatId   = $karatHash === '0' ? 0 : (decode_id($karatHash) ?? 0);
 
-        $sales = SalesGold::query();
+        // $sales = SalesGold::query();
+        $sales = SalesItem::query();
 
         // $sales = SalesGold::when($request->filled(['bulan','tahun']), function ($q) use ($request) {
         //                 $q->whereMonth('created_at', $request->bulan)
@@ -861,25 +909,26 @@ class JualController extends Controller
         $detailRows = collect();
 
         foreach ($sales as $invoice) {
-            $items = json_decode($invoice->products, true) ?? [];
+            $items = $invoice->product;
+            $prod = Product::with(['category','karat'])->find($items);
+            if (!$prod) continue;
 
-            foreach ($items as $p) {
-                $idProduk = is_array($p) ? $p['id'] : $p;
-                $itemQty  = is_array($p) && isset($p['qty']) ? $p['qty'] : 1;
+            $detailRows->push([
+                'tanggal'   => $invoice->created_at->format('Y-m-d'),
+                'kategori'  => optional($prod->category)->category_name ?: '-',
+                'karat'     => optional($prod->karat)->name ?: '-',
+                'karat_id'  => $prod->karat_id,
+                'berat'     => $prod->berat_emas,
+                'qty'       => 1,
+                'total'     => $invoice->total
+            ]);
 
-                $prod = Product::with(['category','karat'])->find($idProduk);
-                if (!$prod) continue;
+            // foreach ($items as $p) {
+            //     // $idProduk = is_array($p) ? $p['id'] : $p;
+            //     // $itemQty  = is_array($p) && isset($p['qty']) ? $p['qty'] : 1;
 
-                $detailRows->push([
-                    'tanggal'   => $invoice->created_at->format('Y-m-d'),
-                    'kategori'  => optional($prod->category)->category_name ?: '-',
-                    'karat'     => optional($prod->karat)->name ?: '-',
-                    'karat_id'  => $prod->karat_id,
-                    'berat'     => $prod->berat_emas * $itemQty,
-                    'qty'       => $itemQty,
-                    'total'     => $invoice->total
-                ]);
-            }
+                
+            // }
         }
 
         if ($karatId !== 0) {

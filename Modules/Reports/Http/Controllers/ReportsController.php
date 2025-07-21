@@ -213,6 +213,92 @@ class ReportsController extends Controller
         return view('reports::sales-unit.index');
     }
 
+    public function salesUnitReportExcel(Request $request){
+        $product = Product::join('karats', 'products.karat_id', '=', 'karats.id')
+            ->join('sales_items', 'products.id', '=', 'sales_items.product')
+            ->select('products.berat_emas', 'products.karat_id', 'karats.name as karat_name', 'sales_items.total')
+            ->where(function ($query) {
+                $query->where('products.status', 2)
+                    ->orWhere('products.status_id', 2);
+            });
+
+        if ($request->startDate && $request->endDate) {
+            $startDate = Carbon::parse($request->startDate)->startOfDay();
+            $endDate = Carbon::parse($request->endDate)->endOfDay();
+            $product->whereBetween('sales_items.created_at', [$startDate, $endDate]);
+        }
+        $product = $product->get();
+        $karatSummary = [];
+
+        foreach($product as $p){
+            $karatId    = $p->karat_id;
+            $karatName    = $p->karat_name;
+            $berat      = $p->berat_emas;
+            $total      = $p->total;
+            $karatSummary[$karatId]['karat_id'] = $karatId;
+            $karatSummary[$karatId]['karat_name'] = $karatName;
+            if(isset($karatSummary[$karatId]['total_produk'])){
+                $karatSummary[$karatId]['total_produk'] += 1;
+            }else{
+                $karatSummary[$karatId]['total_produk'] = 1;
+            }
+            if(isset($karatSummary[$karatId]['total_berat'])){
+                $karatSummary[$karatId]['total_berat'] += $berat;
+            }else{
+                $karatSummary[$karatId]['total_berat'] = $berat;
+            }
+            if(isset($karatSummary[$karatId]['total_penjualan'])){
+                $karatSummary[$karatId]['total_penjualan'] += $total;
+            }else{
+                $karatSummary[$karatId]['total_penjualan'] = $total;
+            }
+        }
+
+        header("Content-Type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; filename=Penjualan_Unit.xls");
+
+        echo '<table border="1">';
+        echo '<thead>
+            <tr>
+                <th>Nama Karat</th>
+                <th>Total Berat</th>
+                <th>Total Product</th>
+                <th>Sales </th>
+            </tr>
+        </thead>
+        <tbody>';
+
+        $total_berat    = 0;
+        $total_qty      = 0;
+        $total_rupiah   = 0;
+
+        foreach ($karatSummary as $row) {
+            echo '<td>' . htmlspecialchars($row['karat_name']) . '</td>';
+            echo '<td align="right">' . number_format($row['total_berat'], 2) . '</td>';
+            echo '<td align="right">' . number_format($row['total_produk']) . '</td>';
+            echo '<td align="right">Rp ' . number_format($row['total_penjualan'], 0, ',', '.') . '</td>';
+            echo '</tr>';
+
+            $total_berat    = $total_berat+$row['total_berat'];
+            $total_qty      = $total_qty+$row['total_produk'];
+            $total_rupiah   = $total_rupiah+$row['total_penjualan'];
+        }
+
+        echo '
+        <tfoot>
+        <tr>
+        <td colspan="1">Total</td>
+        <td align="right">'.number_format($total_berat, 2).'</td>
+        <td align="right">'.number_format($total_qty).'</td>
+        <td align="right">Rp '.number_format($total_rupiah, 0, ',', '.').'</td>
+        <tr>
+        </tfoot>
+        ';
+
+        echo '</tbody></table>';
+        exit;
+    }
+
     public function salesUnitReportData(Request $request){
         $product = Product::join('karats', 'products.karat_id', '=', 'karats.id')
             ->join('sales_items', 'products.id', '=', 'sales_items.product')

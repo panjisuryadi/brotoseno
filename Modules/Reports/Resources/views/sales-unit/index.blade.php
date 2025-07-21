@@ -100,7 +100,7 @@
                                                 $endDate    = $_GET['endDate'] ?? date('Y-m-d');
                                                 $karats     = $_GET['karat'] ?? 0;
                                                 @endphp
-                                                <a href="/summary/excel?endDate={{$endDate}}&karat={{$karats}}&startDate={{$startDate}}" class="btn btn-sm btn-success">Excel</a>
+                                                <a href="/sales-unit/report/excel?endDate={{$endDate}}&startDate={{$startDate}}" class="btn btn-sm btn-success">Excel</a>
                                             </div>
                                         </div>
                                     </form>

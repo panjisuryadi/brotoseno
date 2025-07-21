@@ -103,6 +103,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/sale/report', 'JualController@laporan')
         ->name('sale.report');
 
+    Route::get('/sale/report/excel', 'JualController@laporan_excel')
+        ->name('sale.report_excel');
+
     Route::get('/sale/data_report', 'JualController@data_report')
         ->name('sale.data_report');
 

@@ -127,6 +127,12 @@
                                 placeholder="Sampai" value="{{ request('endDate') }}">
 
                             <button type="submit" class="btn btn-sm mx-1 btn-primary">Filter</button>
+                            @php
+                            $startDate = $_GET['startDate'] ?? date('Y-m-d', strtotime('-30 days'));
+                            $endDate    = $_GET['endDate'] ?? date('Y-m-d');
+                            $karats     = $_GET['karat'] ?? 0;
+                            @endphp
+                            <a href="/sale/report/excel?endDate={{$endDate}}&startDate={{$startDate}}" class="btn btn-sm btn-success">Excel</a>
                         </form>
                         {{-- <button type="button" id="resetFilter" class="btn btn-sm btn-secondary">Reset</button> --}}
 
@@ -157,6 +163,7 @@
                                         <th style="width: 10%!important;">Transfer</th>
                                         <th style="width: 10%!important;">Edc</th>
                                         <th style="width: 10%!important;">Qr</th>
+                                        <th style="width: 10%!important;">CC</th>
                                         {{-- off kan dulu --}}
                                         {{-- <th style="width: 10%!important;">Tukar</th>
                                         <th style="width: 10%!important;">Tkr krg</th>
@@ -350,6 +357,10 @@
                     {
                         data: 'qr',
                         name: 'qr'
+                    },
+                    {
+                        data: 'cc',
+                        name: 'cc'
                     },
                     // off kan dulu
                     // {

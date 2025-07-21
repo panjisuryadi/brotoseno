@@ -19,7 +19,7 @@ use App\Models\Service;
 use App\Models\Harga;
 use App\Models\Config;
 use App\Models\Modal;
-use App\Models\Buyback;
+use App\Models\BuyBack;
 use App\Models\ModalData;
 use App\Models\ProductHistories;
 use App\Models\StockOpname;
@@ -161,6 +161,7 @@ class JualController extends Controller
                 $formattedTransfer = 'Rp. ' . number_format($sale->transfer, 0, ',', '.');
                 $formattedEdc = 'Rp. ' . number_format($sale->edc, 0, ',', '.');
                 $formattedQr = 'Rp. ' . number_format($sale->qr, 0, ',', '.');
+                $formattedCc = 'Rp. ' . number_format($sale->cc, 0, ',', '.');
                 $formattedTotal = 'Rp. ' . number_format($sale->total, 0, ',', '.');
                 $formattedHargaTotalProduk = 'Rp. ' . number_format($hargaTotalProduk, 0, ',', '.');
                 $formattedRata2 = 'Rp. ' . number_format($hargaTotalProduk / $beratEmas, 0, ',', '.');
@@ -187,6 +188,7 @@ class JualController extends Controller
                     'transfer' => $sale->transfer ? $formattedTransfer : '-',
                     'edc' => $sale->edc ? $formattedEdc : '-',
                     'qr' => $sale->qr ? $formattedQr : '-',
+                    'cc' => $sale->cc ? $formattedCc : '-',
                     // 'tukar' => '-',
                     // 'tkr_krg' => '-',
                     // 'btl_jual' => '-',
@@ -272,6 +274,197 @@ class JualController extends Controller
             ])
             ->make(true);
         }
+
+    public function laporan_excel(Request $request){
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        $module_action = 'List';
+        // $$module_name = SalesGold::with('pelanggan')->latest()->get();
+        // $$module_name = SalesGold::latest()->get();
+        // dd($$module_name);
+
+        // $data = $$module_name;
+        // echo $data;
+        // exit();
+
+        $query = SalesGold::with('pelanggan');
+
+        if (!empty($request->startDate) && !empty($request->endDate)) {
+            $start = Carbon::parse($request->startDate)->startOfDay();
+            $end = Carbon::parse($request->endDate)->endOfDay();
+            $query->whereBetween('created_at', [$start, $end]);
+        }
+
+        $sales = $query->latest()->get();
+
+        $hargaEmas = Harga::latest()->first()->harga;
+
+        $results = [];
+
+        foreach ($sales as $sale) {
+            $productIds = json_decode($sale->products);
+
+            if (!is_array($productIds)) continue;
+
+            $products = Product::whereIn('id', $productIds)
+                ->with('category')
+                ->with('karats')
+                ->get();
+
+            foreach ($products as $product) {
+
+                // KOMPONEN UNTUK HARGA JUAL:
+                $coef = $product->karats->coef;
+                $persenMargin = $product->karats->persen;
+                $beratEmas = $product->berat_emas;
+
+                // MEMBUAT HARGA JUAL PRODUK
+                $hargaCoef = $coef * $hargaEmas;
+                $hargaJual = $hargaCoef + ($hargaCoef * ($persenMargin / 100));
+                $hargaTotalProduk = ceil($hargaJual * $beratEmas / 1000) * 1000;
+
+                // format angka rupiah
+                $formattedCash = 'Rp. ' . number_format($sale->cash, 0, ',', '.');
+                $formattedTransfer = 'Rp. ' . number_format($sale->transfer, 0, ',', '.');
+                $formattedEdc = 'Rp. ' . number_format($sale->edc, 0, ',', '.');
+                $formattedQr = 'Rp. ' . number_format($sale->qr, 0, ',', '.');
+                $formattedTotal = 'Rp. ' . number_format($sale->total, 0, ',', '.');
+                $formattedHargaTotalProduk = 'Rp. ' . number_format($hargaTotalProduk, 0, ',', '.');
+                $formattedRata2 = 'Rp. ' . number_format($hargaTotalProduk / $beratEmas, 0, ',', '.');
+
+                // format berat emas
+                $formattedBeratEmas = number_format($product->berat_emas, 2, ',', '.');
+
+                $results[] = [
+                    'id' => $sale->id,
+                    'nomor_transaksi' => $sale->nomor,
+                    'jam' => $sale->created_at->format('H:i'),
+                    'sales' => '-',
+                    'customer_name' => $sale->pelanggan->customer_name ?? '-',
+                    'category_code' => $product->category->category_code ?? '-',
+                    'product_name' => $product->product_name,
+                    'berat' => $product->berat_emas,
+                    'berat_emas' => $formattedBeratEmas,
+                    'karat' => $product->karats->name,
+                    // 'h_atr' => '-',
+                    // 'h_jual' => $formattedHargaTotalProduk,
+                    'h_jual' => $hargaTotalProduk,
+                    'ongkos' => '-',
+                    'total' => $sale->total,
+                    // 'dp' => '-',
+                    'cash' => $sale->cash ? $sale->cash : 0,
+                    'transfer' => $sale->transfer ? $sale->transfer : 0,
+                    'edc' => $sale->edc ? $sale->edc : 0,
+                    'qr' => $sale->qr ? $sale->qr : 0,
+                    'cc' => $sale->cc ? $sale->cc : 0,
+                    // 'tukar' => '-',
+                    // 'tkr_krg' => '-',
+                    // 'btl_jual' => '-',
+                    'rata_rata' => $hargaTotalProduk / $beratEmas,
+                    'keterangan' => '-',
+                ];
+            }
+        }
+
+        header("Content-Type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; filename=penjualan.xls");
+
+        echo '<table border="1">';
+        echo '<thead>
+            <tr>
+                <th>TRX</th>
+                <th>Jam</th>
+                <th>Sales</th>
+                <th>Customer</th>
+                <th>Category</th>
+                <th>Barang</th>
+                <th>Berat</th>
+                <th>Karat</th>
+                <th>Harga Jual</th>
+                <th>Ongkos</th>
+                <th>Total</th>
+                <th>Cash</th>
+                <th>Transfer</th>
+                <th>EDC</th>
+                <th>QR</th>
+                <th>CC</th>
+                <th>Rata</th>
+                <th>Keterangan</th>
+            </tr>
+        </thead>
+        <tbody>';
+
+        $total_berat    = 0;
+        $total_jual     = 0;
+        $total_total    = 0;
+        $total_cash     = 0;
+        $total_transfer = 0;
+        $total_edc      = 0;
+        $total_qr       = 0;
+        $total_cc       = 0;
+        $total_rata     = 0;
+
+        foreach ($results as $row) {
+            echo '<tr>';
+            echo '<td>' . htmlspecialchars($row['nomor_transaksi']) . '</td>';
+            echo '<td>' . htmlspecialchars($row['jam']) . '</td>';
+            echo '<td>' . htmlspecialchars($row['sales']) . '</td>';
+            echo '<td>' . htmlspecialchars($row['customer_name']) . '</td>';
+            echo '<td>' . htmlspecialchars($row['category_code']) . '</td>';
+            echo '<td>' . htmlspecialchars($row['product_name']) . '</td>';
+            echo '<td align="right">' . number_format($row['berat'], 2) . '</td>';
+            echo '<td>' . htmlspecialchars($row['karat']) . '</td>';
+            echo '<td align="right">Rp ' . number_format($row['h_jual'], 0, ',', '.') . '</td>';
+            echo '<td>' . htmlspecialchars($row['ongkos']) . '</td>';
+            echo '<td align="right">Rp ' . number_format($row['total'], 0, ',', '.') . '</td>';
+            echo '<td align="right">Rp ' . number_format($row['cash'], 0, ',', '.') . '</td>';
+            echo '<td align="right">Rp ' . number_format($row['transfer'], 0, ',', '.') . '</td>';
+            echo '<td align="right">Rp ' . number_format($row['edc'], 0, ',', '.') . '</td>';
+            echo '<td align="right">Rp ' . number_format($row['qr'], 0, ',', '.') . '</td>';
+            echo '<td align="right">Rp ' . number_format($row['cc'], 0, ',', '.') . '</td>';
+            echo '<td align="right">Rp ' . number_format($row['rata_rata'], 0, ',', '.') . '</td>';
+            echo '<td>' . htmlspecialchars($row['keterangan']) . '</td>';
+            echo '</tr>';
+
+            $total_berat    = $total_berat+$row['berat'];
+            $total_jual     = $total_jual+$row['h_jual'];
+            $total_total    = $total_total+$row['total'];
+            $total_cash     = $total_cash+$row['cash'];
+            $total_transfer = $total_transfer+$row['transfer'];
+            $total_edc      = $total_edc+$row['edc'];
+            $total_qr       = $total_qr+$row['qr'];
+            $total_cc       = $total_cc+$row['cc'];
+            $total_rata     = $total_rata+$row['rata_rata'];
+        }
+
+        echo '
+        <tfoot>
+        <tr>
+        <td colspan="6">Total</td>
+        <td colspan="1" align="right">'.number_format($total_berat, 2).'</td>
+        <td colspan="1"></td>
+        <td colspan="1" align="right">Rp '.number_format($total_jual, 0, ',', '.').'</td>
+        <td colspan="1"></td>
+        <td align="right">Rp '.number_format($total_total, 0, ',', '.').'</td>
+        <td align="right">Rp '.number_format($total_cash, 0, ',', '.').'</td>
+        <td align="right">Rp '.number_format($total_transfer, 0, ',', '.').'</td>
+        <td align="right">Rp '.number_format($total_edc, 0, ',', '.').'</td>
+        <td align="right">Rp '.number_format($total_qr, 0, ',', '.').'</td>
+        <td align="right">Rp '.number_format($total_cc, 0, ',', '.').'</td>
+        <td colspan="1" align="right">Rp '.number_format($total_rata, 0, ',', '.').'</td>
+        <td colspan="1"></td>
+        <tr>
+        </tfoot>
+        ';
+
+        echo '</tbody></table>';
+        exit;
+    }
 
     public function laporan(Request $request){
 

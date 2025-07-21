@@ -121,23 +121,19 @@
                 buttons: [{
                         extend: 'excel',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+                            columns: [0, 1, 2, 3, 4, 5]
                         }
                     },
                     {
-                        extend: 'pdfHtml5',
-                        orientation: 'landscape',
-                        customize: function(doc) {
-                            doc.defaultStyle.fontSize = 8;
-                        },
+                        extend: 'pdf',
                         exportOptions: {
-                            columns: ':lt(18)'
-                        },
+                            columns: [0, 1, 2, 3, 4, 5]
+                        }
                     },
                     {
                         extend: 'print',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+                            columns: [0, 1, 2, 3, 4, 5]
                         }
                     }
                 ],

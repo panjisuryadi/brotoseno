@@ -119,7 +119,7 @@
                 <label for="">Customer</label>
             </div>
             <div class="col-md-3">
-                <select name="customer" id="customer_modal" onchange="muncul_cicil();" class="pilih2 form-control">
+                <select name="customer" id="customer_modal" onchange="muncul_cicil();" class="select2 form-control">
                     <option value="0">Pilih Customer / User Umum</option>
                 @foreach($customers as $index => $c)
                     <option value="{{$c->id}}">{{$c->customer_phone}} - {{$c->customer_name}}</option>
@@ -264,7 +264,14 @@
 <!-- Bootstrap JS (with Popper) – CDN version -->
 <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AHR5oKn06PWzGk+E9Y1kCfmhktbZ5d9+8wCjUY8H7Sk/9kccB+ApPBALSczF+" crossorigin="anonymous"></script> -->
     <script> 
-
+    $(document).ready(function() {
+        $('#customer_modal').select2({
+            dropdownParent: $('#confirmProductModal'),
+            placeholder: "Pilih Customer",
+            allowClear: true
+        });
+    });
+    
     function getIntVal(id) {
         let val = $("#" + id).val();
         return val ? parseInt(val) || 0 : 0;

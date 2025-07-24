@@ -2,6 +2,17 @@
 @section('title', 'Products')
 @section('third_party_stylesheets')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css">
+
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<!-- jQuery (required) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
 <style type="text/css">
     div.dataTables_wrapper div.dataTables_filter input {
     margin-left: 0.5em;
@@ -58,7 +69,7 @@
                             <div class="form-row align-items-end">
                                 <div class="col-md-6 ml-5 col-sm-6 mb-2">
                                     <label for="category" class="small">Category</label>
-                                    <select id="category" name="category" class="form-control form-control-sm">
+                                    <select id="category" name="category" class="form-control form-control-sm select2">
                                         <option value="0" selected="">All Category</option>
                                         @foreach ($product_categories as $cat)      
                                             @if ($cat->id == $cat_id)
@@ -239,8 +250,8 @@
                                             <?php
                                             $field_id   = 'product_category_'.$number;
                                             ?>
-                                            <label for="product_category">Product Category</label>
-                                            <select name="new_product_category_id" id="{{$field_id}}" class="form-control @error('new_product.product_category_id') is-invalid @enderror" required>
+                                            <label for="product_category" class="form-label d-block">Product Category</label>
+                                            <select name="new_product_category_id" id="{{$field_id}}" class="select2 form-control @error('new_product.product_category_id') is-invalid @enderror" required>
                                             <option value="">Semua Produk</option>
 
                                                 @foreach($product_categories as $category)
@@ -252,13 +263,14 @@
                                         <div class="form-group">
                                             <?php
                                             $field_name = 'new_product.model_id';
+                                            $field_id = 'model_'.$number;
                                             $field_lable = label_case('model');
                                             $field_placeholder = $field_lable;
                                             $invalid = $errors->has($field_name) ? ' is-invalid' : '';
                                             $required = "required";
                                             ?>
-                                            <label for="{{ $field_name }}">{{ $field_lable }}</label>
-                                            <select class="form-control @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_name }}" required>
+                                            <label for="{{ $field_name }}" class="form-label d-block">{{ $field_lable }}</label>
+                                            <select class="select2 form-control @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}" required>
                                                 <option value="" selected disabled>Pilih Model</option>
                                                 @foreach($models as $model)
                                                 <option value="{{$model->id}}">
@@ -277,8 +289,8 @@
                                             $invalid = $errors->has($field_name) ? ' is-invalid' : '';
                                             $required = "required";
                                             ?>
-                                            <label for="{{ $field_name }}">@lang('Karat') <span class="text-danger">*</span></label>
-                                            <select class="form-control select2 @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}" required>
+                                            <label for="{{ $field_name }}" class="form-label d-block">@lang('Karat') <span class="text-danger">*</span></label>
+                                            <select class="select2 form-control select2 @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}" required>
                                                 @foreach($dataKarat as $karat)
                                                     <option value="{{ $karat->id }}" >{{ $karat->label }}</option>
                                                 @endforeach
@@ -294,11 +306,11 @@
                                             $invalid = $errors->has($field_name) ? ' is-invalid' : '';
                                             $required = "required";
                                             ?>
-                                            <label for="{{ $field_name }}">@lang($field_lable)
+                                            <label for="{{ $field_name }}" class="form-label d-block">@lang($field_lable)
                                                 <span class="text-danger">*</span>
                                                 <span class="small">Jenis Perhiasan</span>
                                             </label>
-                                            <select class="form-control @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}" required>
+                                            <select class="form-control select2 @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}" required>
                                                 <option value="" selected disabled>Pilih {{ $field_lable }}</option>
                                                 @foreach($groups as $group)
                                                 <option value="{{ $group->id }}">{{ $group->name }}</option>
@@ -363,8 +375,8 @@
                                             $invalid = $errors->has($field_name) ? ' is-invalid' : '';
                                             $required = "required";
                                             ?>
-                                            <label for="{{ $field_name }}">Baki</label>
-                                            <select name="{{ $field_name }}" id="{{ $field_id }}" class="form-control">
+                                            <label for="{{ $field_name }}" class="form-label d-block">Baki</label>
+                                            <select name="{{ $field_name }}" id="{{ $field_id }}" class="form-control select2">
                                                 <option value="">Select Baki</option>
                                                 @foreach($baki as $b)
                                                 <option value="{{$b->id}}">{{$b->posisi}} - {{$b->name}}</option>
@@ -580,6 +592,46 @@
 @endsection
 @push('page_scripts')
 <script src="{{  asset('js/jquery.min.js') }}"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#category').select2({
+            placeholder: "Pilih kategori produk",
+            allowClear: true
+        });
+
+        $('#product_category_0').select2({
+            dropdownParent: $('#createModal'),
+            placeholder: "Pilih kategori produk",
+            allowClear: true
+        });
+
+        $('#model_0').select2({
+            dropdownParent: $('#createModal'),
+            placeholder: "Pilih Model",
+            allowClear: true
+        });
+
+        $('#karat_0').select2({
+            dropdownParent: $('#createModal'),
+            placeholder: "Pilih Karat",
+            allowClear: true
+        });
+
+        $('#group_0').select2({
+            dropdownParent: $('#createModal'),
+            placeholder: "Pilih Group",
+            allowClear: true
+        });
+
+        $('#baki_id_0').select2({
+            dropdownParent: $('#createModal'),
+            placeholder: "Select Baki",
+            allowClear: true
+        });
+
+    });
+</script>
 
 <script type="text/javascript">
     jQuery.noConflict();

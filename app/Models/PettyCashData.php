@@ -14,5 +14,6 @@ class PettyCashData extends Model
         'cash_in',
         'cash_out',
         'keterangan',
+        'image',
     ];
 }

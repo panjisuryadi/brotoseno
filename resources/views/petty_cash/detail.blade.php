@@ -79,16 +79,19 @@ body {
                                     <th style="width: 5%!important;">
                                         NO
                                     </th>
-                                    <th style="width: 25%!important;">
+                                    <th style="width: 20%!important;">
                                         Tanggal
                                     </th>
                                     <th style="width: 20%!important;">
                                         Keterangan
                                     </th>
-                                    <th style="width: 25%!important;" class="text-center">
+                                    <th style="width: 15%!important;">
+                                        Image
+                                    </th>
+                                    <th style="width: 20%!important;" class="text-center">
                                         Cash In
                                     </th>  
-                                    <th style="width: 25%!important;" class="text-center">
+                                    <th style="width: 20%!important;" class="text-center">
                                         Cash Out
                                     </th> 
                                 </tr>
@@ -156,6 +159,10 @@ body {
                 {
                     data: 'keterangan',
                     name: 'keterangan'
+                },
+                {
+                    data: 'image',
+                    name: 'image'
                 },
                 {
                     data: 'cash_in',

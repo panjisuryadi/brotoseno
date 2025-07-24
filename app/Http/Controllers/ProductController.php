@@ -29,6 +29,7 @@ use App\Models\ProductHistories;
 use Carbon\Carbon;
 use Image;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -775,7 +776,21 @@ class ProductController extends Controller
         $module_model = $this->module_model;
         $dataKarat = Karat::where('status', 'A')->whereNull('parent_id')->get();
 
-        $baki   = Baki::where('status', 'A')->latest()->get();
+        // $baki   = Baki::where('status', 'A')->latest()->get();
+        $baki = Baki::select('*')
+            ->selectSub(function ($query) {
+                $query->from('products')
+                    ->selectRaw('COUNT(products.id)')
+                    ->whereColumn('products.baki_id', 'baki.id')
+                    ->where('products.status', 2)
+                    ->where('products.status_id', 2);
+            }, 'used')
+            ->where('status', 'A')
+            ->orderByDesc('id')
+            ->get();
+
+            // echo $baki;
+            // exit();
         return view(
             'products.list_nota', // Path to your create view file
             compact(

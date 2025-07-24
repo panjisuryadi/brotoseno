@@ -219,11 +219,15 @@ body {
                 </button>
             </div>
             <div class="modal-body p-4">
-                <form action="/pettycash/data" method="post">
+                <form action="/pettycash/data" method="post" enctype="multipart/form-data">
                     @csrf
+                    <div class="form-group" id="">
+                        <label for="">Image</label>
+                        <input type="file" class="form-control" name="image" accept=".jpg, .jpeg, .png, .gif">
+                    </div>
                     <div class="form-group" id="div_keterangan">
                         <label for="">Keterangan</label>
-                        <textarea name="keterangan" id="keterangan" class="form-control"></textarea>
+                        <textarea name="keterangan" id="keterangan" class="form-control" required></textarea>
                     </div>
                     <div class="form-group">
                         <label for="">Nominal</label>

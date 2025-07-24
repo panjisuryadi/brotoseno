@@ -379,7 +379,13 @@
                                             <select name="{{ $field_name }}" id="{{ $field_id }}" class="form-control select2">
                                                 <option value="">Select Baki</option>
                                                 @foreach($baki as $b)
-                                                <option value="{{$b->id}}">{{$b->posisi}} - {{$b->name}}</option>
+                                                @php 
+                                                $available  = $b->capacity - $b->used;
+                                                @endphp
+                                                @if ($available > 0)
+                                                <option value="{{$b->id}}">{{$b->posisi}} - {{$b->name}} | {{$available}}</option>
+
+                                                @endif
                                                 @endforeach
                                             </select>
                                             <!-- <div class="input-group">
@@ -566,7 +572,13 @@
                                             <select name="{{ $field_name }}" id="edit_baki" class="form-control">
                                                 <option value="">Select Baki</option>
                                                 @foreach($baki as $b)
-                                                <option value="{{$b->id}}">{{$b->posisi}} - {{$b->name}}</option>
+                                                @php 
+                                                $available  = $b->capacity - $b->used;
+                                                @endphp
+                                                @if ($available > 0)
+                                                <option value="{{$b->id}}">{{$b->posisi}} - {{$b->name}} | {{$available}}</option>
+
+                                                @endif
                                                 @endforeach
                                             </select>
                                             <!-- <div class="input-group">

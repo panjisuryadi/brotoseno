@@ -204,6 +204,10 @@ class PettyCashController extends Controller
                 return '<div class="items-center text-center">' .($data->created_at) . '</div>';
             }) 
 
+            ->editColumn('image', function ($data) {
+                return view('petty_cash.image', compact('data'));
+            })
+
             ->editColumn('cash_in', function($data){
                 return number_format($data->cash_in);
             })
@@ -244,17 +248,43 @@ class PettyCashController extends Controller
     }
 
     public function data(Request $request){
+        // echo json_encode($_POST);
+        // echo json_encode($_FILES);
+        // exit();
+        $request->validate([
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048', // max 2MB
+            'keterangan' => 'required|string',
+            'nominal' => 'required|numeric',
+        ]);
+
         $pettycash  = PettyCash::where('status', 'A')->first();
         $pettycash_id   = $pettycash->id;
         $pettycash->current     = $pettycash->current-$request->nominal;
         $pettycash->cash_out    = $pettycash->cash_out+$request->nominal;
         $pettycash->save();
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+
+            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+
+            $folderPath = 'uploads'; // this will go into storage/app/public/uploads
+
+            if ($image->storeAs($folderPath, $imageName, 'public')) {
+                $imagePath = $imageName; // path for saving to DB
+            } else {
+                toast('Fail to upload image!', 'error');
+                return redirect()->back();
+            }
+        }
         
         $pettycashdata  = PettycashData::create([
             'petty_cash_id' => $pettycash_id,
             'cash_in' => 0,
             'cash_out' => $request->nominal,
-            'keterangan' => $request->keterangan
+            'keterangan' => $request->keterangan,
+            'image' => $imagePath
         ]);
 
         return redirect()->action([PettyCashController::class, 'list']);

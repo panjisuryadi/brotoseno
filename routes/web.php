@@ -97,6 +97,18 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/payment-flow/chart-data', 'HomeController@paymentChart')
         ->name('payment-flow.chart');
 
+    Route::get('/cicil', 'CicilController@list')
+        ->name('cicil.list');
+
+    Route::get('/cicil/data/{id}', 'CicilController@list_data')
+        ->name('cicil.list_data');
+
+    Route::get('/cicil/index_data', 'CicilController@index_data')
+        ->name('cicil.index_data');
+
+    Route::get('/cicil/index_datas/{id}', 'CicilController@index_datas')
+        ->name('cicil.index_datas');
+
     Route::get('/sale', 'JualController@list')
         ->name('sale.list');
 

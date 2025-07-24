@@ -66,6 +66,7 @@
                     <input type="hidden" name="hidden_qr" id="hidden_qr">
                     <input type="hidden" name="hidden_cc" id="hidden_cc">
                     <input type="hidden" name="hidden_muncul_cc" id="hidden_muncul_cc">
+                    <input type="hidden" name="hidden_cicil" id="hidden_cicil">
                     <input type="hidden" name="hidden_bank" id="hidden_bank">
                     <input type="hidden" name="hidden_rekening" id="hidden_rekening">
                     <input type="hidden" name="persen_cc" id="persen_cc" value="{{$cc->value}}">
@@ -118,7 +119,7 @@
                 <label for="">Customer</label>
             </div>
             <div class="col-md-3">
-                <select name="customer" id="customer_modal" class="pilih2 form-control">
+                <select name="customer" id="customer_modal" onchange="muncul_cicil();" class="pilih2 form-control">
                     <option value="0">Pilih Customer / User Umum</option>
                 @foreach($customers as $index => $c)
                     <option value="{{$c->id}}">{{$c->customer_phone}} - {{$c->customer_name}}</option>
@@ -150,9 +151,6 @@
             
         </div>
         <div class="row mt-3">
-            <div class="col-md-2">
-                <label for="">Payment</label>
-            </div>
             <div class="col-md-2">
                 <label>
                     <input type="checkbox" name="cash" id="cash" onchange="rubah_disabled();" checked>
@@ -188,6 +186,13 @@
                 </label>
                 <input type="number" name="muncul_cc" id="muncul_cc" class="form-control" value="0" disabled style="display:none;">
                 <input type="number" name="nominal_cc" id="nominal_cc" class="form-control" value="0" onkeyup="check_total();" disabled style="color: red;">
+            </div>
+            <div class="col-md-2" id="div_cicil" style="display: none;">
+                <label>
+                    <input type="checkbox" name="cicil" id="cicil" onchange="rubah_disabled();">
+                    Cicil
+                </label>
+                <input type="number" name="nominal_cicil" id="nominal_cicil" class="form-control" value="0" onkeyup="check_total();" disabled>
             </div>
         </div>
         <hr class="mt-3">
@@ -265,20 +270,33 @@
         return val ? parseInt(val) || 0 : 0;
     }
 
+    function muncul_cicil(){
+        let customer    = $("#customer_modal").val();
+        if(customer == 0){
+            $("#div_cicil").hide();
+            $("#nominal_cicil").val(0);
+            $("#cicil").prop('checked', false);
+        }else{
+            $("#div_cicil").show();
+        }
+    }
+
     function check_total(){
         let isCcChecked         = $('#cc').prop('checked');
+        let isCicilChecked      = $('#cicil').prop('checked');
         let nominal_cash        = getIntVal('nominal_cash');
         let nominal_edc         = getIntVal('nominal_edc');
         let nominal_transfer    = getIntVal('nominal_transfer');
         let nominal_qr          = getIntVal('nominal_qr');
         let nominal_cc          = getIntVal('nominal_cc');
+        let nominal_cicil       = getIntVal('nominal_cicil');
 
         if(isCcChecked){
             let persenCc            = $("#persen_cc").val();
             let total               = $("#total-nominal").html();
             const nilai = parseInt(total.replace(/[^\d]/g, ''), 10);
 
-            let semua   = nominal_cash+nominal_edc+nominal_transfer+nominal_qr;
+            let semua   = nominal_cash+nominal_edc+nominal_transfer+nominal_qr+nominal_cicil;
             // console.log(semua);
             let sisa    = nilai-semua;
             // console.log(sisa);
@@ -290,12 +308,26 @@
             $('#muncul_cc').val(0);
         }
 
-        let muncul_cc           = getIntVal('muncul_cc');
+        if(isCicilChecked){
+            let total               = $("#total-nominal").html();
+            const nilai = parseInt(total.replace(/[^\d]/g, ''), 10);
 
-        let kabeh   = nominal_cash+nominal_edc+nominal_transfer+nominal_qr+muncul_cc;
+            let semua   = nominal_cash+nominal_edc+nominal_transfer+nominal_qr+nominal_cc;
+            let sisa    = nilai-semua;
+            $('#nominal_cicil').val(sisa);
+        }else{
+            $('#nominal_cicil').val(0);
+        }
+
+        let muncul_cc           = getIntVal('muncul_cc');
+        let muncul_cicil        = getIntVal('nominal_cicil');
+
+        let kabeh   = nominal_cash+nominal_edc+nominal_transfer+nominal_qr+muncul_cc+muncul_cicil;
         let total   = $("#total").html(); // Rp 1.405.000
         let totalInt = parseInt(total.replace(/[^0-9]/g, '')); // "1405000" → 1405000
-        let total_pembayaran    = nominal_cash+nominal_edc+nominal_transfer+nominal_qr+muncul_cc;
+        let total_pembayaran    = nominal_cash+nominal_edc+nominal_transfer+nominal_qr+muncul_cc+muncul_cicil;
+        console.log(muncul_cicil);
+        console.log(total_pembayaran);
         const formatted = new Intl.NumberFormat('id-ID', {
             style: 'currency',
             currency: 'IDR',
@@ -316,6 +348,7 @@
         let isTransferChecked = $('#transfer').prop('checked');
         let isQrChecked = $('#qr').prop('checked');
         let isCcChecked = $('#cc').prop('checked');
+        let isCicilChecked = $('#cicil').prop('checked');
         let persenCc = $("#persen_cc").val();
 
         if(isCashChecked){
@@ -347,21 +380,27 @@
         let nominal_edc         = getIntVal("nominal_edc");
         let nominal_transfer    = getIntVal("nominal_transfer");
         let nominal_qr          = getIntVal("nominal_qr");
+        let nominal_cc          = getIntVal("nominal_cc");
+        let nominal_cicil       = getIntVal("nominal_cicil");
         let total               = $("#total-nominal").html();
         const nilai = parseInt(total.replace(/[^\d]/g, ''), 10);
         
         if(isCcChecked){
-            // console.log(nilai);
-
-            let semua   = nominal_cash+nominal_edc+nominal_transfer+nominal_qr;
-            // console.log(semua);
+            let semua   = nominal_cash+nominal_edc+nominal_transfer+nominal_qr+nominal_cicil;
             let sisa    = nilai-semua;
-            // console.log(sisa);
             $("#muncul_cc").show();
             $("#muncul_cc").val(sisa);
             $('#nominal_cc').val(sisa+(sisa*persenCc/100));
         }else{
             $('#nominal_cc').val(0);
+        }
+
+        if(isCicilChecked){
+            let semua   = nominal_cash+nominal_edc+nominal_transfer+nominal_qr+nominal_cc;
+            let sisa    = nilai-semua;
+            $('#nominal_cicil').val(sisa);
+        }else{
+            $('#nominal_cicil').val(0);
         }
         
         $('#nominal_cash').prop('disabled', !isCashChecked);
@@ -370,7 +409,7 @@
         $('#nominal_qr').prop('disabled', !isQrChecked);
         let muncul_cc          = getIntVal("muncul_cc");
 
-        let total_pembayaran    = nominal_cash+nominal_edc+nominal_transfer+nominal_qr+muncul_cc;
+        let total_pembayaran    = nominal_cash+nominal_edc+nominal_transfer+nominal_qr+muncul_cc+nominal_cicil;
         console.log(nominal_cash);
         console.log(nominal_edc);
         console.log(nominal_transfer);
@@ -405,6 +444,7 @@
         let transfer = $("#nominal_transfer").val();
         let qr = $("#nominal_qr").val();
         let cc = $("#nominal_cc").val();
+        let cicil = $("#nominal_cicil").val();
         let muncul_cc = $("#muncul_cc").val();
         let bank = $("#bank").val();
         let rekening = $("#rekening").val();
@@ -415,6 +455,7 @@
         $("#hidden_qr").val(qr);
         $("#hidden_cc").val(cc);
         $("#hidden_muncul_cc").val(muncul_cc);
+        $("#hidden_cicil").val(cicil);
         $("#hidden_bank").val(bank);
         $("#hidden_rekening").val(rekening);
 

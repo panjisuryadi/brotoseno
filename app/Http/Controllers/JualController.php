@@ -20,6 +20,8 @@ use App\Models\Harga;
 use App\Models\Config;
 use App\Models\Modal;
 use App\Models\BuyBack;
+use App\Models\Cicil;
+use App\Models\CicilData;
 use App\Models\ModalData;
 use App\Models\ProductHistories;
 use App\Models\StockOpname;
@@ -1666,7 +1668,6 @@ class JualController extends Controller
         // echo json_encode($_POST);
         // exit();
 
-
         $set_harga  = Harga::latest()->first();
         $set_harga  = $set_harga->harga;
         $config = Config::where('name', 'nota')->first();
@@ -1684,10 +1685,31 @@ class JualController extends Controller
         $number     = 0;
         $nama_cus   = '';
         $address    = '';
+        $cicil      = 0;
+
+        $transfer   = $request->hidden_transfer;
+        $bank   = $request->hidden_bank;
+        $rekening   = $request->hidden_rekening;
+        $edc   = $request->hidden_edc;
+        if($transfer > 0){
+            if($bank == 0){
+                toast('Bank Harus di Pilih!', 'error');
+                return redirect()->back();
+            }
+        }
+
+        if($edc > 0){
+            if($rekening == 0){
+                toast('Rekening Harus di Pilih!', 'error');
+                return redirect()->back();
+            }
+        }
+
         if($request->customer != '0'){
             $customer   = Customer::where('id', $request->customer)->first();
             $nama_cus   = $customer->customer_name;
             $address    = $customer->address;
+            $cicil      = $request->hidden_cicil;
             //         $nama_cus   = '
             // <p style="text-align: right; font-size:13px">Kepada Yth : '.$nama_cus.'</p>
             //         ';
@@ -1774,9 +1796,10 @@ class JualController extends Controller
             $qr         = $request->hidden_qr;
             $cc         = $request->hidden_muncul_cc;
             $cc_up      = $request->hidden_cc;
+            $cicil      = $request->hidden_cicil;
             $bank       = $request->hidden_bank;
             $rekening   = $request->hidden_rekening;
-            $sum        = $cash+$edc+$transfer+$qr+$cc;
+            $sum        = $cash+$edc+$transfer+$qr+$cc+$cicil;
 
             // START MODAL
             $modal      = Modal::where('status', 'A')->first();
@@ -1820,10 +1843,38 @@ class JualController extends Controller
                 'qr' => $qr,
                 'cc' => $cc,
                 'cc_up' => $cc_up,
+                'cicil' => $cicil,
                 'bank_id' => $bank,
                 'rekening_id' => $rekening,
             ]);
             $id = $salesGold->id;
+
+
+            // INSERT CICIL IF CUSTOMER TRUE AND CICIL > 0
+            if($cicil > 0 && $request->customer != 0){
+                $install    = 'period';
+                $paid   = $total-$cicil;
+                $cicil  = Cicil::create([
+                    'sales_gold_id' => $id,
+                    'customer_id' => $request->customer,
+                    'total_trx' => $total,
+                    'paid' => $paid,
+                    'sisa' => $cicil,
+                    'install' => $install,
+                    'installments' => 0,
+                ]);
+
+                $cicil_id   = $cicil->id;
+
+                $cicilData  = CicilData::create([
+                    'cicil_id' => $cicil_id,
+                    'sales_gold_id' => $id,
+                    'nominal' => $request->hidden_cicil,
+                    'method' => 'dp',
+                    'bank' => 0,
+                    'rekening' => 0,
+                ]);
+            }
         }
 
         // UPDATE STATUS PRODUCT
@@ -2068,6 +2119,17 @@ class JualController extends Controller
                     </div>';
                 return $tb;
             })
+            ->addColumn('product_code2', function ($data) {
+                $tb = '<div class="flex items-center gap-x-2">
+                        <div>
+                           <div class="text-xs font-normal text-yellow-600 dark:text-gray-400">
+                            ' . $data->category?->category_name . '</div>
+                            <h3 class="small font-medium text-gray-600 dark:text-white "> ' . $data->product_name . '</h3>
+                            <h3 class="small font-medium text-blue-600 dark:text-white "> ' . $data->product_code . '</h3>
+                        </div>
+                    </div>';
+                return $tb;
+            })
             //    ->addColumn('product_image', function ($data) {
             //     $url = $data->getFirstMediaUrl('images', 'thumb');
             //     return '<img src="'.$url.'" border="0" width="50" class="img-thumbnail" align="center"/>';
@@ -2175,7 +2237,7 @@ class JualController extends Controller
                 return tgljam($data->created_at);
             })
             ->rawColumns([
-                'created_at', 'product_image', 'rounded', 'rekomendasi', 'weight', 'status', 'tracking',
+                'created_at', 'product_image', 'product_code2', 'rounded', 'rekomendasi', 'weight', 'status', 'tracking',
                 'product_name', 'karat', 'cabang', 'action'
             ])
             ->make(true);
@@ -2264,6 +2326,21 @@ class JualController extends Controller
                     </div>';
                 return $tb;
             })
+
+            ->addColumn('product_code2', function ($data) {
+                $tb = '<div class="flex items-center gap-x-2">
+                        <div>
+                           <div class="text-xs font-normal text-yellow-600 dark:text-gray-400">
+                            ' . $data->category?->category_name . '</div>
+
+                            <h3 class="small font-medium text-gray-600 dark:text-white "> ' . $data->product_name . '</h3>
+                            <h3 class="small font-medium text-blue-600 dark:text-white "> ' . $data->product_code . '</h3>
+
+
+                        </div>
+                    </div>';
+                return $tb;
+            })
             //    ->addColumn('product_image', function ($data) {
             //     $url = $data->getFirstMediaUrl('images', 'thumb');
             //     return '<img src="'.$url.'" border="0" width="50" class="img-thumbnail" align="center"/>';
@@ -2330,7 +2407,7 @@ class JualController extends Controller
                 return tgljam($data->created_at);
             })
             ->rawColumns([
-                'created_at', 'product_image', 'rekomendasi', 'weight', 'status', 'tracking',
+                'created_at', 'product_image', 'product_code2', 'rekomendasi', 'weight', 'status', 'tracking',
                 'product_name', 'karat', 'cabang', 'action'
             ])
             ->make(true);
@@ -2393,6 +2470,22 @@ class JualController extends Controller
                             <h3 class="small font-medium text-gray-600 dark:text-white "> ' . $data->product_name . '</h3>
                              <div class="text-xs font-normal text-blue-500 font-semibold">
                             ' . @$data->cabang->name . '</div>
+
+
+                        </div>
+                    </div>';
+                return $tb;
+            })
+
+             ->addColumn('product_code2', function ($data) {
+                $tb = '<div class="flex items-center gap-x-2">
+                        <div>
+                           <div class="text-xs font-normal text-yellow-600 dark:text-gray-400">
+                            ' . $data->category?->category_name . '</div>
+
+                            <h3 class="small font-medium text-gray-600 dark:text-white "> ' . $data->product_name . '</h3>
+                            <h3 class="small font-medium text-blue-600 dark:text-white "> ' . $data->product_code . '</h3>
+                             
 
 
                         </div>
@@ -2466,7 +2559,7 @@ class JualController extends Controller
             })
             ->rawColumns([
                 'created_at', 'product_image', 'rekomendasi', 'weight', 'status', 'tracking',
-                'product_name', 'karat', 'cabang', 'action'
+                'product_name', 'product_code2', 'karat', 'cabang', 'action'
             ])
             ->make(true);
     }

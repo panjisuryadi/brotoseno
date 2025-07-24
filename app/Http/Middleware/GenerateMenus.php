@@ -534,6 +534,19 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link py-2',
                 ]);
 
+            $cicil = $pos->add('<i class="c-sidebar-nav-icon  bi bi-truck text-sm"></i> ' . __('Cicil'), [
+                'route' => 'cicil.list',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 1,
+                    'activematches' => ['storeemployees*'],
+                    'permission'    => ['access_storeemployees'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link py-2',
+                ]);
+
 
 
             // EMAS - TOKO master menu

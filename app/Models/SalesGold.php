@@ -21,6 +21,7 @@ class SalesGold extends Model
         'qr',
         'cc',
         'cc_up',
+        'cicil',
         'bank_id',
         'rekening_id',
     ];

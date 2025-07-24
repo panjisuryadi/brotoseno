@@ -208,8 +208,8 @@
         //     name: 'product_code'
         // }, 
         {
-            data: 'product_name',
-            name: 'product_name'
+            data: 'product_code2',
+            name: 'product_code2'
         },
         {
             data: 'baki',
@@ -295,8 +295,8 @@
         //     name: 'product_code'
         // }, 
         {
-            data: 'product_name',
-            name: 'product_name'
+            data: 'product_code2',
+            name: 'product_code2'
         },
         {
             data: 'baki',

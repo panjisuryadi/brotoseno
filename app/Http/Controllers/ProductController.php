@@ -121,8 +121,6 @@ class ProductController extends Controller
             $gambar = $gam;
         }
         $i = 0;
-        // echo json_encode($_POST);
-        // exit();
         $group  = Group::where('id', $request->new_product_group_id)->first();
         $group_name = $group->name;
         $model  = ProdukModel::where('id', $request->new_product_model_id)->first();
@@ -159,31 +157,33 @@ class ProductController extends Controller
             'tag_label'       => 0,
             'berat_label'       => 0,
         ]);
-        
+        $payment    = $request->payment;
         $nota   = 'BL-LUV-'.date('ymd').rand(100, 999);
         $product_history = ProductHistories::create([
             'product_id'    => $product->id,
-            'status'        => 'P',
-            'keterangan'    => 'Nota BL : '.$nota.' | '.$request->new_product_keterangan,
+            'status'        => 'L',
+            'keterangan'    => $payment.' | Nota BL : '.$nota.' | '.$request->new_product_keterangan,
             'harga'         => $request->new_product_harga,
             'tanggal'       => date('Y-m-d'),
         ]);
 
         // MODAL START
-        $modal      = Modal::where('status', 'A')->first();
-        if($modal){
-            $cash_out   = $modal->cash_out;
-            $current    = $modal->current;
-            $modal->cash_out= $cash_out+$request->new_product_harga;
-            $modal->current = $current-$request->new_product_harga;
-            $modal->save();
-            
-            $modalData  = ModalData::create([
-                'modal_id' => $modal->id,
-                'type'  => 'luar',
-                'nominal' => $request->new_product_harga,
-                'from' => 'kasir'
-            ]);
+        if($payment == 'cash'){ // if cash
+            $modal      = Modal::where('status', 'A')->first();
+            if($modal){
+                $cash_out   = $modal->cash_out;
+                $current    = $modal->current;
+                $modal->cash_out= $cash_out+$request->new_product_harga;
+                $modal->current = $current-$request->new_product_harga;
+                $modal->save();
+                
+                $modalData  = ModalData::create([
+                    'modal_id' => $modal->id,
+                    'type'  => 'luar',
+                    'nominal' => $request->new_product_harga,
+                    'from' => 'kasir'
+                ]);
+            }
         }
         // MODAL END
 

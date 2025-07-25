@@ -1235,12 +1235,12 @@ class JualController extends Controller
             leftJoin('groups', 'products.group_id', '=', 'products.id')
             ->select('buyback.*', 'products.product_code', 'products.berat_emas', 'categories.category_name', 'karats.name', 'groups.code');
 
-        // $luar = BuyBack::
-        //     leftJoin('products', 'buyback.product_id', '=', 'products.id')->
-        //     leftJoin('categories', 'products.category_id', '=', 'categories.id')->
-        //     leftJoin('karats', 'products.karat_id', '=', 'karats.id')->
-        //     leftJoin('groups', 'products.group_id', '=', 'products.id')
-        //     ->select('buyback.*', 'products.product_code', 'products.berat_emas', 'categories.category_name', 'karats.name', 'groups.code');
+        $luar = Product::
+            leftJoin('product_histories', 'products.id', '=', 'product_histories.product_id')->
+            leftJoin('categories', 'products.category_id', '=', 'categories.id')->
+            leftJoin('karats', 'products.karat_id', '=', 'karats.id')->
+            leftJoin('groups', 'products.group_id', '=', 'products.id')
+            ->select('products.*', 'product_histories.keterangan', 'categories.category_name', 'karats.name', 'groups.code');
 
         $pos = SalesItem::
             leftJoin('products', 'sales_items.product', '=', 'products.id')->
@@ -1250,17 +1250,90 @@ class JualController extends Controller
             leftJoin('groups', 'products.group_id', '=', 'products.id')
             ->select('sales_items.*', 'products.product_code', 'products.berat_emas', 'categories.category_name', 'categories.category_code', 'karats.name', 'groups.code', 'services.name as service_name', 'services.desc');
 
+        $luar
+        ->where('product_price', '>', 0)
+        ->where('product_histories.keterangan', 'LIKE', '%Nota%')
+        ->whereIn('product_histories.status', ['L', 'P']);
+
         if ($request->startDate && $request->endDate && !$request->resetFilter) {
             $startDate = Carbon::parse($request->startDate)->startOfDay();
             $endDate = Carbon::parse($request->endDate)->endOfDay();
+            
             $buy->whereBetween('buyback.created_at', [$startDate, $endDate]);
+            
+            $luar->whereBetween('product_histories.created_at', [$startDate, $endDate]);
+            
             $pos->whereBetween('sales_items.created_at', [$startDate, $endDate]);
         }
 
         $buybacks = $buy->latest()->get();
+        $luars = $luar->latest()->get();
         $poss = $pos->latest()->get();
         $data = array();
         $number = 0;
+        
+        foreach($luars as $b){
+            $buyback                = 0;
+            $pemasukan_lm           = 0;
+            $pemasukan_perhiasan    = 0;
+            $barang_luar            = 0;
+            $cash                   = 0;
+            $transfer               = 0;
+            $edc                    = 0;
+            $qr                     = 0;
+            $cc                     = 0;
+            $cicil                  = 0;
+            $nota                   = '';
+            $keterangan = $b->keterangan;
+            $explode    = explode(' | ', $keterangan);
+            // echo json_encode($explode);
+            // echo '<br>';
+            if(is_array($explode)){
+                $payment    = $explode[0];
+                if(count($explode) > 0){
+                    $nota       = $explode[1];
+                    // $nota       = str_replace('Nota BL : ', '', $nota);
+                }
+                // $ket        = $explode[2];
+                if($payment == 'cash'){
+                    $nota       = $explode[1];
+                    $nota       = str_replace('Nota BL : ', '', $nota);
+                    $cash   = $b->product_price;
+                }elseif($payment == 'transfer'){
+                    $nota       = $explode[1];
+                    $nota       = str_replace('Nota BL : ', '', $nota);
+                    $transfer   = $b->product_price;
+                }else{
+                    $cash   = $b->product_price;
+                    $nota   = $payment;
+                    $nota       = str_replace('Nota BL : ', '', $nota);
+                }
+            }
+            $data[$number]['from'] = 'luar';
+            $data[$number]['tanggal'] = $b->created_at;
+            $data[$number]['trx'] = $nota;
+            $data[$number]['category'] = $b->category_name;
+            $data[$number]['barang'] = $b->product_code;
+            $data[$number]['berat'] = $b->berat_emas;
+            $data[$number]['karat'] = $b->name;
+            $data[$number]['pemasukan_lm'] = $pemasukan_lm;
+            $data[$number]['pemasukan_perhiasan'] = $pemasukan_perhiasan;
+            $data[$number]['buyback'] = $buyback;
+            $data[$number]['barang_luar'] = $b->product_price;
+            $data[$number]['count'] = 1;
+            $data[$number]['cash'] = $cash;
+            $data[$number]['transfer'] = $transfer;
+            $data[$number]['edc'] = $edc;
+            $data[$number]['qr'] = $qr;
+            $data[$number]['cc'] = $cc;
+            $data[$number]['cicil'] = $cicil;
+            $number++;
+        }
+
+        // echo $luars;
+        // echo json_encode($data);
+        // exit();
+
         foreach($buybacks as $b){
             $pemasukan_lm           = 0;
             $pemasukan_perhiasan    = 0;
@@ -1270,6 +1343,7 @@ class JualController extends Controller
             $edc                    = 0;
             $qr                     = 0;
             $cc                     = 0;
+            $cicil                  = 0;
             if($b->payment == 'cash'){
                 $cash   = $b->harga;
             }else{
@@ -1292,6 +1366,7 @@ class JualController extends Controller
             $data[$number]['edc'] = $edc;
             $data[$number]['qr'] = $qr;
             $data[$number]['cc'] = $cc;
+            $data[$number]['cicil'] = $cicil;
             $number++;
         }
 
@@ -1307,6 +1382,7 @@ class JualController extends Controller
             $edc                    = 0;
             $qr                     = 0;
             $cc                     = 0;
+            $cicil                  = 0;
             if($inv == $b->nomor){
                 $count  = 0;
             }else{
@@ -1324,6 +1400,7 @@ class JualController extends Controller
                     $edc        = $salesGold->edc;
                     $qr         = $salesGold->qr;
                     $cc         = $salesGold->cc;
+                    $cicil         = $salesGold->cicil;
                 }
             }
 
@@ -1356,6 +1433,7 @@ class JualController extends Controller
             $data[$number]['edc'] = $edc;
             $data[$number]['qr'] = $qr;
             $data[$number]['cc'] = $cc;
+            $data[$number]['cicil'] = $cicil;
             $number++;
         }
         usort($data, function($a, $b) {
@@ -1401,6 +1479,9 @@ class JualController extends Controller
             ->editColumn('cc', function ($data) {
                 return number_format($data['cc']);
             })
+            ->editColumn('cicil', function ($data) {
+                return number_format($data['cicil']);
+            })
             
             
             ->rawColumns([
@@ -1418,12 +1499,12 @@ class JualController extends Controller
             leftJoin('groups', 'products.group_id', '=', 'products.id')
             ->select('buyback.*', 'products.product_code', 'products.berat_emas', 'categories.category_name', 'karats.name', 'groups.code');
 
-        // $luar = BuyBack::
-        //     leftJoin('products', 'buyback.product_id', '=', 'products.id')->
-        //     leftJoin('categories', 'products.category_id', '=', 'categories.id')->
-        //     leftJoin('karats', 'products.karat_id', '=', 'karats.id')->
-        //     leftJoin('groups', 'products.group_id', '=', 'products.id')
-        //     ->select('buyback.*', 'products.product_code', 'products.berat_emas', 'categories.category_name', 'karats.name', 'groups.code');
+        $luar = Product::
+            leftJoin('product_histories', 'products.id', '=', 'product_histories.product_id')->
+            leftJoin('categories', 'products.category_id', '=', 'categories.id')->
+            leftJoin('karats', 'products.karat_id', '=', 'karats.id')->
+            leftJoin('groups', 'products.group_id', '=', 'products.id')
+            ->select('products.*', 'product_histories.keterangan', 'categories.category_name', 'karats.name', 'groups.code');
 
         $pos = SalesItem::
             leftJoin('products', 'sales_items.product', '=', 'products.id')->
@@ -1433,17 +1514,77 @@ class JualController extends Controller
             leftJoin('groups', 'products.group_id', '=', 'products.id')
             ->select('sales_items.*', 'products.product_code', 'products.berat_emas', 'categories.category_name', 'categories.category_code', 'karats.name', 'groups.code', 'services.name as service_name', 'services.desc');
 
+        $luar
+            ->where('product_price', '>', 0)
+            ->where('product_histories.keterangan', 'LIKE', '%Nota%')
+            ->whereIn('product_histories.status', ['L', 'P']);
+
         if ($request->startDate && $request->endDate && !$request->resetFilter) {
             $startDate = Carbon::parse($request->startDate)->startOfDay();
             $endDate = Carbon::parse($request->endDate)->endOfDay();
             $buy->whereBetween('buyback.created_at', [$startDate, $endDate]);
+            $luar->whereBetween('product_histories.created_at', [$startDate, $endDate]);
             $pos->whereBetween('sales_items.created_at', [$startDate, $endDate]);
         }
 
         $buybacks = $buy->latest()->get();
+        $luars = $luar->latest()->get();
         $poss = $pos->latest()->get();
         $data = array();
         $number = 0;
+
+        foreach($luars as $b){
+            $buyback                = 0;
+            $pemasukan_lm           = 0;
+            $pemasukan_perhiasan    = 0;
+            $barang_luar            = 0;
+            $cash                   = 0;
+            $transfer               = 0;
+            $edc                    = 0;
+            $qr                     = 0;
+            $cc                     = 0;
+            $cicil                  = 0;
+            $nota                   = '';
+            $keterangan = $b->keterangan;
+            $explode    = explode(' | ', $keterangan);
+            if(is_array($explode)){
+                $payment    = $explode[0];
+                
+                if($payment == 'cash'){
+                    $nota       = $explode[1];
+                    $nota       = str_replace('Nota BL : ', '', $nota);
+                    $cash   = $b->product_price;
+                }elseif($payment == 'transfer'){
+                    $nota       = $explode[1];
+                    $nota       = str_replace('Nota BL : ', '', $nota);
+                    $transfer   = $b->product_price;
+                }else{
+                    $cash   = $b->product_price;
+                    $nota   = $payment;
+                    $nota       = str_replace('Nota BL : ', '', $nota);
+                }
+            }
+            $data[$number]['from'] = 'luar';
+            $data[$number]['tanggal'] = $b->created_at;
+            $data[$number]['trx'] = $nota;
+            $data[$number]['category'] = $b->category_name;
+            $data[$number]['barang'] = $b->product_code;
+            $data[$number]['berat'] = $b->berat_emas;
+            $data[$number]['karat'] = $b->name;
+            $data[$number]['pemasukan_lm'] = $pemasukan_lm;
+            $data[$number]['pemasukan_perhiasan'] = $pemasukan_perhiasan;
+            $data[$number]['buyback'] = $buyback;
+            $data[$number]['barang_luar'] = $b->product_price;
+            $data[$number]['count'] = 1;
+            $data[$number]['cash'] = $cash;
+            $data[$number]['transfer'] = $transfer;
+            $data[$number]['edc'] = $edc;
+            $data[$number]['qr'] = $qr;
+            $data[$number]['cc'] = $cc;
+            $data[$number]['cicil'] = $cicil;
+            $number++;
+        }
+
         foreach($buybacks as $b){
             $pemasukan_lm           = 0;
             $pemasukan_perhiasan    = 0;
@@ -1453,6 +1594,7 @@ class JualController extends Controller
             $edc                    = 0;
             $qr                     = 0;
             $cc                     = 0;
+            $cicil                  = 0;
             if($b->payment == 'cash'){
                 $cash   = $b->harga;
             }else{
@@ -1475,6 +1617,7 @@ class JualController extends Controller
             $data[$number]['edc'] = $edc;
             $data[$number]['qr'] = $qr;
             $data[$number]['cc'] = $cc;
+            $data[$number]['cicil'] = $cicil;
             $number++;
         }
 
@@ -1490,6 +1633,7 @@ class JualController extends Controller
             $edc                    = 0;
             $qr                     = 0;
             $cc                     = 0;
+            $cicil                  = 0;
             if($inv == $b->nomor){
                 $count  = 0;
             }else{
@@ -1507,6 +1651,7 @@ class JualController extends Controller
                     $edc        = $salesGold->edc;
                     $qr         = $salesGold->qr;
                     $cc         = $salesGold->cc;
+                    $cicil      = $salesGold->cicil;
                 }
             }
 
@@ -1539,6 +1684,7 @@ class JualController extends Controller
             $data[$number]['edc'] = $edc;
             $data[$number]['qr'] = $qr;
             $data[$number]['cc'] = $cc;
+            $data[$number]['cicil'] = $cicil;
             $number++;
         }
         usort($data, function($a, $b) {
@@ -1576,6 +1722,7 @@ class JualController extends Controller
                 <th>EDC</th>
                 <th>QR</th>
                 <th>CC</th>
+                <th>Cicil</th>
             </tr>
         </thead>
         <tbody>';
@@ -1590,6 +1737,7 @@ class JualController extends Controller
         $total_edc                  = 0;
         $total_qr                   = 0;
         $total_cc                   = 0;
+        $total_cicil                = 0;
 
         $no = 1;
 
@@ -1614,6 +1762,7 @@ class JualController extends Controller
                 echo '<td align="right" rowspan="'.$row['count'].'">Rp ' . number_format($row['edc'], 0, ',', '.') . '</td>';
                 echo '<td align="right" rowspan="'.$row['count'].'">Rp ' . number_format($row['qr'], 0, ',', '.') . '</td>';
                 echo '<td align="right" rowspan="'.$row['count'].'">Rp ' . number_format($row['cc'], 0, ',', '.') . '</td>';
+                echo '<td align="right" rowspan="'.$row['count'].'">Rp ' . number_format($row['cicil'], 0, ',', '.') . '</td>';
             }
             echo '</tr>';
 
@@ -1628,6 +1777,7 @@ class JualController extends Controller
                 $total_edc                  = $total_edc+$row['edc'];
                 $total_qr                   = $total_qr+$row['qr'];
                 $total_cc                   = $total_cc+$row['cc'];
+                $total_cicil                = $total_cicil+$row['cicil'];
             }else{
                 $total_berat                = $total_berat-$row['berat'];
                 $total_pemasukan_lm         = $total_pemasukan_lm-$row['pemasukan_lm'];
@@ -1639,6 +1789,7 @@ class JualController extends Controller
                 $total_edc                  = $total_edc-$row['edc'];
                 $total_qr                   = $total_qr-$row['qr'];
                 $total_cc                   = $total_cc-$row['cc'];
+                $total_cicil                = $total_cicil-$row['cicil'];
             }
         }
 
@@ -1656,6 +1807,7 @@ class JualController extends Controller
         <td align="right">Rp '.number_format($total_edc, 0, ',', '.').'</td>
         <td align="right">Rp '.number_format($total_qr, 0, ',', '.').'</td>
         <td align="right">Rp '.number_format($total_cc, 0, ',', '.').'</td>
+        <td align="right">Rp '.number_format($total_cicil, 0, ',', '.').'</td>
         <tr>
         </tfoot>
         ';

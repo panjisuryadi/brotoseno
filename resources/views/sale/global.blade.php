@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Buyback')
+@section('title', 'Global')
 @section('third_party_stylesheets')
     <style>
         .invoice-table {
@@ -104,6 +104,9 @@
                                         </th>
                                         <th style="width: 7%!important;" class="text-center">
                                             CC
+                                        </th>
+                                        <th style="width: 7%!important;" class="text-center">
+                                            Cicil
                                         </th>
                                     </tr>
                                 </thead>
@@ -227,9 +230,10 @@
                         data: 'cc',
                         name: 'cc'
                     },
-
-                    
-
+                    {
+                        data: 'cicil',
+                        name: 'cicil'
+                    },
                 ]
             })
             .buttons()

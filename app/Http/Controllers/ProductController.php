@@ -120,6 +120,9 @@ class ProductController extends Controller
         if(!empty($gam)){
             $gambar = $gam;
         }
+        $berat  = str_replace(',', '.', $request->new_product_berat);
+        $berat  = (int)$berat;
+
         $i = 0;
         $group  = Group::where('id', $request->new_product_group_id)->first();
         $group_name = $group->name;
@@ -137,7 +140,7 @@ class ProductController extends Controller
             'product_stock_alert'       => 5,
             'status'       => 3,
             'images'       => $gam,
-            'berat_emas'       => $request->new_product_berat,
+            'berat_emas'       => $berat,
             'status_id'       => 3,
             'karat_id'       => $request->new_product_karat_id,
             'group_id'       => $request->new_product_group_id,
@@ -149,9 +152,9 @@ class ProductController extends Controller
         $productItem    = ProductItem::create([
             'product_id'       => $product->id,
             // 'berat_total'       => $request->new_product_total_weight,
-            'berat_total'       => $request->new_product_berat,
+            'berat_total'       => $berat,
             // 'berat_emas'       => $request->new_product_gold_weight,
-            'berat_emas'       => $request->new_product_berat,
+            'berat_emas'       => $berat,
             // 'berat_accessories'       => $request->new_product_accessories_weight,
             'berat_accessories'       => 0,
             'tag_label'       => 0,
@@ -191,7 +194,7 @@ class ProductController extends Controller
         $luar['nota']   = $nota;
         $luar['name']   = $product_name;
         $luar['code']   = $request->new_product_code_id;
-        $luar['berat']   = $request->new_product_berat;
+        $luar['berat']   = $berat;
         $luar['harga']   = $request->new_product_harga;
 
         return view(

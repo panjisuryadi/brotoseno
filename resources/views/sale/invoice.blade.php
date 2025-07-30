@@ -298,8 +298,8 @@
                     <td>{{ $product['gram'] }}</td>
                     <td>Rp {{ number_format($product['harga'], 0, ',', '.') }}</td>
                 @else
-                    <td style="height: 130px; vertical-align: middle; text-align: center;">
-                        <img src="{{ $isrc }}" style="max-height: 130px; height: 130px; width: auto; object-fit: contain;" alt="Image">
+                    <td style="height: 120px; vertical-align: middle; text-align: center;">
+                        <img src="{{ $isrc }}" style="max-height: 120px; height: 120px; width: auto; object-fit: contain;" alt="Image">
                     </td>
                     <td>
                         {{ $product['desc'] }}<br>

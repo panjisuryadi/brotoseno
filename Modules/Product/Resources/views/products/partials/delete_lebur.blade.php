@@ -100,7 +100,7 @@
 
     function confirmPasswordAndDelete() {
         const enteredPassword = document.getElementById('delete-password').value;
-        const correctPassword = 'luvenia12345'; // ⚠️ Replace this with a secure check or variable!
+        const correctPassword = 'Paopao000'; // ⚠️ Replace this with a secure check or variable!
 
         if (enteredPassword === correctPassword) {
             document.getElementById(deleteFormId).submit();

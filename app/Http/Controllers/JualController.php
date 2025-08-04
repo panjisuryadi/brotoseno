@@ -2136,14 +2136,17 @@ class JualController extends Controller
             $salesNomor = 'INV-LUV-'.date('ymd').rand(100, 999);
             $salesNomor = $nomor;
             if($lanjut){
+                $nominal_diskon = isset($request->diskon[$number]) && filter_var($request->diskon[$number], FILTER_VALIDATE_INT) !== false ? (int)$request->diskon[$number] : 0;
+                $nominal_ongkos = isset($request->ongkos[$number]) && filter_var($request->ongkos[$number], FILTER_VALIDATE_INT) !== false ? (int)$request->ongkos[$number] : 0;
+
                 $salesItem  = SalesItem::create([
                     'sales_gold_id'     => $id,
                     'nomor'     => $salesNomor,
                     'product'   => $p,
                     'name'      => $name,
                     'desc'      => $desc,
-                    'diskon'      => $request->diskon[$number],
-                    'ongkos'      => $request->ongkos[$number],
+                    'diskon'      => $nominal_diskon,
+                    'ongkos'      => $nominal_ongkos,
                     'total'     => $harga,
                     'total_real'     => $total_real,
                 ]);

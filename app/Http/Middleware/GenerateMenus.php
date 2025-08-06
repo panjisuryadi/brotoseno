@@ -1529,6 +1529,19 @@ class GenerateMenus
                 ->link->attr([
                     'class' => 'c-sidebar-nav-link',
                 ]);
+
+            $jual->add('<i class="c-sidebar-nav-icon bi-tags"></i> ' . __('Product Masuk') . '', [
+                'route' => 'sale.product_in',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 91,
+                    'activematches' => 'settings*',
+                    'permission'    => ['access_settings'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link',
+                ]);
             /// end menu
 
 

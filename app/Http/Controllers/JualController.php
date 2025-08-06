@@ -1227,6 +1227,185 @@ class JualController extends Controller
         );
     }
 
+    public function product_in(Request $request){
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $dataKarat  = Karat::whereNull('parent_id')->get();
+        $config     = Config::where('name', 'buyback')->first();
+        $configs    = json_decode($config->value, true);
+        $potongan   = $configs['potongan'];
+        $tambahan   = $configs['tambahan'];
+        return view(
+            'sale.product_in', // Path to your create view file
+            compact(
+                'module_title',
+                'module_name',
+                'module_path',
+                'module_icon',
+                'module_model',
+            )
+        );
+    }
+
+    public function index_product_in(Request $request){
+        $harga = Harga::latest()->first();
+
+        $product = DB::table('products as p')
+            ->leftJoin('karats as k', 'p.karat_id', '=', 'k.id')
+            ->selectRaw('DATE(p.created_at) as tanggal, k.name as nama, k.coef as coef, SUM(p.berat_emas) as berat, COUNT(p.id) as jumlah')
+            ->groupBy(DB::raw('DATE(p.created_at)'), 'p.karat_id', 'k.name', 'k.coef')
+            ->orderBy('tanggal', 'desc');  // Order by 'tanggal', since it's the derived column for date
+
+        // Apply date range filter if provided
+        if ($request->startDate && $request->endDate && !$request->resetFilter) {
+            $startDate = Carbon::parse($request->startDate)->startOfDay();
+            $endDate = Carbon::parse($request->endDate)->endOfDay();
+            
+            // Correct column name for filtering
+            $product->whereBetween('p.created_at', [$startDate, $endDate]);
+        }
+
+        // Get the results
+        $products = $product->get();
+        $number = 0;
+        foreach($products as $b){
+            $coef   = $b->coef;
+            $nom  = $harga->harga;
+            $nominal    = $coef*$nom;
+            $data[$number]['tanggal'] = $b->tanggal;
+            $data[$number]['karat'] = $b->nama;
+            $data[$number]['berat'] = $b->berat;
+            $data[$number]['total'] = $b->jumlah;
+            $data[$number]['nominal'] = $nominal;
+            $number++;
+        }
+
+        // echo json_encode($data);
+        // exit();
+
+        return Datatables::of($data)
+
+            ->editColumn('tanggal', function ($data) {
+                return date('Y-m-d', strtotime($data['tanggal']));
+            })
+            ->editColumn('karat', function ($data) {
+                return ($data['karat']);
+            })
+            ->editColumn('berat', function ($data) {
+                return ($data['berat']);
+            })
+            ->editColumn('total', function ($data) {
+                return number_format($data['total']);
+            })
+            ->editColumn('nominal', function ($data) {
+                return 'Rp. '.number_format($data['nominal']);
+            })
+            
+            
+            ->rawColumns([
+                'tanggal', 'karat', 'berat', 'total', 'nominal'
+            ])
+            ->make(true);
+    }
+
+    public function excel_product_in(Request $request){
+        $harga = Harga::latest()->first();
+
+        $product = DB::table('products as p')
+            ->leftJoin('karats as k', 'p.karat_id', '=', 'k.id')
+            ->selectRaw('DATE(p.created_at) as tanggal, k.name as nama, k.coef as coef, SUM(p.berat_emas) as berat, COUNT(p.id) as jumlah')
+            ->groupBy(DB::raw('DATE(p.created_at)'), 'p.karat_id', 'k.name', 'k.coef')
+            ->orderBy('tanggal', 'desc');  // Order by 'tanggal', since it's the derived column for date
+
+        // Apply date range filter if provided
+        if ($request->startDate && $request->endDate && !$request->resetFilter) {
+            $startDate = Carbon::parse($request->startDate)->startOfDay();
+            $endDate = Carbon::parse($request->endDate)->endOfDay();
+            
+            // Correct column name for filtering
+            $product->whereBetween('p.created_at', [$startDate, $endDate]);
+        }
+
+        // Get the results
+        $products = $product->get();
+        $number = 0;
+        foreach($products as $b){
+            $coef   = $b->coef;
+            $nom  = $harga->harga;
+            $nominal    = $coef*$nom;
+            $data[$number]['tanggal'] = $b->tanggal;
+            $data[$number]['karat'] = $b->nama;
+            $data[$number]['berat'] = $b->berat;
+            $data[$number]['total'] = $b->jumlah;
+            $data[$number]['nominal'] = $nominal;
+            $number++;
+        }
+
+        header("Content-Type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; filename=product_in.xls");
+
+        echo '<table border="1">';
+        echo '<thead>
+            <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Karat</th>
+                <th>Berat</th>
+                <th>Total</th>
+                <th>Est Nominal</th>
+            </tr>
+        </thead>
+        <tbody>';
+
+        $total_berat                = 0;
+        $total_total                = 0;
+        $total_nominal              = 0;
+
+        $no = 1;
+
+        foreach ($data as $row) {
+            echo '<tr>';
+            echo '<td>' . $no++ . '</td>';
+            echo '<td>' . \Carbon\Carbon::parse($row['tanggal'])->format('d/m/Y') . '</td>';
+            echo '<td>' . htmlspecialchars($row['karat']) . '</td>';
+            echo '<td align="right">' . number_format($row['berat'], 2) . '</td>';
+            echo '<td align="right">' . number_format($row['total'], 2) . '</td>';
+            echo '<td align="right">' . number_format($row['nominal'], 2) . '</td>';
+            // if($row['count'] == 0){
+                
+            // }else{
+            //     echo '<td align="right" rowspan="'.$row['count'].'">Rp ' . number_format($row['cash'], 0, ',', '.') . '</td>';
+            //     echo '<td align="right" rowspan="'.$row['count'].'">Rp ' . number_format($row['transfer'], 0, ',', '.') . '</td>';
+            //     echo '<td align="right" rowspan="'.$row['count'].'">Rp ' . number_format($row['edc'], 0, ',', '.') . '</td>';
+            //     echo '<td align="right" rowspan="'.$row['count'].'">Rp ' . number_format($row['qr'], 0, ',', '.') . '</td>';
+            //     echo '<td align="right" rowspan="'.$row['count'].'">Rp ' . number_format($row['cc'], 0, ',', '.') . '</td>';
+            //     echo '<td align="right" rowspan="'.$row['count'].'">Rp ' . number_format($row['cicil'], 0, ',', '.') . '</td>';
+            // }
+            echo '</tr>';
+
+            $total_berat                = $total_berat+$row['berat'];
+            $total_total                = $total_total+$row['total'];
+            $total_nominal              = $total_nominal+$row['nominal'];
+        }
+
+        echo '
+        <tfoot>
+        <tr>
+        <td colspan="3">Total</td>
+        <td align="right">'.number_format($total_berat, 2).'</td>
+        <td align="right">'.number_format($total_total, 2).'</td>
+        <td align="right">Rp '.number_format($total_nominal, 2, ',', '.').'</td>
+        <tr>
+        </tfoot>
+        ';
+
+        echo '</tbody></table>';
+        exit;
+    }
+
     public function index_global(Request $request){
         $buy = BuyBack::
             leftJoin('products', 'buyback.product_id', '=', 'products.id')->

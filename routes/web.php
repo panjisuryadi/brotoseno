@@ -127,8 +127,17 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/sale/global', 'JualController@all')
     ->name('sale.global');
 
+    Route::get('/sale/product_in', 'JualController@product_in')
+    ->name('sale.product_in');
+
     Route::get('/sale/index_global', 'JualController@index_global')
     ->name('sale.index_global');
+
+    Route::get('/sale/index_product_in', 'JualController@index_product_in')
+    ->name('sale.index_product_in');
+
+    Route::get('/sale/excel_product_in', 'JualController@excel_product_in')
+    ->name('sale.excel_product_in');
 
     Route::get('/sale/recap/data', 'JualController@data_recap')
     ->name('sale.data_recap');

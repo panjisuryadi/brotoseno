@@ -77,7 +77,7 @@
         <table style="width: 100%;">
             <tr>
                 <td><strong>Metode Pembayaran</strong></td>
-                <td class="right">Cash</td>
+                <td class="right">{{ucfirst($buyback->payment)}}</td>
             </tr>
             <tr>
                 <td><strong>Total</strong></td>

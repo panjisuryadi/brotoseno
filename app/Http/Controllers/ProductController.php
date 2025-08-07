@@ -196,6 +196,7 @@ class ProductController extends Controller
         $luar['code']   = $request->new_product_code_id;
         $luar['berat']   = $berat;
         $luar['harga']   = $request->new_product_harga;
+        $luar['payment']   = ucfirst($payment);
 
         return view(
             'products.struk', // Path to your create view file
@@ -214,10 +215,23 @@ class ProductController extends Controller
             ->orderBy('id', 'desc')
             ->first();
 
+        $payment    = 'Cash';
         $harga      = $history->harga;
-        $nota       = $history->nota;
-        $explode    = explode(' | ', $nota);
-        $sub        = str_replace('Nota BL ', '', $explode[0]);
+        $keterangan       = $history->keterangan;
+        $explode    = explode(' | ', $keterangan);
+        $count      = count($explode);
+        // echo $keterangan;
+        // echo $count;
+        // exit();
+        if($count == 3){
+            $sub        = str_replace('Nota BL ', '', $explode[1]);
+            $payment    = ucfirst($explode[0]);
+        }elseif($count == 2){
+            $sub        = str_replace('Nota BL ', '', $explode[0]);
+
+        }elseif($count == 1){
+
+        }
 
         $product    = Product::where('id', $id)->first();
         $berat      = $product->berat_emas;
@@ -230,6 +244,7 @@ class ProductController extends Controller
         $luar['code']   = $code;
         $luar['berat']  = $berat;
         $luar['harga']  = $harga;
+        $luar['payment']  = $payment;
 
         return view(
             'products.struk', // Path to your create view file

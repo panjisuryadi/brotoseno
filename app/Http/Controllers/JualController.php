@@ -1818,8 +1818,10 @@ class JualController extends Controller
             if($inv == $b->nomor){
                 $count  = 0;
             }else{
-                $inv    = $b->nomor;
-                $salesGold  = SalesGold::where('nomor', $inv)->first();
+                // $inv    = $b->nomor;
+                $inv    = $b->sales_gold_id;
+                // $salesGold  = SalesGold::where('nomor', $inv)->first();
+                $salesGold  = SalesGold::where('id', $inv)->first();
                 if($salesGold){
                     $prod   = $salesGold->products;
                     $ser    = $salesGold->services;

@@ -1565,8 +1565,10 @@ class JualController extends Controller
             if($inv == $b->nomor){
                 $count  = 0;
             }else{
-                $inv    = $b->nomor;
-                $salesGold  = SalesGold::where('nomor', $inv)->first();
+                // $inv    = $b->nomor;
+                $inv    = $b->sales_gold_id;
+                // $salesGold  = SalesGold::where('nomor', $inv)->first();
+                $salesGold  = SalesGold::where('id', $inv)->first();
                 if($salesGold){
                     $prod   = $salesGold->products;
                     $ser    = $salesGold->services;
@@ -2313,7 +2315,7 @@ class JualController extends Controller
                 }
             }
             $salesNomor = 'INV-LUV-'.date('ymd').rand(100, 999);
-            $salesNomor = $nomor;
+            // $salesNomor = $nomor;
             if($lanjut){
                 $nominal_diskon = isset($request->diskon[$number]) && filter_var($request->diskon[$number], FILTER_VALIDATE_INT) !== false ? (int)$request->diskon[$number] : 0;
                 $nominal_ongkos = isset($request->ongkos[$number]) && filter_var($request->ongkos[$number], FILTER_VALIDATE_INT) !== false ? (int)$request->ongkos[$number] : 0;

@@ -23,7 +23,16 @@
                         <div class="flex flex-row grid grid-cols-2 gap-1">
                             <div class="form-group">
                                 <label for="password">Password<span class="text-danger">*</span></label>
-                                <input type="password" id="password" name="password" class="form-control" >
+                                <div class="row">
+                                    <div class="col-9">
+                                        <input type="password" id="password" name="password" class="form-control" >
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="btn btn-sm position-absolute top-50 end-0 translate-middle-y me-2 border-0 bg-transparent p-0" onclick="togglePassword()" tabindex="-1">
+                                            <i id="eye-icon" class="bi bi-eye-fill text-secondary"></i>
+                                        </button>
+                                    </div>
+                                </div>
                                 <!-- <div class="input-group">
                                 </div> -->
                             </div>
@@ -38,6 +47,21 @@
 </div>
 
 <script>
+    function togglePassword() {
+        const input = document.getElementById("password");
+        const icon = document.getElementById("eye-icon");
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("bi-eye-fill");
+            icon.classList.add("bi-eye-slash-fill");
+        } else {
+            input.type = "password";
+            icon.classList.remove("bi-eye-slash-fill");
+            icon.classList.add("bi-eye-fill");
+        }
+    }
+
     function detail_print(id){
         $("#id").val(id);
     }

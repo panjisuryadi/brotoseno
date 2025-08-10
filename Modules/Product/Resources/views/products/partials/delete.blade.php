@@ -208,7 +208,7 @@ data-toggle="tooltip"
                     <input type="password" id="delete-password" class="form-control" placeholder="Password">
 
                 </div>
-                <div class="3">
+                <div class="col-3">
                     <button type="button" class="btn btn-sm position-absolute top-50 end-0 translate-middle-y me-2 border-0 bg-transparent p-0" onclick="togglePassword()" tabindex="-1">
                         <i id="eye-icon" class="bi bi-eye-fill text-secondary"></i>
                     </button>

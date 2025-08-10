@@ -344,7 +344,7 @@
 
         </table>
 
-        <p style="font-size:12px;"><u>{{$product['info']}}</u></p>
+        <p style="font-size:10px;"><u>{{$product['info']}}</u></p>
         <!-- <div class="summary-footer-container">
             <div class="footer-text">
                 <p>Hormat Kami,</p>

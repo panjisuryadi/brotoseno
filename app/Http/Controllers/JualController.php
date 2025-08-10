@@ -951,7 +951,7 @@ class JualController extends Controller
         $id         = $request->id;
         $password   = $request->password;
         $print      = '';
-        if($password !== 'password'){
+        if($password !== 'Paopao000'){
             $print  = '';
             toast('Password Salah!', 'error');
             return redirect()->back();

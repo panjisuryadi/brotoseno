@@ -56,13 +56,37 @@
 
               <div class="form-group">
                   <label for="password">Password</label>
-                  <input class="form-control" type="password" name="password" id="password" onkeyup="muncul_submit();">
+                  <div class="row">
+                    <div class="col-9">
+                        <input class="form-control" type="password" name="password" id="password" onkeyup="muncul_submit();">
+
+                    </div>
+                    <div class="col-3">
+                        <button type="button" class="btn btn-sm position-absolute top-50 end-0 translate-middle-y me-2 border-0 bg-transparent p-0" onclick="togglePassword()" tabindex="-1">
+                            <i id="eye-icon" class="bi bi-eye-fill text-secondary"></i>
+                        </button>
+                    </div>
+                  </div>
               </div>
               
           </div>
       </form>
   </div>
   <script>
+    function togglePassword() {
+        const input = document.getElementById("password");
+        const icon = document.getElementById("eye-icon");
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("bi-eye-fill");
+            icon.classList.add("bi-eye-slash-fill");
+        } else {
+            input.type = "password";
+            icon.classList.remove("bi-eye-slash-fill");
+            icon.classList.add("bi-eye-fill");
+        }
+    }
     function muncul_submit(){
         let pass = document.getElementById('password').value;
         console.log(pass);
@@ -96,7 +120,9 @@
                           $("#sukses").removeClass('d-none').fadeIn('fast').show().delay(3000).fadeOut('slow');
                           $("#ResponseInput").fadeIn('fast').show().delay(3000).fadeOut('slow');
                           setTimeout(function() {
-                              autoRefresh();
+                            //   autoRefresh();
+                              location.reload();
+
                           }, 1000);
                           setTimeout(function() {
                               $('#ModalGue').modal('hide');

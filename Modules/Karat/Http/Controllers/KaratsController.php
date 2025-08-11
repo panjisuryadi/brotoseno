@@ -434,6 +434,7 @@ public function update(Request $request, $id)
             // }
         }
         return response()->json(['success'=>'Karat Sukses diupdate.']);
+        // return redirect()->back()->with('success', 'Karat Sukses diupdate.');
  }
 
  public function update_diskon(Request $request, Karat $data)

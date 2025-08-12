@@ -1925,6 +1925,12 @@ class JualController extends Controller
         $no = 1;
 
         foreach ($data as $row) {
+            $red    = '';
+            $minus  = '';
+            if($row['from'] == 'buyback' || $row['from'] == 'luar'){
+                $red    = ' style="color:red;" ';
+                $minus  = '- ';
+            }
             echo '<tr>';
             echo '<td>' . $no++ . '</td>';
             echo '<td>' . \Carbon\Carbon::parse($row['tanggal'])->format('d/m/Y') . '</td>';
@@ -1940,12 +1946,12 @@ class JualController extends Controller
             if($row['count'] == 0){
                 
             }else{
-                echo '<td align="right" rowspan="'.$row['count'].'">Rp ' . number_format($row['cash'], 0, ',', '.') . '</td>';
-                echo '<td align="right" rowspan="'.$row['count'].'">Rp ' . number_format($row['transfer'], 0, ',', '.') . '</td>';
-                echo '<td align="right" rowspan="'.$row['count'].'">Rp ' . number_format($row['edc'], 0, ',', '.') . '</td>';
-                echo '<td align="right" rowspan="'.$row['count'].'">Rp ' . number_format($row['qr'], 0, ',', '.') . '</td>';
-                echo '<td align="right" rowspan="'.$row['count'].'">Rp ' . number_format($row['cc'], 0, ',', '.') . '</td>';
-                echo '<td align="right" rowspan="'.$row['count'].'">Rp ' . number_format($row['cicil'], 0, ',', '.') . '</td>';
+                echo '<td align="right" '.$red.' rowspan="'.$row['count'].'">'.$minus.'Rp ' . number_format($row['cash'], 0, ',', '.') . '</td>';
+                echo '<td align="right" '.$red.' rowspan="'.$row['count'].'">'.$minus.'Rp ' . number_format($row['transfer'], 0, ',', '.') . '</td>';
+                echo '<td align="right" '.$red.' rowspan="'.$row['count'].'">'.$minus.'Rp ' . number_format($row['edc'], 0, ',', '.') . '</td>';
+                echo '<td align="right" '.$red.' rowspan="'.$row['count'].'">'.$minus.'Rp ' . number_format($row['qr'], 0, ',', '.') . '</td>';
+                echo '<td align="right" '.$red.' rowspan="'.$row['count'].'">'.$minus.'Rp ' . number_format($row['cc'], 0, ',', '.') . '</td>';
+                echo '<td align="right" '.$red.' rowspan="'.$row['count'].'">'.$minus.'Rp ' . number_format($row['cicil'], 0, ',', '.') . '</td>';
             }
             echo '</tr>';
 

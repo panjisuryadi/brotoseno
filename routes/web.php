@@ -405,6 +405,24 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/products_gudang', 'ProductController@list_gudang')
         ->name('products.gudang');
 
+    Route::get('/lm', 'KaratController@list_lm')
+        ->name('lm.list');
+
+    Route::get('/index_lm', 'KaratController@index_lm')
+        ->name('lm.index');
+
+    Route::get('/edit_lm', 'KaratController@edit_lm')
+        ->name('lm.edit');
+
+    Route::post('/insert_lm', 'KaratController@insert_lm')
+        ->name('lm.insert');
+
+    Route::patch('/update_lm', 'KaratController@update_lm')
+        ->name('lm.update');
+    
+    Route::delete('/delete_lm', 'KaratController@delete_lm')
+        ->name('lm.delete');
+
     Route::get('/discounts', 'KaratController@list_diskon')
         ->name('discounts.list');
 

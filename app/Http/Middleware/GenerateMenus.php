@@ -1922,7 +1922,22 @@ class GenerateMenus
                     'onclick' => "openPasswordModal(event, '" . route('discounts.list') . "')",
                 ]);
 
-
+            $Parameters->add(
+                '<i class="c-sidebar-nav-icon bi bi-dot text-sm" onclick="openPasswordModal(event, \'' . route('discounts.list') . '\');"></i> ' . __('Logam Mulia'),
+                [
+                    'route' => 'lm.list',
+                    'class' => 'nav-item',
+                ]
+            )
+                ->data([
+                    'order'         => 3,
+                    'activematches' => ['karats*'],
+                    'permission'    => ['access_karats'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link py-2',
+                    'onclick' => "openPasswordModal(event, '" . route('lm.list') . "')",
+                ]);
 
 
             //==== Access Control Dropdown data Parameter

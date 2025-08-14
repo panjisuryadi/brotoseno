@@ -2501,6 +2501,7 @@ class JualController extends Controller
             })
 
             ->editColumn('rekomendasi', function ($data) {
+                
                 $coef   = isset($data->karat->coef) ? $data->karat->coef : 0;
                 $persen = isset($data->karat->persen) ? $data->karat->persen : 0;
                 $harga  = isset($data->harga) ? $data->harga : 0;
@@ -2518,6 +2519,12 @@ class JualController extends Controller
                 // $price  = ($har)+($har*$persen/100);
                 // $price  = ceil($price/1000);
                 // $price  = $price*1000;
+                if(isset($data->karat->type)){
+                    if($data->karat->type == 'LM'){
+                        $price  = $data->karat->harga;
+                    }
+                }
+
                 $tb = '<div class="items-center gap-x-2">
                                 <div class="text-sm text-center text-gray-500">
                                 Rp .' . @rupiah($price). ' <br>

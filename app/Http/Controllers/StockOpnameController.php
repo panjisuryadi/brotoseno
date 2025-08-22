@@ -64,7 +64,12 @@ class StockopnameController extends Controller
         $id = $request->id;
         $code = $request->code;
 
-        $pro    = Product::where('product_code', $code)->firstOrFail();
+        try {
+            $pro = Product::where('product_code', $code)->firstOrFail();
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            toast("Product [{$code}] sudah dihapus", 'error');
+        	return redirect()->back();   
+        }
         $product_id = $pro->id;
         $baki_id = $pro->baki_id;
 

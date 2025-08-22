@@ -121,7 +121,7 @@ class ProductController extends Controller
             $gambar = $gam;
         }
         $berat  = str_replace(',', '.', $request->new_product_berat);
-        $berat  = (int)$berat;
+        $berat  = (float)$berat;
 
         $i = 0;
         $group  = Group::where('id', $request->new_product_group_id)->first();

@@ -27,7 +27,8 @@ class User extends Authenticatable implements HasMedia
      * @var array
      */
 
-
+    protected $connection = 'mysql'; // central
+    protected $table = 'users';
 
     public const USERCODE = 'U';
 

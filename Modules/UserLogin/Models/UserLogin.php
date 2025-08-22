@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class UserLogin extends Model
 {
     use HasFactory;
+    protected $connection = 'mysql'; // central
     protected $table = 'user_logins';
 
     //protected $guarded = [];

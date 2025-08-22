@@ -15,7 +15,14 @@ Route::get('/', function () {
 Auth::routes(['register' => false]);
 Route::get('language/{language}', 'LanguageController@switch')->name('language.switch');
 
-
+Route::middleware(['web'])->get('/debug/db', function () {
+    return response()->json([
+        'default'           => config('database.default'),
+        'pdo_database()'    => optional(DB::select('select database() as db')[0] ?? null)->db,
+        'auth_user_conn'    => optional(Auth::user())->getConnectionName(),
+        'tenant_session'    => session('tenant_db'),
+    ]);
+});
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/home', 'HomeController@index')

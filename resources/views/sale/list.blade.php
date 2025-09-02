@@ -741,7 +741,8 @@
 
         const service   = $('#service').val().trim();
         const desc      = $('#desc').val().trim();
-        const harga     = formatRupiah(parseFloat($('#harga').val()));
+        // const harga     = formatRupiah(parseFloat($('#harga').val()));
+        const harga     = (parseFloat($('#harga').val()));
         const price     = $('#harga').val();
         const diskon    = $('#diskon').val();
         const min       = price-diskon;

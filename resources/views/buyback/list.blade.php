@@ -195,7 +195,7 @@
                             <input type="text" class="form-control" name="product" required>
                         </div> --}}
                         <div class="row">
-                            <div class="col-2">
+                            <div class="col-3">
                                 <div class="form-group">
                                     <label for="">No Nota</label>
                                     <input type="hidden" name="product" id="product">
@@ -203,39 +203,11 @@
                                         onkeyup="view_nota();" required>
                                 </div>
                             </div>
-                            <div class="col-2">
+                            <div class="col-3">
                                 <div class="form-group">
                                     <label for="">Kondisi</label>
                                     <input type="text" class="form-control" name="kondisi" id="kondisi" required
                                         readonly>
-                                </div>
-                            </div>
-
-                            <div class="col-2">
-                                <div class="form-group">
-                                    <label for="" id="label_potongan">Max Harga Potongan : </label>
-                                    <input type="number" class="form-control" potongan="{{ $potongan }}"
-                                        name="potongan" id="potongan" onkeyup="change_harga();" required
-                                        value="0">
-                                </div>
-                            </div>
-
-                            <div class="col-2">
-                                <div class="form-group">
-                                    <label for="" id="label_tambahan">Max Harga Tambahan : </label>
-                                    <input type="number" class="form-control" tambahan="{{ $tambahan }}"
-                                        name="tambahan" id="tambahan" onkeyup="change_harga();" required
-                                        value="0">
-                                </div>
-                            </div>
-
-                            <div class="col-2">
-                                <div class="form-group">
-                                    <label for="">Harga : </label>
-                                    <input type="hidden" name="harga_awal" id="harga_awal">
-                                    <input type="hidden" name="harga" id="harga">
-                                    <input type="text" class="form-control" name="harga_label" id="harga_label"
-                                        value="0" readonly>
                                 </div>
                             </div>
 
@@ -248,6 +220,48 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="col-4">
+
+                            </div>
+
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="" id="label_potongan">Max Harga Potongan : </label>
+                                    <input type="number" class="form-control" potongan="{{ $potongan }}"
+                                        name="potongan" id="potongan" onkeyup="change_harga();" required
+                                        value="0">
+                                </div>
+                            </div>
+
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="" id="label_tambahan">Max Harga Tambahan : </label>
+                                    <input type="number" class="form-control" tambahan="{{ $tambahan }}"
+                                        name="tambahan" id="tambahan" onkeyup="change_harga();" required
+                                        value="0">
+                                </div>
+                            </div>
+
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="" id="label_manual">Input Harga Manual : </label>
+                                    <input type="number" class="form-control" 
+                                        name="manual" id="manual" onkeyup="change_harga();" required
+                                        value="0">
+                                </div>
+                            </div>
+
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="">Harga : </label>
+                                    <input type="hidden" name="harga_awal" id="harga_awal">
+                                    <input type="hidden" name="harga" id="harga">
+                                    <input type="text" class="form-control" name="harga_label" id="harga_label"
+                                        value="0" readonly>
+                                </div>
+                            </div>
+
+                            
 
                             <div class="col-12 mt-5">
                                 <table class="invoice-table" id="invoice-table" style="display: none;">
@@ -430,8 +444,9 @@
             return false; // cancel action if user pressed Cancel
         }
 
-        function change_harga() {
+        function change_harga_old() {
             let awal = $("#harga_awal").val();
+            let manual = $("#manual");
             let potongan = $("#potongan");
             let tambahan = $("#tambahan");
             let tambahanPercent = parseFloat($('#tambahan').attr('tambahan')) || 0;
@@ -450,30 +465,115 @@
             if (tambahan.val() > maxTambahan) {
                 tambahan.val(maxTambahan);
             }
-            if (potongan.val() == 0) {
+
+            // POTONGAN
+            if (potongan.val() == 0 || potongan.val() == '') {
+                manual.prop('disabled', false);
+                manual.prop('readonly', false);
                 tambahan.prop('disabled', false);
                 tambahan.prop('readonly', false);
-            } else {
+            } else if (potongan.val() > 0){
                 tambahan.val(0);
-                harga = awal - potongan.val();
+                manual.val(0);
+                manual.prop('disabled', true);
+                manual.prop('readonly', true);
                 tambahan.prop('disabled', true);
                 tambahan.prop('readonly', true);
+                harga = awal - potongan.val();
             }
-
-            if (tambahan.val() == 0) {
+            // TAMBAHAN
+            else if (tambahan.val() == 0 || tambahan.val() == '') {
+                manual.prop('disabled', false);
+                manual.prop('readonly', false);
                 potongan.prop('disabled', false);
                 potongan.prop('readonly', false);
-            } else {
+            } else if (tambahan.val() > 0) {
                 potongan.val(0);
+                manual.val(0);
                 harga = parseInt(harga) + parseInt(tambahan.val());
+                manual.prop('disabled', true);
+                manual.prop('readonly', true);
                 potongan.prop('disabled', true);
                 potongan.prop('readonly', true);
+            }
+            // MANUAL
+            else if (manual.val() == 0 || manual.val() == ''){
+                tambahan.prop('disabled', false);
+                tambahan.prop('readonly', false);
+                potongan.prop('disabled', false);
+                potongan.prop('readonly', false);
+            } else if (manual.val() > 0){
+                potongan.val(0);
+                tambahan.val(0);
+                tambahan.prop('disabled', true);
+                tambahan.prop('readonly', true);
+                potongan.prop('disabled', true);
+                potongan.prop('readonly', true);
+                harga   = parseInt(manual.val());
             }
 
             let rupiah = 'Rp ' + harga.toLocaleString('id-ID');
             $("#harga").val(harga);
             $("#harga_label").val(rupiah);
         }
+
+        function change_harga() {
+            let awal = parseInt($("#harga_awal").val()) || 0;
+            let manual = $("#manual");
+            let potongan = $("#potongan");
+            let tambahan = $("#tambahan");
+            let tambahanPercent = parseFloat($('#tambahan').attr('tambahan')) || 0;
+            let maxTambahan = awal * tambahanPercent / 100;
+            let potonganPercent = parseFloat($('#potongan').attr('potongan')) || 0;
+            let maxPotongan = awal * potonganPercent / 100;
+
+            if (potongan.val() > maxPotongan) {
+                potongan.val(maxPotongan);
+            }
+            if (tambahan.val() > maxTambahan) {
+                tambahan.val(maxTambahan);
+            }
+
+            // ambil nilai input
+            let potonganVal = parseInt(potongan.val()) || 0;
+            let tambahanVal = parseInt(tambahan.val()) || 0;
+            let manualVal   = parseInt(manual.val())   || 0;
+
+            let harga = awal;
+
+            // case: potongan > 0
+            if (potonganVal > 0) {
+                tambahan.val(0).prop("disabled", true).prop("readonly", true);
+                manual.val(0).prop("disabled", true).prop("readonly", true);
+
+                harga = awal - potonganVal;
+            }
+            // case: tambahan > 0
+            else if (tambahanVal > 0) {
+                potongan.val(0).prop("disabled", true).prop("readonly", true);
+                manual.val(0).prop("disabled", true).prop("readonly", true);
+
+                harga = awal + tambahanVal;
+            }
+            // case: manual > 0
+            else if (manualVal > 0) {
+                potongan.val(0).prop("disabled", true).prop("readonly", true);
+                tambahan.val(0).prop("disabled", true).prop("readonly", true);
+
+                harga = manualVal;
+            }
+            // kalau semua kosong / 0 → aktifkan semua lagi
+            else {
+                potongan.prop("disabled", false).prop("readonly", false);
+                tambahan.prop("disabled", false).prop("readonly", false);
+                manual.prop("disabled", false).prop("readonly", false);
+            }
+
+            // update field harga
+            $("#harga").val(harga);
+            $("#harga_label").val("Rp " + harga.toLocaleString("id-ID"));
+        }
+
 
         function view_nota() {
             $("#btn_submit").hide();

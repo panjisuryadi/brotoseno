@@ -12,7 +12,7 @@
                             <div class="font-semibold">{{ $row->name }}</div>
                             <div class="text-xs text-gray-600">{{ $row->os }} ,{{ $row->browser }}</div>
                             <div class="text-xs text-gray-600">{{ $row->ip }}</div>
-                           <div class="text-sm text-gray-600"> {{ @$row["location"]['cityName'] }}</div>
+                            <div class="text-sm text-gray-600"> {{ @$row["location"]['city'] }}</div>
                             <div class="text-xs text-gray-600"> {{ tgl($row->created_at)}}</div>
                             <div class="text-xs text-blue-600">
                                 {{ \Carbon\Carbon::parse($row->created_at)->diffForHumans() }}

@@ -87,6 +87,9 @@
                         <button class="btn btn-outline-primary w-100" id="btn-add-special" data-toggle="modal" data-target="#customProductModal">
                             <i class="hover:text-blue-400 text-2xl text-gray-500 bi bi-file-plus"></i> Custom
                         </button>
+                        <button class="btn btn-outline-warning w-100" id="btn-add-special" data-toggle="modal" data-target="#tukar">
+                            <i class="hover:text-blue-400 text-2xl text-gray-500 bi bi-file-plus"></i> Tukar Tambah
+                        </button>
                     </div>
                     
                     <!-- Checkout / Total -->
@@ -254,6 +257,128 @@
   </div>
 </div>
 
+<div class="modal fade" id="tukar" tabindex="-1" role="dialog" aria-labelledby="addModalLabel"
+    aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-lg font-bold" id="addModalLabel">Tukar Tambah</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-4">
+                <form action="/buyback_insert" target="_blank" method="post">
+                    @csrf
+                    {{-- <div class="form-group">
+                        <label for="">Code Product</label>
+                        <input type="text" class="form-control" name="product" required>
+                    </div> --}}
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="">No Nota</label>
+                                <input type="hidden" name="product" id="product">
+                                <input type="text" class="form-control" name="nota" id="nota"
+                                    onkeyup="view_nota();" required>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="">Kondisi</label>
+                                <input type="text" class="form-control" name="kondisi" id="kondisi" required
+                                    readonly>
+                            </div>
+                        </div>
+
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label for="">Payment</label>
+                                <select name="payment" id="payment" class="form-control">
+                                    <option value="cash">Cash</option>
+                                    <option value="transfer">Transfer</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-4">
+
+                        </div>
+
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="" id="label_potongan">Max Harga Potongan : </label>
+                                <input type="number" class="form-control" potongan=""
+                                    name="potongan" id="potongan" onkeyup="change_harga();" required
+                                    value="0">
+                            </div>
+                        </div>
+
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="" id="label_tambahan">Max Harga Tambahan : </label>
+                                <input type="number" class="form-control" tambahan=""
+                                    name="tambahan" id="tambahan" onkeyup="change_harga();" required
+                                    value="0">
+                            </div>
+                        </div>
+
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="" id="label_manual">Input Harga Manual : </label>
+                                <input type="number" class="form-control" 
+                                    name="manual" id="manual" onkeyup="change_harga();" required
+                                    value="0">
+                            </div>
+                        </div>
+
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="">Harga : </label>
+                                <input type="hidden" name="harga_awal" id="harga_awal">
+                                <input type="hidden" name="harga" id="harga">
+                                <input type="text" class="form-control" name="harga_label" id="harga_label"
+                                    value="0" readonly>
+                            </div>
+                        </div>
+
+                        
+
+                        <div class="col-12 mt-5">
+                            <table class="invoice-table" id="invoice-table" style="display: none;">
+                                <thead>
+                                    <tr>
+                                        <th>Img</th>
+                                        <th>Kode</th>
+                                        <th>Jenis</th>
+                                        <th>Deskripsi</th>
+                                        <th>Berat</th>
+                                        <th>Harga</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><img id="t_image" src="./storage/uploads/1742774180.png" order="0"
+                                                width="70" class="img-thumbnail"></td>
+                                        <td id="t_kode">Emas Dummy</td>
+                                        <td id="t_jenis">Emas Antam</td>
+                                        <td id="t_desc">Gold 1 ml Ruth</td>
+                                        <td id="t_berat">1 g</td>
+                                        <td id="t_harga">Rp. 9.999.999</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <br>
+                    <button type="button" class="btn btn-sm btn-success" id="btn_submit" style="display: none;">Submit</button>
+                    <button type="submit" class="btn btn-sm btn-success" form="tukar-product-form">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
@@ -264,6 +389,136 @@
 <!-- Bootstrap JS (with Popper) – CDN version -->
 <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AHR5oKn06PWzGk+E9Y1kCfmhktbZ5d9+8wCjUY8H7Sk/9kccB+ApPBALSczF+" crossorigin="anonymous"></script> -->
     <script> 
+
+    function change_harga() {
+            let awal = parseInt($("#harga_awal").val()) || 0;
+            let manual = $("#manual");
+            let potongan = $("#potongan");
+            let tambahan = $("#tambahan");
+            let tambahanPercent = parseFloat($('#tambahan').attr('tambahan')) || 0;
+            let maxTambahan = awal * tambahanPercent / 100;
+            let potonganPercent = parseFloat($('#potongan').attr('potongan')) || 0;
+            let maxPotongan = awal * potonganPercent / 100;
+
+            if (potongan.val() > maxPotongan) {
+                potongan.val(maxPotongan);
+            }
+            if (tambahan.val() > maxTambahan) {
+                tambahan.val(maxTambahan);
+            }
+
+            // ambil nilai input
+            let potonganVal = parseInt(potongan.val()) || 0;
+            let tambahanVal = parseInt(tambahan.val()) || 0;
+            let manualVal   = parseInt(manual.val())   || 0;
+
+            let harga = awal;
+
+            // case: potongan > 0
+            if (potonganVal > 0) {
+                tambahan.val(0).prop("disabled", true).prop("readonly", true);
+                manual.val(0).prop("disabled", true).prop("readonly", true);
+
+                harga = awal - potonganVal;
+            }
+            // case: tambahan > 0
+            else if (tambahanVal > 0) {
+                potongan.val(0).prop("disabled", true).prop("readonly", true);
+                manual.val(0).prop("disabled", true).prop("readonly", true);
+
+                harga = awal + tambahanVal;
+            }
+            // case: manual > 0
+            else if (manualVal > 0) {
+                potongan.val(0).prop("disabled", true).prop("readonly", true);
+                tambahan.val(0).prop("disabled", true).prop("readonly", true);
+
+                harga = manualVal;
+            }
+            // kalau semua kosong / 0 → aktifkan semua lagi
+            else {
+                potongan.prop("disabled", false).prop("readonly", false);
+                tambahan.prop("disabled", false).prop("readonly", false);
+                manual.prop("disabled", false).prop("readonly", false);
+            }
+
+            // update field harga
+            $("#harga").val(harga);
+            $("#harga_label").val("Rp " + harga.toLocaleString("id-ID"));
+        }
+
+
+        function view_nota() {
+            $("#btn_submit").hide();
+            $('#invoice-table').hide();
+
+            let nota = $('#nota').val();
+            let length = nota.length;
+            $('#potongan').val(0);
+            $('#tambahan').val(0);
+            $('#kondisi').prop('readonly', true);
+
+            if (length > 9) {
+                $('#t_image').html();
+                $('#t_kode').html();
+                $('#t_jenis').html();
+                $('#t_desc').html();
+                $('#t_berat').html();
+                $('#t_harga').html();
+                $.ajax({
+                    url: '/buyback_nota/' + nota, // The URL for your route
+                    type: 'GET', // Request method
+                    dataType: 'json', // Expecting JSON response
+                    success: function(response) {
+                        // On success, handle the response
+                        if (response) {
+                            if (response.harga !== '') {
+                                let price = parseInt(response.price);
+                                let rupiah = 'Rp ' + price.toLocaleString('id-ID');
+                                let tambahanPercent = parseFloat($('#tambahan').attr('tambahan')) || 0;
+                                let maxTambahan = price * tambahanPercent / 100;
+                                let potonganPercent = parseFloat($('#potongan').attr('potongan')) || 0;
+                                let maxPotongan = price * potonganPercent / 100;
+                                let rupiahMaxPotongan = 'Rp ' + maxPotongan.toLocaleString('id-ID');
+                                let rupiahMaxTambahan = 'Rp ' + maxTambahan.toLocaleString('id-ID');
+
+                                $('#potongan').attr('max', maxPotongan);
+                                $('#label_potongan').html('Potongan Max ' + potonganPercent + '% : ' +
+                                    rupiahMaxPotongan);
+                                $('#tambahan').attr('max', maxTambahan);
+                                $('#label_tambahan').html('Tambahan Max ' + tambahanPercent + '% : ' +
+                                    rupiahMaxTambahan);
+
+                                $('#kondisi').prop('readonly', false);
+
+                                $('#product').val(response.product);
+
+                                $('#harga').val(price);
+                                $('#t_image').attr('src', '/storage/uploads/' + response.image);
+                                $('#t_kode').html(response.kode);
+                                $('#t_jenis').html(response.jenis);
+                                $('#t_desc').html(response.desc);
+                                $('#t_berat').html(response.berat);
+                                $('#t_harga').html(rupiah);
+                                $('#harga_label').val(rupiah);
+                                $('#harga_awal').val(price);
+                                $('#btn_submit').show();
+                                $('#invoice-table').show();
+                            } else {
+                                alert('Nota not valid');
+                            }
+                        } else {
+                            // $("#result").html("<p>No data found.</p>");
+                        }
+                    },
+                    error: function() {
+                        // Handle errors
+                        alert('An error occurred.');
+                    }
+                });
+            }
+        }
+
     $(document).ready(function() {
         $('#customer_modal').select2({
             dropdownParent: $('#confirmProductModal'),
@@ -795,6 +1050,64 @@
         // modal.hide();
     });
 
+    $('#tukar-product-form').on('submit', function (e) {
+        e.preventDefault();
+
+        const service   = $('#tukar_product').val().trim();
+        const desc      = $('#tukar_desc').val().trim();
+        // const harga     = formatRupiah(parseFloat($('#harga').val()));
+        const harga     = (parseFloat($('#tukar_harga').val()));
+        const price     = $('#tukar_harga').val();
+        const diskon    = $('#diskon').val();
+        const min       = price-diskon;
+        
+        if (!service || isNaN(harga)) {
+            alert("Please fill out the form correctly.");
+            return;
+        }
+
+        const previewArea = $('#preview-area');
+
+        const newItem = `
+            <div class="border-bottom pb-2 mb-2 preview-item">
+                <div class="row align-items-center">
+                    <div class="col-2">
+                        <div class="text-xs text-red-600">${service}</div>
+                        <h6 class="mb-0 small text-gray-700">${desc}</h6>
+                    </div>
+                    <div class="col-3">
+                        <small>Harga: <strong>${harga}</strong></small>
+                    </div>
+                    <div class="col-2">
+                        <input type="number" name="diskon[]" class="form-control form-control-sm" value="0" max="0" readonly>
+                    </div>
+                    <div class="col-2">
+                        <input type="number" name="ongkos[]" class="form-control form-control-sm" value="0" max="0" readonly>
+                    </div>
+                    <div class="col-2">
+                        <input type="hidden" name="product[]" value="0">
+                        <input type="hidden" name="product_name[]" value="${service}">
+                        <input type="hidden" name="product_desc[]" value="${desc}">
+                        <input type="number" name="harga[]" class="form-control form-control-sm" data-original-harga="${price}" onkeyup="sum_harga();" value="${price}" placeholder="Harga" readonly>
+                    </div>
+                    <div class="col-1 text-end">
+                        <button type="button" class="btn btn-sm btn-outline-danger btn-delete-current">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        previewArea.append(newItem);
+        sum_harga();
+
+        // Reset and hide modal
+        $('#tukar-product-form')[0].reset();
+        // const modalEl = document.getElementById('customProductModal');
+        // const modal = bootstrap.Modal.getInstance(modalEl);
+        // modal.hide();
+    });
 
     $(document).on('click', '.btn-add-to-preview', function() {
         let rowData = $(this).attr('data-row');

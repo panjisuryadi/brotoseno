@@ -2913,6 +2913,19 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link py-2',
                 ]);
 
+            $accessControl->add('<i class="c-sidebar-nav-icon  bi bi-person text-sm"></i> ' . __('Profile'), [
+                'route' => 'profile.index',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 102,
+                    'activematches' => ['userlogins*'],
+                    'permission'    => ['access_userlogins'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link py-2',
+                ]);
+
             // Companies
             // $menu->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Company'), [
             //     'route' => 'company.index',

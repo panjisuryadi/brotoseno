@@ -208,6 +208,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/modal', 'ModalController@list')
         ->name('modal.index');
 
+    Route::get('/profile', 'ProfileController@list')
+        ->name('profile.index');
+    
+    Route::put('/profile/update', 'ProfileController@update')
+        ->name('profile.update');
+
     Route::get('/webcam', 'WebcamController@list')
         ->name('webcam.index');
 

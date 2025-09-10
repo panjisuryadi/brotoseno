@@ -92,9 +92,11 @@ class JualController extends Controller
         $cc = Config::where('name', 'cc')->first();
         $bank   = DataBank::latest()->get();
         $rekening   = DataRekening::latest()->get();
+        $dataKarat = Karat::whereNull('parent_id')->get();
+        $groups = Group::all();  // Assuming Supplier model is set up
 
 
-        return view('sale.list', compact('product_categories', 'customers', 'karat', 'category', 'group', 'models', 'cc', 'bank', 'rekening'));
+        return view('sale.list', compact('product_categories', 'customers', 'karat', 'category', 'group', 'models', 'cc', 'bank', 'rekening', 'dataKarat', 'groups'));
     }
 
     public function data_report(Request $request)
@@ -144,6 +146,7 @@ class JualController extends Controller
             $products = Product::whereIn('id', $productIds)
                 ->with('category')
                 ->with('karats')
+                ->with('sales_items')
                 ->get();
 
             foreach ($products as $product) {
@@ -152,11 +155,13 @@ class JualController extends Controller
                 $coef = $product->karats->coef;
                 $persenMargin = $product->karats->persen;
                 $beratEmas = $product->berat_emas;
+                $nomor_inv  = $product->sales_items->nomor ?? $sale->nomor;
 
                 // MEMBUAT HARGA JUAL PRODUK
                 $hargaCoef = $coef * $hargaEmas;
                 $hargaJual = $hargaCoef + ($hargaCoef * ($persenMargin / 100));
                 $hargaTotalProduk = ceil($hargaJual * $beratEmas / 1000) * 1000;
+                $hargaTotalProduk   = $product->sales_items->total ?? $hargaTotalProduk;
 
                 // format angka rupiah
                 $formattedCash = 'Rp. ' . number_format($sale->cash, 0, ',', '.');
@@ -173,7 +178,8 @@ class JualController extends Controller
 
                 $results[] = [
                     'id' => $sale->id,
-                    'nomor_transaksi' => $sale->nomor,
+                    // 'nomor_transaksi' => $sale->nomor,
+                    'nomor_transaksi' => $nomor_inv,
                     'jam' => $sale->created_at->format('H:i'),
                     'sales' => '-',
                     'customer_name' => $sale->pelanggan->customer_name ?? '-',

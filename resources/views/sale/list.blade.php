@@ -268,112 +268,323 @@
                 </button>
             </div>
             <div class="modal-body p-4">
-                <form action="/buyback_insert" target="_blank" method="post">
-                    @csrf
-                    {{-- <div class="form-group">
-                        <label for="">Code Product</label>
-                        <input type="text" class="form-control" name="product" required>
-                    </div> --}}
-                    <div class="row">
-                        <div class="col-3">
-                            <div class="form-group">
-                                <label for="">No Nota</label>
-                                <input type="hidden" name="product" id="product">
-                                <input type="text" class="form-control" name="nota" id="nota"
-                                    onkeyup="view_nota();" required>
+                <div>
+                    <form action="/products_insert_luar" id="productForm" target="_blank" method="post">
+                        @csrf
+                        <input type="hidden" name="webcam" id="hasilcapture">
+                        <div class="px-0 py-2">
+                            @php
+                                $number = 0;
+                            @endphp
+                            <div class="col-span-2 px-2">
+                                <div class="flex flex-row grid grid-cols-2 gap-1">
+                                    <div class="form-group">
+                                        <div class="py-1">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="upload"
+                                                    id="up2" checked>
+                                                <label class="form-check-label" for="up2">Upload</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="upload"
+                                                    id="up1">
+                                                <label class="form-check-label" for="up1">Webcam</label>
+                                            </div>
+                                        </div>
+                                        <div id="upload2" style="display: none !important;"
+                                            class="align-items-center justify-content-center" wire:ignore>
+                                            @livewire('webcam', ['key' => 0], key('cam-' . 0))
+                                        </div>
+                                        <div id="upload1" wire:ignore>
+                                            <div class="form-group">
+                                                <div class="dropzone d-flex flex-wrap align-items-center justify-content-center"
+                                                    id="document-dropzone">
+                                                    <div class="dz-message" data-dz-message>
+                                                        <i class="bi bi-cloud-arrow-up"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @if ($errors->has('image'))
+                                            <span class="invalid feedback" role="alert">
+                                                <small class="text-danger">{{ $errors->first('image') }}</small
+                                                    class="text-danger">
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <div class="form-group">
+                                        <?php
+                                        $field_id = 'product_category_' . $number;
+                                        ?>
+                                        <label for="product_category" class="form-label d-block">Product Category</label>
+                                        <select name="new_product_category_id" id="{{ $field_id }}" required
+                                            class="form-control select2 @error('new_product.product_category_id') is-invalid @enderror">
+                                            <option value="">Semua Produk</option>
+
+                                            @foreach ($product_categories as $category)
+                                                <option value="{{ $category->id }}"
+                                                    code="{{ $category->category_code }}">
+                                                    {{ $category->category_name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <?php
+                                        $field_name = 'new_product.model_id';
+                                        $field_id = 'model_'.$number;
+                                        $field_lable = label_case('model');
+                                        $field_placeholder = $field_lable;
+                                        $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                        $required = 'required';
+                                        ?>
+                                        <label for="{{ $field_name }}" class="form-label d-block">{{ $field_lable }}</label>
+                                        <select class="form-control select2 @error($field_name) is-invalid @enderror"
+                                            name="{{ $field_name }}" id="{{ $field_id }}" required>
+                                            <option value="" selected disabled>Pilih Model</option>
+                                            @foreach ($models as $model)
+                                                <option value="{{ $model->id }}">
+                                                    {{ $model->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <?php
+                                        $field_name = 'new_product.karat_id';
+                                        $field_id = 'karat_' . $number;
+                                        $field_lable = label_case('karat');
+                                        $field_placeholder = $field_lable;
+                                        $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                        $required = 'required';
+                                        ?>
+                                        <label for="{{ $field_name }}" class="form-label d-block">@lang('Karat') <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-control select2 @error($field_name) is-invalid @enderror"
+                                            name="{{ $field_name }}" id="{{ $field_id }}" required>
+                                            @foreach ($dataKarat as $karat)
+                                                <option value="{{ $karat->id }}">{{ $karat->label }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <?php
+                                        $field_name = 'new_product.group_id';
+                                        $field_id = 'group_' . $number;
+                                        $field_lable = label_case('group');
+                                        $field_placeholder = $field_lable;
+                                        $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                        $required = 'required';
+                                        ?>
+                                        <label for="{{ $field_name }}" class="form-label d-block">@lang($field_lable)
+                                            <span class="text-danger">*</span>
+                                            <span class="small">Jenis Perhiasan</span>
+                                        </label>
+                                        <select class="form-control select2 @error($field_name) is-invalid @enderror"
+                                            name="{{ $field_name }}" id="{{ $field_id }}" required>
+                                            <option value="" selected disabled>Pilih {{ $field_lable }}</option>
+                                            @foreach ($groups as $group)
+                                                <option value="{{ $group->id }}">{{ $group->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <?php
+                                        $field_name = 'new_product.code';
+                                        $field_id = 'code_' . $number;
+                                        $field_lable = label_case('code');
+                                        $field_placeholder = $field_lable;
+                                        $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                        $required = 'required';
+                                        ?>
+                                        <label for="{{ $field_name }}">{{ $field_lable }}<span
+                                                class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input type="hidden" name="temp_code" id="temp_code">
+                                            <input type="text" id="{{ $field_id }}" name="new_product_code_id"
+                                                class="form-control @error($field_name) is-invalid @enderror" readonly
+                                                required>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-info relative rounded-l-none"
+                                                    onclick="gencode({{ $number }});" type="button">Check</button>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <?php
+                                        $field_name = 'new_product.harga';
+                                        $field_id = 'harga_' . $number;
+                                        $field_lable = label_case('harga');
+                                        $field_placeholder = $field_lable;
+                                        $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                        $required = 'required';
+                                        ?>
+                                        <label for="{{ $field_name }}">{{ $field_lable }}<span
+                                                class="text-danger">*</span></label>
+                                        <input type="number" id="{{ $field_id }}" name="new_product_harga"
+                                            class="form-control " required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="">Payment</label>
+                                        <select name="payment" id="payment" class="form-control">
+                                            <option value="cash">Cash</option>
+                                            <option value="transfer">Transfer</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <?php
+                                        $field_name = 'new_product.keterangan';
+                                        $field_id = 'keterangan_' . $number;
+                                        $field_lable = label_case('keterangan');
+                                        $field_placeholder = $field_lable;
+                                        $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                        $required = 'required';
+                                        ?>
+                                        <label for="{{ $field_name }}">{{ $field_lable }}<span
+                                                class="text-danger">*</span></label>
+                                        <textarea id="{{ $field_id }}" name="new_product_keterangan" class="form-control" required></textarea>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <?php
+                                        $field_name = 'new_product.berat';
+                                        $field_id = 'berat_' . $number;
+                                        $field_lable = label_case('berat');
+                                        $field_placeholder = $field_lable;
+                                        $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                        $required = 'required';
+                                        ?>
+                                        <label for="{{ $field_name }}">{{ $field_lable }} (gram)<span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" id="{{ $field_id }}" name="new_product_berat"
+                                            class="form-control " required>
+                                        <!-- <div class="input-group">
+                                                    </div> -->
+                                    </div>
+
+                                </div>
+
+                                {{-- ///batas --}}
+
+                            </div>
+                            <button class="btn btn-success" onclick="return alert('Proses ?');">Submit</button>
+                    </form>
+                </div>
+            
+                <div> 
+                    <form action="/buyback_insert" target="_blank" method="post">
+                        @csrf
+                        {{-- <div class="form-group">
+                            <label for="">Code Product</label>
+                            <input type="text" class="form-control" name="product" required>
+                        </div> --}}
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="">No Nota</label>
+                                    <input type="hidden" name="product" id="product">
+                                    <input type="text" class="form-control" name="nota" id="nota"
+                                        onkeyup="view_nota();" required>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="">Kondisi</label>
+                                    <input type="text" class="form-control" name="kondisi" id="kondisi" required
+                                        readonly>
+                                </div>
+                            </div>
+    
+                            <div class="col-2">
+                                <div class="form-group">
+                                    <label for="">Payment</label>
+                                    <select name="payment" id="payment" class="form-control">
+                                        <option value="cash">Cash</option>
+                                        <option value="transfer">Transfer</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-4">
+    
+                            </div>
+    
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="" id="label_potongan">Max Harga Potongan : </label>
+                                    <input type="number" class="form-control" potongan=""
+                                        name="potongan" id="potongan" onkeyup="change_harga();" required
+                                        value="0">
+                                </div>
+                            </div>
+    
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="" id="label_tambahan">Max Harga Tambahan : </label>
+                                    <input type="number" class="form-control" tambahan=""
+                                        name="tambahan" id="tambahan" onkeyup="change_harga();" required
+                                        value="0">
+                                </div>
+                            </div>
+    
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="" id="label_manual">Input Harga Manual : </label>
+                                    <input type="number" class="form-control" 
+                                        name="manual" id="manual" onkeyup="change_harga();" required
+                                        value="0">
+                                </div>
+                            </div>
+    
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="">Harga : </label>
+                                    <input type="hidden" name="harga_awal" id="harga_awal">
+                                    <input type="hidden" name="harga" id="harga">
+                                    <input type="text" class="form-control" name="harga_label" id="harga_label"
+                                        value="0" readonly>
+                                </div>
+                            </div>
+    
+                            
+    
+                            <div class="col-12 mt-5">
+                                <table class="invoice-table" id="invoice-table" style="display: none;">
+                                    <thead>
+                                        <tr>
+                                            <th>Img</th>
+                                            <th>Kode</th>
+                                            <th>Jenis</th>
+                                            <th>Deskripsi</th>
+                                            <th>Berat</th>
+                                            <th>Harga</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><img id="t_image" src="./storage/uploads/1742774180.png" order="0"
+                                                    width="70" class="img-thumbnail"></td>
+                                            <td id="t_kode">Emas Dummy</td>
+                                            <td id="t_jenis">Emas Antam</td>
+                                            <td id="t_desc">Gold 1 ml Ruth</td>
+                                            <td id="t_berat">1 g</td>
+                                            <td id="t_harga">Rp. 9.999.999</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-                        <div class="col-3">
-                            <div class="form-group">
-                                <label for="">Kondisi</label>
-                                <input type="text" class="form-control" name="kondisi" id="kondisi" required
-                                    readonly>
-                            </div>
-                        </div>
-
-                        <div class="col-2">
-                            <div class="form-group">
-                                <label for="">Payment</label>
-                                <select name="payment" id="payment" class="form-control">
-                                    <option value="cash">Cash</option>
-                                    <option value="transfer">Transfer</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-4">
-
-                        </div>
-
-                        <div class="col-3">
-                            <div class="form-group">
-                                <label for="" id="label_potongan">Max Harga Potongan : </label>
-                                <input type="number" class="form-control" potongan=""
-                                    name="potongan" id="potongan" onkeyup="change_harga();" required
-                                    value="0">
-                            </div>
-                        </div>
-
-                        <div class="col-3">
-                            <div class="form-group">
-                                <label for="" id="label_tambahan">Max Harga Tambahan : </label>
-                                <input type="number" class="form-control" tambahan=""
-                                    name="tambahan" id="tambahan" onkeyup="change_harga();" required
-                                    value="0">
-                            </div>
-                        </div>
-
-                        <div class="col-3">
-                            <div class="form-group">
-                                <label for="" id="label_manual">Input Harga Manual : </label>
-                                <input type="number" class="form-control" 
-                                    name="manual" id="manual" onkeyup="change_harga();" required
-                                    value="0">
-                            </div>
-                        </div>
-
-                        <div class="col-3">
-                            <div class="form-group">
-                                <label for="">Harga : </label>
-                                <input type="hidden" name="harga_awal" id="harga_awal">
-                                <input type="hidden" name="harga" id="harga">
-                                <input type="text" class="form-control" name="harga_label" id="harga_label"
-                                    value="0" readonly>
-                            </div>
-                        </div>
-
-                        
-
-                        <div class="col-12 mt-5">
-                            <table class="invoice-table" id="invoice-table" style="display: none;">
-                                <thead>
-                                    <tr>
-                                        <th>Img</th>
-                                        <th>Kode</th>
-                                        <th>Jenis</th>
-                                        <th>Deskripsi</th>
-                                        <th>Berat</th>
-                                        <th>Harga</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><img id="t_image" src="./storage/uploads/1742774180.png" order="0"
-                                                width="70" class="img-thumbnail"></td>
-                                        <td id="t_kode">Emas Dummy</td>
-                                        <td id="t_jenis">Emas Antam</td>
-                                        <td id="t_desc">Gold 1 ml Ruth</td>
-                                        <td id="t_berat">1 g</td>
-                                        <td id="t_harga">Rp. 9.999.999</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <br>
-                    <button type="button" class="btn btn-sm btn-success" id="btn_submit" style="display: none;">Submit</button>
-                    <button type="submit" class="btn btn-sm btn-success" form="tukar-product-form">
-                </form>
+    
+                        <br>
+                        <button type="button" class="btn btn-sm btn-success" id="btn_submit" style="display: none;">Submit</button>
+                        <button type="submit" class="btn btn-sm btn-success" form="tukar-product-form">
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -385,10 +596,50 @@
 
 @push('page_scripts')
 <script src="{{ asset('js/jquery-mask-money.js') }}"></script>
+<script src="{{ asset('js/dropzone.js') }}"></script>
+
 
 <!-- Bootstrap JS (with Popper) – CDN version -->
 <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AHR5oKn06PWzGk+E9Y1kCfmhktbZ5d9+8wCjUY8H7Sk/9kccB+ApPBALSczF+" crossorigin="anonymous"></script> -->
     <script> 
+
+    function addProductLuarToCart(data) {
+    const previewArea = $('#preview-area');
+
+    const newItem = `
+        <div class="border-bottom pb-2 mb-2 preview-item tukar-item">
+            <div class="row align-items-center">
+                <div class="col-2">
+                    <h6 class="mb-0 small text-danger">${data.product_name}</h6>
+                    <small>${data.product_desc || ''}</small>
+                </div>
+                <div class="col-3">
+                    <small>Potongan: <strong>- ${data.harga}</strong></small>
+                </div>
+                <div class="col-2">
+                    <input type="number" name="diskon[]" class="form-control form-control-sm" value="0" readonly>
+                </div>
+                <div class="col-2">
+                    <input type="number" name="ongkos[]" class="form-control form-control-sm" value="0" readonly>
+                </div>
+                <div class="col-2">
+                    <input type="number" name="harga[]" class="form-control form-control-sm tukar-harga"
+                           data-original-harga="${data.harga}" value="${data.harga}" readonly>
+                </div>
+                <div class="col-1 text-end">
+                    <button type="button" class="btn btn-sm btn-outline-danger btn-delete-current">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    previewArea.append(newItem);
+    sum_harga(); // recalc total
+}
+
+
 
     function change_harga() {
             let awal = parseInt($("#harga_awal").val()) || 0;
@@ -519,11 +770,107 @@
             }
         }
 
+        function gencode(number) {
+            console.log(number);
+            let rand = Math.floor(Math.random() * 1000);
+            let group = $('#group_' + number).find('option:selected').text();
+            group = group.substring(0, 1);
+            let categoryCode = $('#product_category_' + number).find('option:selected').attr('code');
+
+            let karat = $('#karat_' + number).find('option:selected').text();
+            karat = karat.split('|')[0]?.trim();
+            let date = new Date();
+            let formattedDate = ("0" + date.getDate()).slice(-2) + ("0" + (date.getMonth() + 1)).slice(-2) + date
+                .getFullYear().toString().slice(-2);
+            let temp_code = categoryCode + karat + formattedDate + rand;
+            $("#temp_code").val(temp_code);
+
+            const now = new Date();
+
+            const datePart = now.toISOString().split('T')[0]; // "2025-06-18"
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+
+            const formatted = `${datePart} ${hours}.${minutes}`;
+            const input = formatted.replace(/[-.:\s]/g, '');
+
+            console.log(formatted);
+
+            let code = 'BL' + input;
+            $("#code_" + number).val(code);
+        }
+
     $(document).ready(function() {
         $('#customer_modal').select2({
             dropdownParent: $('#confirmProductModal'),
             placeholder: "Pilih Customer",
             allowClear: true
+        });
+        $('#product_category_0').select2({
+            dropdownParent: $('#tukar'),
+            placeholder: "Pilih kategori produk",
+            allowClear: true
+        });
+
+        $('#model_0').select2({
+            dropdownParent: $('#tukar'),
+            placeholder: "Pilih Model",
+            allowClear: true
+        });
+
+        $('#karat_0').select2({
+            dropdownParent: $('#tukar'),
+            placeholder: "Pilih Karat",
+            allowClear: true
+        });
+
+        $('#group_0').select2({
+            dropdownParent: $('#tukar'),
+            placeholder: "Pilih Group",
+            allowClear: true
+        });
+
+        $('#productForm').on('submit', function(e) {
+            e.preventDefault();
+
+            let formData = new FormData(this);
+
+            const productName  = $('#product_category_0 option:selected').text();
+            const modelName    = $('#model_0 option:selected').text();
+            const karat        = $('#karat_0 option:selected').text();
+            const group        = $('#group_0 option:selected').text();
+            const code         = $('#code_0').val();
+            const harga        = $('#harga_0').val();
+            const keterangan   = $('#keterangan_0').val();
+            const berat        = $('#berat_0').val();
+
+            $.ajax({
+                url: $(this).attr('action'),
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(res) {
+                    // ✅ after insert success, add to cart preview
+                    addProductLuarToCart(
+                        {
+                            product_name: productName,
+                            product_desc: `${modelName} - ${karat} - ${group} - ${keterangan}`,
+                            harga: harga,
+                            code: code,
+                            berat: berat
+                        }
+                    );
+
+                    // reset form + close modal
+                    $('#productForm')[0].reset();
+                    // $('#tukar').modal('hide');
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                    alert('Gagal menyimpan Produk Luar');
+                }
+            });
         });
     });
     
@@ -891,7 +1238,7 @@
     .container()
     .appendTo("#buttons"); 
     
-    function sum_harga(){
+    function sum_harga_old(){
         let total = 0;
 
         $('input[name="harga[]"]').each(function () {
@@ -905,6 +1252,25 @@
         // Format and update total display
         $('#total-nominal').text(`Rp ${formatRupiah(total)}`);
     }
+
+    function sum_harga() {
+    let total = 0;
+
+    // loop all harga inputs
+    $('input[name="harga[]"]').each(function () {
+        const value = parseFloat($(this).val());
+        if (isNaN(value)) return;
+
+        if ($(this).hasClass('tukar-harga')) {
+            total -= value; // subtract tukar tambah item
+        } else {
+            total += value; // add normal item
+        }
+    });
+
+    // Format and update total display
+    $('#total-nominal').text(`Rp ${formatRupiah(total)}`);
+}
 
     function sum_diskon() {
         const ongkosInputs = document.querySelectorAll('input[name="ongkos[]"]');
@@ -1187,81 +1553,6 @@
             });
             window.addEventListener('showCheckoutModal', event => {
                 $('#checkoutModal').modal('show');
-
-                // $('#paid_amount').maskMoney({
-                //     prefix:'{{ settings()->currency->symbol }}',
-                //     thousands:'{{ settings()->currency->thousand_separator }}',
-                //     decimal:'{{ settings()->currency->decimal_separator }}',
-                //     allowZero: false,
-                //     precision: 0,
-                // });  
-
-                // $('#discount').maskMoney({
-                //     prefix:'{{ settings()->currency->symbol }}',
-                //     thousands:'{{ settings()->currency->thousand_separator }}',
-                //     decimal:'{{ settings()->currency->decimal_separator }}',
-                //     allowZero: false,
-                //     precision: 0,
-
-                // });
-
-                // $('#total_amount').maskMoney({
-                //     prefix:'{{ settings()->currency->symbol }}',
-                //     thousands:'{{ settings()->currency->thousand_separator }}',
-                //     decimal:'{{ settings()->currency->decimal_separator }}',
-                //     precision: 0,
-                //     allowZero: false,
-                // });
-
-                //  $('#grand_total').maskMoney({
-                //     prefix:'{{ settings()->currency->symbol }}',
-                //     thousands:'{{ settings()->currency->thousand_separator }}',
-                //     decimal:'{{ settings()->currency->decimal_separator }}',
-                //     allowZero: true,
-                //     precision: 0,
-                // });
-                 
-                //  $('#final').maskMoney({
-                //     prefix:'{{ settings()->currency->symbol }}',
-                //     thousands:'{{ settings()->currency->thousand_separator }}',
-                //     decimal:'{{ settings()->currency->decimal_separator }}',
-                //     allowZero: true,
-                //     precision: 0,
-                // });
-
-                //  $('#input_tunai').maskMoney({
-                //     prefix:'{{ settings()->currency->symbol }}',
-                //     thousands:'{{ settings()->currency->thousand_separator }}',
-                //     decimal:'{{ settings()->currency->decimal_separator }}',
-                //     allowZero: true,
-                //     precision: 0,
-                // });
-
-                //  $('#input_cicilan').maskMoney({
-                //     prefix:'{{ settings()->currency->symbol }}',
-                //     thousands:'{{ settings()->currency->thousand_separator }}',
-                //     decimal:'{{ settings()->currency->decimal_separator }}',
-                //     allowZero: true,
-                //     precision: 0,
-                // });
-
-
-                // $('#paid_amount').maskMoney('mask');
-                // $('#total_amount').maskMoney('mask');
-                // $('#grand_total').maskMoney('mask');
-                // $('#discount').maskMoney('mask');
-                // $('#final').maskMoney('mask');
-
-                // $('#checkout-form').submit(function () {
-                //     var paid_amount = $('#paid_amount').maskMoney('unmasked')[0];
-                //     $('#paid_amount').val(paid_amount);
-
-                //     var total_amount = $('#total_amount').maskMoney('unmasked')[0];
-                //     $('#total_amount').val(total_amount); 
-
-                //     var discount = $('#discount').maskMoney('unmasked')[0];
-                //     $('#discount').val(discount);
-                // });
             });
             window.addEventListener('cart:empty', event => {
                 toastr.error(event.detail.message);
@@ -1270,6 +1561,134 @@
                 toastr.error(event.detail.message);
             });
         });
+
+        // WEBCAM
+
+        var uploadedDocumentMap = {}
+        Dropzone.options.documentDropzone = {
+            url: "{{ route('dropzone.upload') }}",
+            maxFilesize: 1,
+            acceptedFiles: '.jpg, .jpeg, .png',
+            maxFiles: 1,
+            addRemoveLinks: true,
+            dictRemoveFile: "<i class='bi bi-x-circle text-danger'></i> remove",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            success: function(file, response) {
+                console.log('uploaded');
+                $('form').append('<input type="hidden" name="document[]" value="' + response.name + '">');
+                uploadedDocumentMap[file.name] = response.name;
+                Livewire.emit('imageUploaded', response.name);
+                console.log(response.name);
+            },
+            removedfile: function(file) {
+                file.previewElement.remove();
+                var name = '';
+                if (typeof file.file_name !== 'undefined') {
+                    name = file.file_name;
+                } else {
+                    name = uploadedDocumentMap[file.name];
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('dropzone.delete') }}",
+                    data: {
+                        '_token': "{{ csrf_token() }}",
+                        'file_name': `${name}`
+                    },
+                });
+                $('form').find('input[name="document[]"][value="' + name + '"]').remove();
+                Livewire.emit('imageRemoved', name);
+            },
+            init: function() {
+                @if (isset($product) && $product->getMedia('pembelian'))
+                    var files = {
+                        !!json_encode($product - > getMedia('pembelian')) !!
+                    };
+                    for (var i in files) {
+                        var file = files[i];
+                        this.options.addedfile.call(this, file);
+                        this.options.thumbnail.call(this, file, file.original_url);
+                        file.previewElement.classList.add('dz-complete');
+                        $('form').append('<input type="hidden" name="document[]" value="' + file.file_name + '">');
+                    }
+                @endif
+            }
+        }
+
+        window.addEventListener('webcam-image:remove', event => {
+            $('#imageprev0').attr('src', '');
+        });
+        window.addEventListener('uploaded-image:remove', event => {
+            Dropzone.forElement("div#document-dropzone").removeAllFiles(true);
+        });
+        $('#up1').change(function() {
+            $('#upload2').toggle();
+            $('#upload1').hide();
+        });
+        $('#up2').change(function() {
+            $('#upload1').toggle();
+            $('#upload2').hide();
+        });
+
+        function configure() {
+            Webcam.set({
+                width: 340,
+                height: 230,
+                autoplay: false,
+                image_format: 'jpeg',
+                jpeg_quality: 90,
+                force_flash: false
+            });
+            Webcam.attach('#camera');
+            $("#camera").attr("style", "display:block")
+            $('#hasilGambar').addClass('d-none');
+            $('#Start').addClass('d-none');
+            $('#snap').removeClass('d-none');
+        }
+        // preload shutter audio clip
+        var shutter = new Audio();
+        shutter.autoplay = false;
+        shutter.src = navigator.userAgent.match(/Firefox/) ? asset('js/webcamjs/shutter.ogg') : asset(
+            'js/webcamjs/shutter.mp3');
+
+        function take_snapshot() {
+            // play sound effect
+            shutter.play();
+            // take snapshot and get image data
+            Webcam.snap(function(data_uri) {
+                $(".image-tag").val(data_uri);
+                $("#camera").attr("style", "display:none")
+                $('#hasilGambar').removeClass('d-none').delay(5000);
+                document.getElementById('hasilGambar').innerHTML =
+                    '<img class="border-2 border-dashed border-yellow-600 rounded-xl" id="imageprev" src="' +
+                    data_uri + '"/><span class="absolute bottom-1 text-white right-4">Capture Sukses..!! </span>';
+                $('#snap').addClass('d-none');
+                $('#Start').removeClass('d-none');
+
+
+            });
+            Webcam.reset();
+        }
+
+        function reset() {
+            Webcam.reset();
+            alert('off');
+        }
+
+        function saveSnap() {
+            // Get base64 value from <img id='imageprev'> source
+            var base64image = document.getElementById("imageprev").src;
+
+            Webcam.upload(base64image, 'upload.php', function(code, text) {
+                console.log('Save successfully');
+                //console.log(text);
+            });
+
+        }
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.25/webcam.min.js"></script>
+
 
 @endpush

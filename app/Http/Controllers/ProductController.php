@@ -208,6 +208,105 @@ class ProductController extends Controller
         // return redirect()->action([ProductController::class, 'list_luar']);
     }
 
+    public function insert_luar_sale(Request $request)
+    {
+        $doc    = isset($request['document'][0]) ? $request['document'][0] : '';
+        if(empty($doc) && empty($request['webcam'])){
+            toast('Image Required', 'error');
+            return redirect()->back();
+        }
+        $gam                     = $this->getUploadedImage($request['webcam'], $doc);
+        if(!empty($gam)){
+            $gambar = $gam;
+        }
+        $berat  = str_replace(',', '.', $request->new_product_berat);
+        $berat  = (float)$berat;
+
+        $i = 0;
+        $group  = Group::where('id', $request->new_product_group_id)->first();
+        $group_name = $group->name;
+        $model  = ProdukModel::where('id', $request->new_product_model_id)->first();
+        $model_name = $model->name;
+        $product_name   = $group_name.' '.$model_name;
+        $product    = Product::create([
+            'category_id'       => $request->new_product_category_id,
+            'product_code'       => $request->new_product_code_id,
+            'temp_code'       => $request->temp_code,
+            'product_name'       => $product_name,
+            'product_price'       => $request->new_product_harga,
+            'product_barcode_symbology'       => 'C128',
+            'product_unit'       => 'Gram',
+            'product_stock_alert'       => 5,
+            'status'       => 3,
+            'images'       => $gam,
+            'berat_emas'       => $berat,
+            'status_id'       => 3,
+            'karat_id'       => $request->new_product_karat_id,
+            'group_id'       => $request->new_product_group_id,
+            'model_id'       => $request->new_product_model_id,
+            'goodreceipt_item_id' => 0,
+            'is_nota' => false,
+        ]);
+
+        $productItem    = ProductItem::create([
+            'product_id'       => $product->id,
+            // 'berat_total'       => $request->new_product_total_weight,
+            'berat_total'       => $berat,
+            // 'berat_emas'       => $request->new_product_gold_weight,
+            'berat_emas'       => $berat,
+            // 'berat_accessories'       => $request->new_product_accessories_weight,
+            'berat_accessories'       => 0,
+            'tag_label'       => 0,
+            'berat_label'       => 0,
+        ]);
+        $payment    = $request->payment;
+        $nota   = 'BL-LUV-'.date('ymd').rand(100, 999);
+        $product_history = ProductHistories::create([
+            'product_id'    => $product->id,
+            'status'        => 'L',
+            'keterangan'    => $payment.' | Nota BL : '.$nota.' | '.$request->new_product_keterangan,
+            'harga'         => $request->new_product_harga,
+            'tanggal'       => date('Y-m-d'),
+        ]);
+
+        // MODAL START
+        if($payment == 'cash'){ // if cash
+            $modal      = Modal::where('status', 'A')->first();
+            if($modal){
+                $cash_out   = $modal->cash_out;
+                $current    = $modal->current;
+                $modal->cash_out= $cash_out+$request->new_product_harga;
+                $modal->current = $current-$request->new_product_harga;
+                $modal->save();
+                
+                $modalData  = ModalData::create([
+                    'modal_id' => $modal->id,
+                    'type'  => 'luar',
+                    'nominal' => $request->new_product_harga,
+                    'from' => 'kasir'
+                ]);
+            }
+        }
+        // MODAL END
+
+        $luar   = array();
+        $luar['nota']   = $nota;
+        $luar['name']   = $product_name;
+        $luar['code']   = $request->new_product_code_id;
+        $luar['berat']   = $berat;
+        $luar['harga']   = $request->new_product_harga;
+        $luar['payment']   = ucfirst($payment);
+
+        return view(
+            'products.struk', // Path to your create view file
+            compact(
+                'luar',
+            )
+        );
+
+        // return redirect()->action([ProductController::class, 'list_luar']);
+    }
+
     public function print_struk($id)
     {
         $history = ProductHistories::where('product_id', $id)

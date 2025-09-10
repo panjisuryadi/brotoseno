@@ -358,6 +358,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/products_insert_luar', 'ProductController@insert_luar')
         ->name('products.insert_luar');
 
+    Route::post('/products/insert_luar_sale', 'ProductController@insert_luar_sale')
+        ->name('products.insert_luar_sale');
+
     Route::post('/products_insert_nota', 'ProductController@insert_nota')
         ->name('products.insert_nota');
 

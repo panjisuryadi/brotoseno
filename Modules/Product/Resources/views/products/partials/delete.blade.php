@@ -14,7 +14,7 @@
 @if($data->status == 2 || $data->status == 10 || $data->status == 15)
 
 @else
-<button class="btn btn-outline-danger btn-sm" onclick="openPasswordModal2(event, '{{ $data->id }}')">
+<button class="btn btn-outline-danger btn-sm" onclick="openPasswordModal2(event, '{{ $data->id }}', '{{ $data->product_code }}', '{{ $data->images }}')">
     <i class="bi bi-trash"></i>
 </button>
 @endif
@@ -197,24 +197,35 @@ data-toggle="tooltip"
         <form action="./products/delete/{{$data->id}}" id="delete_form" method="post">
             @csrf
             @method('DELETE')
+            <input type="hidden" name="id" id="delete-id">
             <div class="modal-header">
               <h5 class="modal-title" id="passwordModalLabel">Confirm Deletion</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <label for="delete-password" class="form-label">Enter password to confirm:</label>
-              <div class="row">
-                <div class="col-9">
-                    <input type="password" id="delete-password" class="form-control" placeholder="Password">
+                <div class="row">
+                    <div class="col-6">
+                        <h2 class="text-primary" id="label_code"></h2>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-0 object-center">
+                            <img id="product_image" src="{{ url('images/fallback_product_image.png') }}" width="175" class="img-thumbnail"/>
+                        </div>
+                    </div>
+                </div>
+                <label for="delete-password" class="form-label mt-5">Enter password to confirm:</label>
+                <div class="row">
+                    <div class="col-9">
+                        <input type="password" id="delete-password" class="form-control" placeholder="Password">
 
+                    </div>
+                    <div class="col-3">
+                        <button type="button" class="btn btn-sm position-absolute top-50 end-0 translate-middle-y me-2 border-0 bg-transparent p-0" onclick="togglePassword()" tabindex="-1">
+                            <i id="eye-icon" class="bi bi-eye-fill text-secondary"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="col-3">
-                    <button type="button" class="btn btn-sm position-absolute top-50 end-0 translate-middle-y me-2 border-0 bg-transparent p-0" onclick="togglePassword()" tabindex="-1">
-                        <i id="eye-icon" class="bi bi-eye-fill text-secondary"></i>
-                    </button>
-                </div>
-              </div>
-              <div id="password-error" class="text-danger mt-2 d-none">Wrong password!</div>
+                <div id="password-error" class="text-danger mt-2 d-none">Wrong password!</div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -301,13 +312,41 @@ data-toggle="tooltip"
         }
     }
 
-    function openPasswordModal2(event, id) {
-        event.preventDefault();
-        deleteFormId = 'destroy' + id;
+    function openPasswordModal2(event, id, code, imagePath) {
+        console.log(id);
+        console.log(code);
+        console.log(imagePath);
+        document.getElementById('delete_form').action = "./products/delete/" + id;
+
+        // Update hidden input
+        document.getElementById('delete-id').value = id;
+
+        // Update product code label
+        document.getElementById('label_code').innerText = code;
+
+        // Reset password field
         document.getElementById('delete-password').value = '';
+
+        // Hide error
         document.getElementById('password-error').classList.add('d-none');
+
+        // Update image (if passed)
+        if (imagePath) {
+            console.log('storage/uploads/'+imagePath);
+            document.getElementById('product_image').src = 'storage/uploads/'+imagePath;
+        }
+
+        // Show modal
         let modal = new bootstrap.Modal(document.getElementById('passwordModal'));
         modal.show();
+
+        // event.preventDefault();
+        // deleteFormId = 'destroy' + id;
+        // document.getElementById('label_code').html = code;
+        // document.getElementById('delete-password').value = '';
+        // document.getElementById('password-error').classList.add('d-none');
+        // let modal = new bootstrap.Modal(document.getElementById('passwordModal'));
+        // modal.show();
     }
 
     function confirmPasswordAndDelete() {

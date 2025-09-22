@@ -177,7 +177,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/sale/print', 'JualController@print')
         ->name('sale.print');
 
-
     Route::get('/dashboard', 'DashboardController@list')
         ->name('dashboard.index');
 
@@ -214,6 +213,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::put('/profile/update', 'ProfileController@update')
         ->name('profile.update');
 
+    Route::get('/tenant', 'TenantController@list')
+        ->name('tenant.index');
+
+    Route::get('/tenant/index_data', 'TenantController@index_data')
+        ->name('tenant.index_data');
+    
     Route::get('/webcam', 'WebcamController@list')
         ->name('webcam.index');
 
@@ -424,20 +429,38 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/lm', 'KaratController@list_lm')
         ->name('lm.list');
 
+    Route::get('/silver', 'KaratController@list_silver')
+        ->name('silver.list');
+
     Route::get('/index_lm', 'KaratController@index_lm')
         ->name('lm.index');
+
+    Route::get('/index_silver', 'KaratController@index_silver')
+        ->name('silver.index');
 
     Route::get('/edit_lm', 'KaratController@edit_lm')
         ->name('lm.edit');
 
+    Route::get('/edit_silver', 'KaratController@edit_silver')
+        ->name('silver.edit');
+
     Route::post('/insert_lm', 'KaratController@insert_lm')
         ->name('lm.insert');
 
+    Route::post('/insert_silver', 'KaratController@insert_silver')
+        ->name('silver.insert');
+
     Route::patch('/update_lm', 'KaratController@update_lm')
         ->name('lm.update');
+
+    Route::patch('/update_silver', 'KaratController@update_silver')
+        ->name('silver.update');
     
     Route::delete('/delete_lm', 'KaratController@delete_lm')
         ->name('lm.delete');
+
+    Route::delete('/delete_silver', 'KaratController@delete_silver')
+        ->name('silver.delete');
 
     Route::get('/discounts', 'KaratController@list_diskon')
         ->name('discounts.list');

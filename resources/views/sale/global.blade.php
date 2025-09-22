@@ -82,6 +82,9 @@
                                             Pemasukan LM
                                         </th>
                                         <th style="width: 15%!important;" class="text-center">
+                                            Pemasukan Silver
+                                        </th>
+                                        <th style="width: 15%!important;" class="text-center">
                                             Pemasukan Perhiasan
                                         </th>
                                         <th style="width: 15%!important;" class="text-center">
@@ -197,6 +200,10 @@
                     {
                         data: 'pemasukan_lm',
                         name: 'pemasukan_lm'
+                    },
+                    {
+                        data: 'pemasukan_silver',
+                        name: 'pemasukan_silver'
                     },
                     {
                         data: 'pemasukan_perhiasan',

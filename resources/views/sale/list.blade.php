@@ -23,6 +23,12 @@
     padding-top: 0.3rem;
 }
 
+/* This targets the visible Select2 box */
+.select2-container {
+    width: 350px !important;  /* or any size / 100% */
+}
+
+
 </style>
 @endpush
 
@@ -340,7 +346,7 @@
                                         ?>
                                         <label for="{{ $field_name }}" class="form-label d-block">{{ $field_lable }}</label>
                                         <select class="form-control select2 @error($field_name) is-invalid @enderror"
-                                            name="{{ $field_name }}" id="{{ $field_id }}" required>
+                                            name="{{ $field_name }}" id="{{ $field_id }}" style="width: 100% !important ;" required>
                                             <option value="" selected disabled>Pilih Model</option>
                                             @foreach ($models as $model)
                                                 <option value="{{ $model->id }}">
@@ -813,6 +819,10 @@
         });
 
         $('#model_0').select2({
+            // width: '300px',
+            // width: 'resolve',
+            width: '350px',  
+            // width: '100%',
             dropdownParent: $('#tukar'),
             placeholder: "Pilih Model",
             allowClear: true
@@ -1500,6 +1510,12 @@
         const berat       = data.berat_emas;
         let   harga       = Math.ceil(roundPersen*berat / 1000) * 1000;
         if(type == 'LM'){
+            // let result = value.split(",")[0];
+            harga   = har.split(",")[0];
+            harga   = harga.split(".")[0];
+        }
+
+        if(type == 'SILVER'){
             // let result = value.split(",")[0];
             harga   = har.split(",")[0];
             harga   = harga.split(".")[0];

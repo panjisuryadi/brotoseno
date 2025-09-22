@@ -600,6 +600,7 @@ class GoodReceiptController extends Controller
             'images'                     => $this->getUploadedImage($input['document'][0], $input['document'][0])
         ]);
         $goodsreceipt_id = $goodsreceipt->id;
+        // exit();
         $this->_saveTipePembelian($input, $goodsreceipt_id);
         $this->_saveGoodsReceiptItem($products, $goodsreceipt, $kategori_produk_id);
         return redirect('/goodsreceipt');

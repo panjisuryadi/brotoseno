@@ -1504,7 +1504,7 @@ class GenerateMenus
 
             //////////start menu
             // REPORT - PENJUALAN UNIT
-            $jual->add('<i class="c-sidebar-nav-icon bi-tags"></i> ' . __('Unit Sales') . '', [
+            $jual->add('<i class="c-sidebar-nav-icon bi-tags" onclick="openPasswordModal(event, \'' . route('karats.list') . '\');"></i> ' . __('Unit Sales') . '', [
                 'route' => 'sales-unit-report.index',
                 'class' => 'nav-item',
             ])
@@ -1515,6 +1515,7 @@ class GenerateMenus
                 ])
                 ->link->attr([
                     'class' => 'c-sidebar-nav-link',
+                    'onclick' => "openPasswordModal(event, '" . route('sales-unit-report.index') . "')",
                 ]);
 
             $jual->add('<i class="c-sidebar-nav-icon bi-tags"></i> ' . __('Global') . '', [
@@ -1937,6 +1938,23 @@ class GenerateMenus
                 ->link->attr([
                     'class' => 'c-sidebar-nav-link py-2',
                     'onclick' => "openPasswordModal(event, '" . route('lm.list') . "')",
+                ]);
+
+            $Parameters->add(
+                '<i class="c-sidebar-nav-icon bi bi-dot text-sm" onclick="openPasswordModal(event, \'' . route('silver.list') . '\');"></i> ' . __('Silver'),
+                [
+                    'route' => 'silver.list',
+                    'class' => 'nav-item',
+                ]
+            )
+                ->data([
+                    'order'         => 3,
+                    'activematches' => ['karats*'],
+                    'permission'    => ['access_karats'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link py-2',
+                    'onclick' => "openPasswordModal(event, '" . route('silver.list') . "')",
                 ]);
 
 
@@ -2956,7 +2974,34 @@ class GenerateMenus
             //     ]);
 
 
+            $tenant = $menu->add('<i class="c-sidebar-nav-icon mb-1 bi bi-gear"></i>' . __('Tenant') . '', [
+                'class' => 'c-sidebar-nav-dropdown',
+            ])
+                ->data([
+                    'order'         => 90,
+                    'activematches' => [
+                        'currencies*',
 
+                    ],
+                    'permission'    => ['access_currencies', 'access_settings'],
+                ]);
+            $tenant->link->attr([
+                'class' => 'c-sidebar-nav-dropdown-toggle',
+                'href'  => '#',
+            ]);
+
+            $tenant->add('<i class="c-sidebar-nav-icon bi bi-sliders"></i> ' . __('List Tenant') . '', [
+                'route' => 'tenant.index',
+                'class' => 'nav-item',
+            ])
+            ->data([
+                'order'         => 91,
+                'activematches' => 'settings*',
+                'permission'    => ['access_settings'],
+            ])
+            ->link->attr([
+                'class' => 'c-sidebar-nav-link',
+            ]);
 
 
 

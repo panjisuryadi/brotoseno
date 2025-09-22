@@ -41,24 +41,16 @@ data-toggle="tooltip"
 
 <div class="btn-group">
     <!-- edit_modal(id, image, category, model, group, karat, berat, baki) -->
-    <a href="#" class="px-3 btn btn-sm btn-warning" data-toggle="modal" data-target="#editModal" 
-    onclick="edit_modal(
-        {{ $data->id }},
-        '{{ $data->images }}',
-        '{{ $data->category->id ?? '' }}',
-        '{{ $data->model->id ?? '' }}',
-        '{{ $data->group->id ?? '' }}',
-        '{{ $data->karat->id ?? '' }}',
-        '{{ $data->berat_emas }}',
-        '{{ $data->baki->id ?? '' }}'
+    <a href="#" class="px-3 btn btn-sm btn-info" data-toggle="modal" data-target="#detailModal" onclick="edit_product(
+    {{ $data->id }},
+    '{{ $data->category->id ?? '' }}',
+    '{{ $data->model->id ?? '' }}',
+    '{{ $data->karat->id ?? '' }}',
+    '{{ $data->group->id ?? '' }}',
+    '{{ $data->product_code ?? '' }}',
+    '{{ $data->berat_emas }}',
+    '{{ $data->baki->id ?? '' }}'
     );">
-        <i class="bi bi-pencil"></i>
-    </a>
-</div>
-
-<div class="btn-group">
-    <!-- edit_modal(id, image, category, model, group, karat, berat, baki) -->
-    <a href="#" class="px-3 btn btn-sm btn-info" data-toggle="modal" data-target="#detailModal" >
         <i class="bi bi-pencil"></i>
     </a>
 </div>

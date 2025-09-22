@@ -1460,6 +1460,7 @@ class JualController extends Controller
         foreach($luars as $b){
             $buyback                = 0;
             $pemasukan_lm           = 0;
+            $pemasukan_silver       = 0;
             $pemasukan_perhiasan    = 0;
             $barang_luar            = 0;
             $cash                   = 0;
@@ -1502,6 +1503,7 @@ class JualController extends Controller
             $data[$number]['berat'] = $b->berat_emas;
             $data[$number]['karat'] = $b->name;
             $data[$number]['pemasukan_lm'] = $pemasukan_lm;
+            $data[$number]['pemasukan_silver'] = $pemasukan_silver;
             $data[$number]['pemasukan_perhiasan'] = $pemasukan_perhiasan;
             $data[$number]['buyback'] = $buyback;
             $data[$number]['barang_luar'] = $b->product_price;
@@ -1521,6 +1523,7 @@ class JualController extends Controller
 
         foreach($buybacks as $b){
             $pemasukan_lm           = 0;
+            $pemasukan_silver       = 0;
             $pemasukan_perhiasan    = 0;
             $barang_luar            = 0;
             $cash                   = 0;
@@ -1542,6 +1545,7 @@ class JualController extends Controller
             $data[$number]['berat'] = $b->berat_emas;
             $data[$number]['karat'] = $b->name;
             $data[$number]['pemasukan_lm'] = $pemasukan_lm;
+            $data[$number]['pemasukan_silver'] = $pemasukan_silver;
             $data[$number]['pemasukan_perhiasan'] = $pemasukan_perhiasan;
             $data[$number]['buyback'] = $b->harga;
             $data[$number]['barang_luar'] = $barang_luar;
@@ -1559,6 +1563,7 @@ class JualController extends Controller
 
         foreach($poss as $b){
             $pemasukan_lm           = 0;
+            $pemasukan_silver       = 0;
             $pemasukan_perhiasan    = 0;
             $buyback                = 0;
             $barang_luar            = 0;
@@ -1595,7 +1600,11 @@ class JualController extends Controller
             $barang   = $b->product_code;
             if($b->category_code == 'LM'){
                 $pemasukan_lm   = $b->total;
-            }else{
+            }
+            elseif($b->category_code == 'SILVER'){
+                $pemasukan_silver   = $b->total;
+            }
+            else{
                 $pemasukan_perhiasan    = $b->total;
             }
             if($b->product == 0){
@@ -1611,6 +1620,7 @@ class JualController extends Controller
             $data[$number]['berat'] = $b->berat_emas;
             $data[$number]['karat'] = $b->name;
             $data[$number]['pemasukan_lm'] = $pemasukan_lm;
+            $data[$number]['pemasukan_silver'] = $pemasukan_silver;
             $data[$number]['pemasukan_perhiasan'] = $pemasukan_perhiasan;
             $data[$number]['buyback'] = $buyback;
             $data[$number]['barang_luar'] = $barang_luar;
@@ -1641,6 +1651,9 @@ class JualController extends Controller
             })
             ->editColumn('pemasukan_lm', function ($data) {
                 return number_format($data['pemasukan_lm']);
+            })
+            ->editColumn('pemasukan_silver', function ($data) {
+                return number_format($data['pemasukan_silver']);
             })
             ->editColumn('pemasukan_perhiasan', function ($data) {
                 return number_format($data['pemasukan_perhiasan']);
@@ -1723,6 +1736,7 @@ class JualController extends Controller
         foreach($luars as $b){
             $buyback                = 0;
             $pemasukan_lm           = 0;
+            $pemasukan_silver       = 0;
             $pemasukan_perhiasan    = 0;
             $barang_luar            = 0;
             $cash                   = 0;
@@ -1759,6 +1773,7 @@ class JualController extends Controller
             $data[$number]['berat'] = $b->berat_emas;
             $data[$number]['karat'] = $b->name;
             $data[$number]['pemasukan_lm'] = $pemasukan_lm;
+            $data[$number]['pemasukan_silver'] = $pemasukan_silver;
             $data[$number]['pemasukan_perhiasan'] = $pemasukan_perhiasan;
             $data[$number]['buyback'] = $buyback;
             $data[$number]['barang_luar'] = $b->product_price;
@@ -1774,6 +1789,7 @@ class JualController extends Controller
 
         foreach($buybacks as $b){
             $pemasukan_lm           = 0;
+            $pemasukan_silver       = 0;
             $pemasukan_perhiasan    = 0;
             $barang_luar            = 0;
             $cash                   = 0;
@@ -1795,6 +1811,7 @@ class JualController extends Controller
             $data[$number]['berat'] = $b->berat_emas;
             $data[$number]['karat'] = $b->name;
             $data[$number]['pemasukan_lm'] = $pemasukan_lm;
+            $data[$number]['pemasukan_silver'] = $pemasukan_silver;
             $data[$number]['pemasukan_perhiasan'] = $pemasukan_perhiasan;
             $data[$number]['buyback'] = $b->harga;
             $data[$number]['barang_luar'] = $barang_luar;
@@ -1812,6 +1829,7 @@ class JualController extends Controller
 
         foreach($poss as $b){
             $pemasukan_lm           = 0;
+            $pemasukan_silver       = 0;
             $pemasukan_perhiasan    = 0;
             $buyback                = 0;
             $barang_luar            = 0;
@@ -1848,7 +1866,11 @@ class JualController extends Controller
             $barang   = $b->product_code;
             if($b->category_code == 'LM'){
                 $pemasukan_lm   = $b->total;
-            }else{
+            }
+            elseif($b->category_code == 'SILVER'){
+                $pemasukan_silver   = $b->total;
+            }
+            else{
                 $pemasukan_perhiasan    = $b->total;
             }
             if($b->product == 0){
@@ -1864,6 +1886,7 @@ class JualController extends Controller
             $data[$number]['berat'] = $b->berat_emas;
             $data[$number]['karat'] = $b->name;
             $data[$number]['pemasukan_lm'] = $pemasukan_lm;
+            $data[$number]['pemasukan_silver'] = $pemasukan_silver;
             $data[$number]['pemasukan_perhiasan'] = $pemasukan_perhiasan;
             $data[$number]['buyback'] = $buyback;
             $data[$number]['barang_luar'] = $barang_luar;
@@ -1903,6 +1926,7 @@ class JualController extends Controller
                 <th>Karat</th>
                 <th>Berat</th>
                 <th>Pemasukan LM</th>
+                <th>Pemasukan Silver</th>
                 <th>Pemasukan Perhiasan</th>
                 <th>Buyback</th>
                 <th>Barang Luar</th>
@@ -1918,6 +1942,7 @@ class JualController extends Controller
 
         $total_berat                = 0;
         $total_pemasukan_lm         = 0;
+        $total_pemasukan_silver     = 0;
         $total_pemasukan_perhiasan  = 0;
         $total_buyback              = 0;
         $total_barang_luar          = 0;
@@ -1946,6 +1971,7 @@ class JualController extends Controller
             echo '<td>' . htmlspecialchars($row['karat']) . '</td>';
             echo '<td align="right">' . number_format($row['berat'], 2) . '</td>';
             echo '<td align="right">Rp ' . number_format($row['pemasukan_lm'], 0, ',', '.') . '</td>';
+            echo '<td align="right">Rp ' . number_format($row['pemasukan_silver'], 0, ',', '.') . '</td>';
             echo '<td align="right">Rp ' . number_format($row['pemasukan_perhiasan'], 0, ',', '.') . '</td>';
             echo '<td align="right">Rp ' . number_format($row['buyback'], 0, ',', '.') . '</td>';
             echo '<td align="right">Rp ' . number_format($row['barang_luar'], 0, ',', '.') . '</td>';
@@ -1964,6 +1990,7 @@ class JualController extends Controller
             if($row['from'] == 'pos'){
                 $total_berat                = $total_berat+$row['berat'];
                 $total_pemasukan_lm         = $total_pemasukan_lm+$row['pemasukan_lm'];
+                $total_pemasukan_silver     = $total_pemasukan_silver+$row['pemasukan_silver'];
                 $total_pemasukan_perhiasan  = $total_pemasukan_perhiasan+$row['pemasukan_perhiasan'];
                 $total_buyback              = $total_buyback+$row['buyback'];
                 $total_barang_luar          = $total_barang_luar+$row['barang_luar'];
@@ -1976,6 +2003,7 @@ class JualController extends Controller
             }else{
                 $total_berat                = $total_berat-$row['berat'];
                 $total_pemasukan_lm         = $total_pemasukan_lm-$row['pemasukan_lm'];
+                $total_pemasukan_silver     = $total_pemasukan_silver-$row['pemasukan_silver'];
                 $total_pemasukan_perhiasan  = $total_pemasukan_perhiasan-$row['pemasukan_perhiasan'];
                 $total_buyback              = $total_buyback+$row['buyback'];
                 $total_barang_luar          = $total_barang_luar+$row['barang_luar'];
@@ -1994,6 +2022,7 @@ class JualController extends Controller
         <td colspan="6">Total</td>
         <td align="right">'.number_format($total_berat, 2).'</td>
         <td align="right">Rp '.number_format($total_pemasukan_lm, 0, ',', '.').'</td>
+        <td align="right">Rp '.number_format($total_pemasukan_silver, 0, ',', '.').'</td>
         <td align="right">Rp '.number_format($total_pemasukan_perhiasan, 0, ',', '.').'</td>
         <td align="right">Rp '.number_format($total_buyback, 0, ',', '.').'</td>
         <td align="right">Rp '.number_format($total_barang_luar, 0, ',', '.').'</td>
@@ -2527,6 +2556,9 @@ class JualController extends Controller
                 // $price  = $price*1000;
                 if(isset($data->karat->type)){
                     if($data->karat->type == 'LM'){
+                        $price  = $data->karat->harga;
+                    }
+                    elseif($data->karat->type == 'SILVER'){
                         $price  = $data->karat->harga;
                     }
                 }

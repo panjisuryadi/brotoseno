@@ -16,6 +16,7 @@ class CentralUser extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'sub',
         'kode_user',
         'password',
         'is_active',

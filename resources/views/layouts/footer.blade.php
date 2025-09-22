@@ -36,7 +36,7 @@
 </div>
 
 <!-- Password Modal -->
-<!-- <div id="passwordModal2" style="display: none; position: fixed; z-index: 9999; background: rgba(0,0,0,0.6); top: 0; left: 0; width: 100%; height: 100%;">
+<div id="passwordModal2" style="display: none; position: fixed; z-index: 9999; background: rgba(0,0,0,0.6); top: 0; left: 0; width: 100%; height: 100%;">
   <div style="background: white; width: 300px; margin: 15% auto; padding: 20px; border-radius: 5px; position: relative;">
     <h5>Enter Password</h5>
     <input type="password" id="sidebarPasswordInput2" class="form-control mb-3" placeholder="Password" />
@@ -46,32 +46,32 @@
     </div>
     <p id="passwordError2" style="color: red; display: none; font-size: 0.9em;">Incorrect password</p>
   </div>
-</div> -->
+</div>
 
 
 <script>
 let targetUrl = '';
 
-// function openPasswordModal2(event, url) {
-//     event.preventDefault();
-//     targetUrl = url;
-//     document.getElementById('passwordModal2').style.display = 'block';
-// }
+function openPasswordModal(event, url) {
+    event.preventDefault();
+    targetUrl = url;
+    document.getElementById('passwordModal2').style.display = 'block';
+}
 
-// function closePasswordModal2() {
-//     document.getElementById('passwordModal2').style.display = 'none';
-//     document.getElementById('sidebarPasswordInput2').value = '';
-//     document.getElementById('passwordError2').style.display = 'none';
-// }
+function closePasswordModal2() {
+    document.getElementById('passwordModal2').style.display = 'none';
+    document.getElementById('sidebarPasswordInput2').value = '';
+    document.getElementById('passwordError2').style.display = 'none';
+}
 
-// function verifyPassword2() {
-//     const input = document.getElementById('sidebarPasswordInput2').value;
-//     if (input === 'luvenia12345') {
-//         window.location.href = targetUrl;
-//     } else {
-//         document.getElementById('passwordError2').style.display = 'block';
-//     }
-// }
+function verifyPassword2() {
+    const input = document.getElementById('sidebarPasswordInput2').value;
+    if (input === 'luvenia12345') {
+        window.location.href = targetUrl;
+    } else {
+        document.getElementById('passwordError2').style.display = 'block';
+    }
+}
 
 function closePasswordModal() {
     document.getElementById('passwordModal').style.display = 'none';

@@ -182,6 +182,33 @@ class KaratController extends Controller
         );
     }
 
+    public function list_silver(Request $request)
+    {
+        // $harga = Harga::where('tanggal', date('Y-m-d'))->first();
+        $harga = Harga::latest()->first();
+        // echo json_encode($harga);
+        // exit();
+
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $dataKarat = Karat::whereNull('parent_id')->get();
+        return view(
+            'karats.list_silver', // Path to your create view file
+            compact(
+                'module_title',
+                'module_name',
+                'module_path',
+                'module_icon',
+                'module_model',
+                'dataKarat',
+                'harga',
+            )
+        );
+    }
+
     public function edit_lm(Request $request){
         $id = $request->id;
         $module_title = $this->module_title;
@@ -194,6 +221,25 @@ class KaratController extends Controller
         abort_if(Gate::denies('edit_'.$module_name.''), 403);
         $detail = Karat::findOrFail($id);
           return view('karats.modal_lm',
+           compact('module_name',
+            'module_action',
+            'detail',
+            'module_title',
+            'module_icon', 'module_model'));
+    }
+
+    public function edit_silver(Request $request){
+        $id = $request->id;
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+        $module_action = 'Edit';
+        abort_if(Gate::denies('edit_'.$module_name.''), 403);
+        $detail = Karat::findOrFail($id);
+          return view('karats.modal_silver',
            compact('module_name',
             'module_action',
             'detail',
@@ -289,6 +335,94 @@ class KaratController extends Controller
                         ->make(true);
     }
 
+    public function index_silver(Request $request)
+    {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        $module_action = 'List';
+        
+        $karat = Karat::where('type', 'SILVER')->latest()->get();
+        
+        return Datatables::of($karat)
+                    ->addColumn('action', function ($data) {
+                       $module_name = $this->module_name;
+                        $module_model = $this->module_model;
+                        $module_path = $this->module_path;
+                        $harga = 1000000;
+                        return view('karats.action_silver',
+                        compact('module_name', 'data', 'module_model'));
+                            })
+                         
+                        ->editColumn('karat', function($data){
+                            // $output = '';
+                            // if(is_null($data->parent_id)){
+                            //     $output = "{$data->name} {$data->kode}";
+                            // }else{
+                            //     $output = "{$data->parent->name} {$data->parent->kode} - {$data->name}";
+                            // }
+                            return '<div class="items-center text-center">
+                                            <h3 class="text-sm font-bold text-gray-800"> ' .$data->label . '</h3>
+                                    </div>';
+                             })  
+
+                ->editColumn('type', function($data){
+                            $output = '';
+                            if(is_null($data->type)){
+                                $output = ($data->parent?->type == 'SILVER')?'<span class="text-sm font-medium text-info-700">Silver</span>':'<span class="text-sm font-medium text-green-700">Perhiasan</span>';
+                            }else{
+                                $output = ($data->type == 'SILVER')?'<span class="text-sm font-medium text-info-700">Silver</span>':'<span class="text-sm font-medium text-green-700">Perhiasan</span>';
+                            }
+                       return '<div class="items-center text-center">' .$output . '</div>';
+                        }) 
+                      ->editColumn('coef', function($data){
+                            $output = '';
+                          
+                        return '<div class="items-center text-center">
+                                            <span class="text-sm font-medium text-gray-800"> ' .$data->coef . '</span>
+                                    </div>';
+
+                        })   
+                        ->editColumn('margin', function($data){
+                            return number_format($data->margin);
+                            // return '<div class="items-center text-center">
+                            //                 <h3 class="text-sm font-bold text-gray-800"> ' .number_format($data->margin) . '</h3>
+                            //         </div>';
+                            }) 
+                        
+                        ->editColumn('rekomendasi', function($data){
+                            return '<div class="items-center text-center">
+                                            <h3 class="text-sm font-bold text-gray-800"> ' .number_format(($data->coef*$data->harga)+$data->margin) . '</h3>
+                                    </div>';
+                            })
+
+                        ->editColumn('diskon', function($data){
+                            return number_format($data->diskon);
+                            })
+                      ->editColumn('ph', function($data){
+                            $output = '';
+                          
+                            return '<div class="items-center font-semibold text-center">
+                             ' .rupiah(@$data->penentuanharga->harga_emas) . '
+                             </div>';
+
+                        })
+                        ->editColumn('harga', function($data){
+                            $output = '';
+                          
+                            return '<div class="items-center font-semibold text-center">
+                             ' .rupiah($data->harga) . '
+                             </div>';
+
+                        })
+                        ->rawColumns(['karat', 'rekomendasi', 'diskon', 'action','coef','type','ph', 'harga'])
+                        ->make(true);
+    }
+
     public function insert_lm(Request $request)
     {
         $margin = 0;
@@ -316,6 +450,33 @@ class KaratController extends Controller
         return redirect()->action([KaratController::class, 'list_lm']);
     }
 
+    public function insert_silver(Request $request)
+    {
+        $margin = 0;
+        $diskon = 0;
+        $persen = 0;
+        $coef   = 0.99;
+        $type   = 'SILVER';
+        $status = 'A';
+        $name   = $request->name;
+        $kode   = $request->kode;
+        $harga  = $request->harga;
+
+        $lm    = Karat::create([
+            'coef'      => $coef,
+            'name'      => $name,
+            'kode'      => $kode,
+            'harga'     => $harga,
+            'type'      => $type,
+            'status'    => $status,
+            'margin'    => $margin,
+            'diskon'    => $diskon,
+            'persen'    => $persen,
+        ]);
+
+        return redirect()->action([KaratController::class, 'list_silver']);
+    }
+
     public function update_lm(Request $request)
     {
         $id = $request->id;
@@ -331,6 +492,21 @@ class KaratController extends Controller
         // return redirect()->action([KaratController::class, 'list_lm']);
     }
 
+    public function update_silver(Request $request)
+    {
+        $id = $request->id;
+        $kode = $request->kode;
+        $name = $request->name;
+        $harga = $request->harga;
+        $data = Karat::where('id', $id)->firstOrFail();
+        $data->kode = $kode;
+        $data->name = $name;
+        $data->harga = $harga;
+        $data->save();
+        return response()->json(['success'=>'Silver Sukses diupdate.']);
+        // return redirect()->action([KaratController::class, 'list_lm']);
+    }
+
     public function delete_lm(Request $request)
     {
         $id = $request->id;
@@ -338,6 +514,15 @@ class KaratController extends Controller
         $data->status = 'D';
         $data->save();
         return redirect()->action([KaratController::class, 'list_lm']);
+    }
+
+    public function delete_silver(Request $request)
+    {
+        $id = $request->id;
+        $data = Karat::where('id', $id)->firstOrFail();
+        $data->status = 'D';
+        $data->save();
+        return redirect()->action([KaratController::class, 'list_silver']);
     }
 
     public function list_diskon(Request $request)

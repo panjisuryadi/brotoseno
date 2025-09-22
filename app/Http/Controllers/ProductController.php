@@ -353,7 +353,7 @@ class ProductController extends Controller
         );
     }
 
-    public function update_nota(Request $request)
+    public function update_nota_old(Request $request)
     {
         $doc    = isset($request['document'][0]) ? $request['document'][0] : '';
         if(empty($doc) && empty($request['webcam'])){
@@ -441,6 +441,94 @@ class ProductController extends Controller
 
         return redirect()->action([ProductController::class, 'list_nota']);
     }
+    public function update_nota(Request $request)
+    {
+        // Check for a product ID in the request
+        if (!isset($request->product_id)) {
+            toast('Product ID is required for update.', 'error');
+            return redirect()->back();
+        }
+
+        $product = Product::find($request->product_id);
+
+        if (!$product) {
+            toast('Product not found.', 'error');
+            return redirect()->back();
+        }
+        $gam = $product->images;
+
+        $doc = isset($request['document'][0]) ? $request['document'][0] : '';
+        if (empty($doc) && empty($request['webcam']) && empty($product->images)) {
+            // toast('Image Required', 'error');
+            // return redirect()->back();
+            // dont update image
+        }
+        
+        // Handle image update only if a new one is provided
+        if (!empty($request['webcam']) || !empty($doc)) {
+            $gam = $this->getUploadedImage($request['webcam'], $doc);
+        }
+
+        $group = Group::find($request->new_product_group_id);
+        $group_name = $group ? $group->name : '';
+        $model = ProdukModel::find($request->new_product_model_id);
+        $model_name = $model ? $model->name : '';
+        $product_name = $group_name . ' ' . $model_name;
+
+        $berat = str_replace(',', '.', $request->new_product_berat);
+        $stat = 4; // pending
+        $stat_history = 'P';
+        $baki_id = $request->new_product_baki_id;
+        if (!empty($baki_id)) {
+            $baki = Baki::find($baki_id);
+            if ($baki) {
+                $posisi = $baki->posisi;
+                $stat_history = 'R';
+                if ($posisi == 'etalase') {
+                    $stat = 1;
+                }
+            }
+        } else {
+            $baki_id = 0;
+        }
+
+        // Use the `update` method instead of `create`
+        $product->update([
+            'category_id' => $request->new_product_category_id,
+            'product_code' => $request->new_product_code_id,
+            'product_name' => $product_name,
+            'karat_id' => $request->new_product_karat_id,
+            'status' => $stat,
+            'images' => $gam,
+            'berat_emas' => $berat,
+            'baki_id' => $baki_id,
+            'status_id' => $stat,
+            'group_id' => $request->new_product_group_id,
+            'model_id' => $request->new_product_model_id,
+        ]);
+
+        // Update the related `productItem`
+        $productItem = ProductItem::firstOrNew(['product_id' => $product->id]);
+        $productItem->update([
+            'berat_total' => $berat,
+            'berat_emas' => $berat,
+            'berat_accessories' => $request->new_product_accessories_weight,
+            'tag_label' => 0,
+            'berat_label' => 0,
+        ]);
+
+        // Create a new history entry for the update
+        ProductHistories::create([
+            'product_id' => $product->id,
+            'status' => $stat_history,
+            'keterangan' => $request->new_product_keterangan,
+            'harga' => 0,
+            'tanggal' => date('Y-m-d'),
+        ]);
+
+        toast('Product updated successfully!', 'success');
+        return redirect()->action([ProductController::class, 'list_nota']);
+    }
     public function insert_nota(Request $request)
     {
         // echo $gam;
@@ -463,29 +551,14 @@ class ProductController extends Controller
         $model_name = $model->name;
         $product_name   = $group_name.' '.$model_name;
 
-        // IMAGE
-        // if ($image = $request->file('image')) {
-        //     $gambar = 'products_'.date('YmdHis') . "." . $image->getClientOriginalExtension();
-        //     $normal = Image::make($image)->resize(600, null, function ($constraint) {
-        //                $constraint->aspectRatio();
-        //                })->encode();
-        //     $normalpath = 'uploads/' . $gambar;
-        //     if (config('app.env') === 'production') {$storage = 'public'; } else { $storage = 'public'; }
-        //     Storage::disk($storage)->put($normalpath, (string) $normal);
-        //     // $params['image'] = "$gambar";
-        //     $gambar = $gambar;
-        // }else{
-        //     $gambar = 'no_foto.png';
-        //     // $params['image'] = 'no_foto.png';
-        // }
-        // $gambar = 'products_20250522095614.png';
-
         $berat  = str_replace(',', '.', $request->new_product_berat);
         $stat   = 4; // pending
+        $stat_history   = 'P';
         $baki_id    = $request->new_product_baki_id;
         if(!empty($baki_id)){
             $baki   = Baki::where('id', $baki_id)->first();
             $posisi = $baki->posisi;
+            $stat_history   = 'R';
             if($posisi == 'etalase'){
                 $stat   = 1;
             }
@@ -524,7 +597,7 @@ class ProductController extends Controller
 
         $product_history = ProductHistories::create([
             'product_id'    => $product->id,
-            'status'        => 'P',
+            'status'        => $stat_history,
             'keterangan'    => $request->new_product_keterangan,
             'harga'         => 0,
             'tanggal'       => date('Y-m-d'),

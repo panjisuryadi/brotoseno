@@ -117,20 +117,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true" data-backdrop="static">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title text-lg font-bold" id="addModalLabel">Edit Product</h3>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" data-backdrop="static" data-bs-dismiss="modal">
     <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -338,6 +325,217 @@
     </div>
 </div>
 
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true" data-backdrop="static" data-bs-dismiss="modal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-lg font-bold" id="detailModalLabel">Edit Product Satuan</h3>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="detailModal_bu" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true" data-backdrop="static" data-bs-dismiss="modal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-lg font-bold" id="detailModalLabel">Edit Product Satuan</h3>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-4">
+                <form action="/products_update_nota" method="post" enctype="multipart/form-data">
+                    @csrf
+                        @php
+                        $number = 1;
+                        @endphp
+                    <input type="hidden" name="webcam" id="hasilcapture_{{$number}}">
+                    <input type="hidden" name="product_id" id="product_id">
+                    <div class="px-0 py-2">
+                                
+                                <div class="col-span-2 px-2">
+                                    <div class="flex flex-row grid grid-cols-2 gap-1">
+                                        <div class="form-group">
+                                            <div class="py-1">
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="upload" id="up2_edit" checked>
+                                                    <label class="form-check-label" for="up2_edit">Upload</label>
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="upload" id="up1_edit">
+                                                    <label class="form-check-label" for="up1_edit">Webcam</label>
+                                                </div>
+                                            </div>
+                                            {{-- Use unique Livewire keys and IDs --}}
+                                            <div id="upload2_edit" style="display: none !important;" class="align-items-center justify-content-center" wire:ignore.self>
+                                                @livewire('webcam', ['key' => 'edit-cam'], key('edit-cam'))
+                                            </div>
+                                            <div id="upload1_edit" wire:ignore.self>
+                                                <div class="form-group">
+                                                    <div class="dropzone d-flex flex-wrap align-items-center justify-content-center" id="document-dropzone_edit">
+                                                        <div class="dz-message" data-dz-message>
+                                                            <i class="bi bi-cloud-arrow-up"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @if ($errors->has('image'))
+                                                <span class="invalid feedback" role="alert">
+                                                    <small class="text-danger">{{ $errors->first('image') }}</small class="text-danger">
+                                                </span>
+                                            @endif
+                                        </div>
+
+                                        <div class="form-group">
+                                            <?php
+                                            $field_id   = 'product_category_'.$number;
+                                            ?>
+                                            <label for="product_category" class="form-label d-block">Product Category</label>
+                                            <select name="new_product_category_id" id="{{$field_id}}_edit" class="select2 form-control @error('new_product.product_category_id') is-invalid @enderror" required>
+                                            <option value="">Semua Produk</option>
+
+                                                @foreach($product_categories as $category)
+                                                    <option value="{{ $category->id }}" code="{{ $category->category_code }}">{{ $category->category_name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <?php
+                                            $field_name = 'new_product.model_id';
+                                            $field_id = 'model_'.$number;
+                                            $field_lable = label_case('model');
+                                            $field_placeholder = $field_lable;
+                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                            $required = "required";
+                                            ?>
+                                            <label for="{{ $field_name }}" class="form-label d-block">{{ $field_lable }}</label>
+                                            <select class="select2 form-control @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}_edit" required>
+                                                <option value="" selected disabled>Pilih Model</option>
+                                                @foreach($models as $model)
+                                                <option value="{{$model->id}}">
+                                                    {{$model->name}}
+                                                </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <?php
+                                            $field_name = 'new_product.karat_id';
+                                            $field_id   = 'karat_'.$number;
+                                            $field_lable = label_case('karat');
+                                            $field_placeholder = $field_lable;
+                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                            $required = "required";
+                                            ?>
+                                            <label for="{{ $field_name }}" class="form-label d-block">@lang('Karat') <span class="text-danger">*</span></label>
+                                            <select class="select2 form-control select2 @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}_edit" required>
+                                                @foreach($dataKarat as $karat)
+                                                    <option value="{{ $karat->id }}" >{{ $karat->label }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <?php
+                                            $field_name = 'new_product.group_id';
+                                            $field_id   = 'group_'.$number;
+                                            $field_lable = label_case('group');
+                                            $field_placeholder = $field_lable;
+                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                            $required = "required";
+                                            ?>
+                                            <label for="{{ $field_name }}" class="form-label d-block">@lang($field_lable)
+                                                <span class="text-danger">*</span>
+                                                <span class="small">Jenis Perhiasan</span>
+                                            </label>
+                                            <select class="form-control select2 @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}_edit" required>
+                                                <option value="" selected disabled>Pilih {{ $field_lable }}</option>
+                                                @foreach($groups as $group)
+                                                <option value="{{ $group->id }}">{{ $group->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <?php
+                                            $field_name = 'new_product.code';
+                                            $field_id   = 'code_'.$number;
+                                            $field_lable = label_case('code');
+                                            $field_placeholder = $field_lable;
+                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                            $required = "required";
+                                            ?>
+                                            <label for="{{ $field_name }}">{{ $field_lable }}<span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <input type="text" id="{{ $field_id }}_edit" name="new_product_code_id" class="form-control @error($field_name) is-invalid @enderror" readonly required>
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-info relative rounded-l-none" onclick="gencode({{ $number }});" type="button">Check</button>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <?php
+                                            $field_name = 'new_product.keterangan';
+                                            $field_id   = 'keterangan_'.$number;
+                                            $field_lable = label_case('keterangan');
+                                            $field_placeholder = $field_lable;
+                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                            $required = "required";
+                                            ?>
+                                            <label for="{{ $field_name }}">{{ $field_lable }}<span class="text-danger">*</span></label>
+                                            <textarea id="{{ $field_id }}_edit" name="new_product_keterangan" class="form-control"></textarea>
+                                            </div>
+
+                                        <div class="form-group">
+                                            <?php
+                                            $field_name = 'new_product.berat';
+                                            $field_id   = 'berat_'.$number;
+                                            $field_lable = label_case('berat');
+                                            $field_placeholder = $field_lable;
+                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                            $required = "required";
+                                            ?>
+                                            <label for="{{ $field_name }}">{{ $field_lable }} (gram)<span class="text-danger">*</span></label>
+                                            <input type="text" id="{{ $field_id }}_edit" name="new_product_berat" class="form-control " required>
+                                            </div>
+
+                                        <div class="form-group">
+                                            <?php
+                                            $field_name = 'new_product.baki_id';
+                                            $field_id   = 'baki_id_'.$number;
+                                            $field_lable = label_case('Baki');
+                                            $field_placeholder = $field_lable;
+                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                            $required = "required";
+                                            ?>
+                                            <label for="{{ $field_name }}" class="form-label d-block">Baki</label>
+                                            <select name="{{ $field_name }}" id="{{ $field_id }}_edit" class="form-control select2">
+                                                <option value="">Select Baki</option>
+                                                @foreach($baki as $b)
+                                                @php 
+                                                $available  = $b->capacity - $b->used;
+                                                @endphp
+                                                @if ($available > 0)
+                                                <option value="{{$b->id}}">{{$b->posisi}} - {{$b->name}} | {{$available}}</option>
+                                                @endif
+                                                @endforeach
+                                            </select>
+                                            </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-success">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 @endsection
 <x-library.datatable />
@@ -348,6 +546,17 @@
 <script src="{{  asset('js/jquery.min.js') }}"></script>
 
 <script>
+    function edit_product(id, category, model, karat, group, code, berat, baki){
+        $("#product_id").val(id);
+        $("#product_category_1").val(category);
+        $("#model_1").val(model);
+        $("#karat_1").val(karat);
+        $("#group_1").val(group);
+        $("#baki_id_1").val(baki);
+        $("#code_1").val(code);
+        // $("#keterangan_1").val(keterangan);
+        $("#berat_1").val(berat);
+    }
     $(document).ready(function() {
         $('#category').select2({
             placeholder: "Pilih kategori produk",
@@ -380,6 +589,36 @@
 
         $('#baki_id_0').select2({
             dropdownParent: $('#createModal'),
+            placeholder: "Select Baki",
+            allowClear: true
+        });
+        // 
+        $('#product_category_1').select2({
+            dropdownParent: $('#detailModal'),
+            placeholder: "Pilih kategori produk",
+            allowClear: true
+        });
+
+        $('#model_1').select2({
+            dropdownParent: $('#detailModal'),
+            placeholder: "Pilih Model",
+            allowClear: true
+        });
+
+        $('#karat_1').select2({
+            dropdownParent: $('#detailModal'),
+            placeholder: "Pilih Karat",
+            allowClear: true
+        });
+
+        $('#group_1').select2({
+            dropdownParent: $('#detailModal'),
+            placeholder: "Pilih Group",
+            allowClear: true
+        });
+
+        $('#baki_id_1').select2({
+            dropdownParent: $('#detailModal'),
             placeholder: "Select Baki",
             allowClear: true
         });

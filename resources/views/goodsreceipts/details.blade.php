@@ -73,23 +73,24 @@
                             @endphp
                             @for($x = 0; $x < $pro->qty; $x++)
                             <div class="flex flex-row grid grid-cols-3 gap-2 mt-2">
+                                <input type="hidden" name="webcam[]" id="hasilcapture_{{$number}}">
 
                                 <div class="px-0 py-2">
                                     <div class="form-group">
                                         <div class="py-1">
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="upload" id="up2" checked>
-                                                <label class="form-check-label" for="up2">Upload</label>
+                                                <input class="form-check-input" type="radio" name="upload" id="up2_{{$number}}" onchange="pilih_upload('up_2', '{{$number}}');" checked>
+                                                <label class="form-check-label" for="up2_{{$number}}">Upload</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="upload" id="up1">
-                                                <label class="form-check-label" for="up1">Webcam</label>
+                                                <input class="form-check-input" type="radio" name="upload" id="up1_{{$number}}" onchange="pilih_upload('up_1', '{{$number}}');">
+                                                <label class="form-check-label" for="up1_{{$number}}">Webcam</label>
                                             </div>
                                         </div>
-                                        <div id="upload2" style="display: none !important;" class="align-items-center justify-content-center" wire:ignore>
-                                        @livewire('webcam', ['key' => 0], key('cam-'. 0))
+                                        <div id="upload2_{{$number}}" style="display: none !important;" class="align-items-center justify-content-center" wire:ignore>
+                                        @livewire('webcam', ['key' => $number], key('cam-'. 0))
                                         </div>
-                                        <div id="upload1" wire:ignore>
+                                        <div id="upload1_{{$number}}" wire:ignore>
                                             <div class="form-group">
 
                                                 <div class="dropzone d-flex flex-wrap align-items-center justify-content-center" id="document-dropzone">
@@ -119,11 +120,11 @@
                                             $required = "required";
                                             ?>
                                             <label for="product_category">Product Category</label>
-                                            <select id="product_category" class="form-control @error('new_product.product_category_id') is-invalid @enderror" name="{{ $field_name }}">
+                                            <select id="product_category_{{$number}}" class="form-control @error('new_product.product_category_id') is-invalid @enderror" name="{{ $field_name }}">
                                             <option value="">Semua Produk</option>
 
                                                 @foreach($product_categories as $category)
-                                                    <option value="{{ $category->id }}">{{ $category->category_name }}</option>
+                                                    <option value="{{ $category->id }}" code="{{ $category->category_code }}">{{ $category->category_name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -317,7 +318,7 @@
             $('#total_' + number).val(total);
         }
 
-        function gencode(number){
+        function gencode_old(number){
             $("#code_"+number).val('');
             let rand    = Math.floor(Math.random() * 1000);
             let group   = $('#group_' + number).find('option:selected').text();
@@ -327,6 +328,21 @@
             let date    = new Date();
             let formattedDate = ("0" + date.getDate()).slice(-2) + ("0" + (date.getMonth() + 1)).slice(-2) + date.getFullYear().toString().slice(-2);
             let code    = group+karat+formattedDate+rand;
+            $("#code_"+number).val(code);
+        }
+
+        function gencode(number){
+            console.log(number);
+            let rand    = Math.floor(Math.random() * 1000);
+            let group   = $('#group_' + number).find('option:selected').text();
+            group       = group.substring(0, 1);
+            let categoryCode = $('#product_category_' + number).find('option:selected').attr('code');
+
+            let karat   = $('#karat_' + number).find('option:selected').text();
+            karat       = karat.split('|')[0]?.trim();
+            let date    = new Date();
+            let formattedDate = ("0" + date.getDate()).slice(-2) + ("0" + (date.getMonth() + 1)).slice(-2) + date.getFullYear().toString().slice(-2);
+            let code    = categoryCode+karat+formattedDate+rand;
             $("#code_"+number).val(code);
         }
     </script>
@@ -342,7 +358,15 @@
 @endsection
 @push('page_scripts')
 <script>
-    
+    function pilih_upload(up, id){
+        if(up == 'up_2'){
+            $('#upload2_'+id).hide();
+            $('#upload1_'+id).show();
+        }else{
+            $('#upload1_'+id).hide();
+            $('#upload2_'+id).show();
+        }
+    }
 
     var uploadedDocumentMap = {}
     Dropzone.options.documentDropzone = {

@@ -1,58 +1,61 @@
-@can('delete_products')
-<!-- <button id="delete" class="btn btn-outline-danger btn-sm" onclick="
-    event.preventDefault();
-    if (confirm('Are you sure? It will delete the data permanently!')) {
-        document.getElementById('destroy{{ $data->id }}').submit()
-    }
-    ">
-    <i class="bi bi-trash"></i>&nbsp;
-    <form id="destroy{{ $data->id }}" class="d-none" action="{{ route('products.delete', $data->id) }}" method="POST">
+<div class="row p-2">
+
+    @can('delete_products')
+    <!-- <button id="delete" class="btn btn-outline-danger btn-sm" onclick="
+        event.preventDefault();
+        if (confirm('Are you sure? It will delete the data permanently!')) {
+            document.getElementById('destroy{{ $data->id }}').submit()
+        }
+        ">
+        <i class="bi bi-trash"></i>&nbsp;
+        <form id="destroy{{ $data->id }}" class="d-none" action="{{ route('products.delete', $data->id) }}" method="POST">
+            @csrf
+            @method('delete')
+        </form>
+    </button> -->
+    @if($data->status == 2 || $data->status == 10 || $data->status == 15)
+    
+    @else
+    <button class="btn btn-outline-danger btn-sm" onclick="openPasswordModal2(event, '{{ $data->id }}', '{{ $data->product_code }}', '{{ $data->images }}')">
+        <i class="bi bi-trash"></i>
+    </button>
+    @endif
+    <!-- <form id="destroy{{ $data->id }}" class="d-none" action="{{ route('products.delete', $data->id) }}" method="POST">
         @csrf
         @method('delete')
-    </form>
-</button> -->
-@if($data->status == 2 || $data->status == 10 || $data->status == 15)
-
-@else
-<button class="btn btn-outline-danger btn-sm" onclick="openPasswordModal2(event, '{{ $data->id }}', '{{ $data->product_code }}', '{{ $data->images }}')">
-    <i class="bi bi-trash"></i>
-</button>
-@endif
-<!-- <form id="destroy{{ $data->id }}" class="d-none" action="{{ route('products.delete', $data->id) }}" method="POST">
-    @csrf
-    @method('delete')
-</form> -->
-@endcan
-
-<div class="text-center">
-<a href="#" data-toggle="modal" data-target="#lihatModal_{{$data->id}}"
-
-data-toggle="tooltip"
- class="btn btn-outline-info btn-sm">
-    <i class="bi bi-eye"></i>
-</a>
-</div>
-
-<div class="btn-group">
-    <a href="#" class="px-3 btn btn-sm btn-success" data-toggle="modal" data-target="#updateModal" onclick="show_modal({{ $data->id }});">
-        <i class="bi bi-pencil"></i>
+    </form> -->
+    @endcan
+    
+    <div class="text-center">
+    <a href="#" data-toggle="modal" data-target="#lihatModal_{{$data->id}}"
+    
+    data-toggle="tooltip"
+     class="btn btn-outline-info btn-sm">
+        <i class="bi bi-eye"></i>
     </a>
-</div>
-
-<div class="btn-group">
-    <!-- edit_modal(id, image, category, model, group, karat, berat, baki) -->
-    <a href="#" class="px-3 btn btn-sm btn-info" data-toggle="modal" data-target="#detailModal" onclick="edit_product(
-    {{ $data->id }},
-    '{{ $data->category->id ?? '' }}',
-    '{{ $data->model->id ?? '' }}',
-    '{{ $data->karat->id ?? '' }}',
-    '{{ $data->group->id ?? '' }}',
-    '{{ $data->product_code ?? '' }}',
-    '{{ $data->berat_emas }}',
-    '{{ $data->baki->id ?? '' }}'
-    );">
-        <i class="bi bi-pencil"></i>
-    </a>
+    </div>
+    
+    <div class="btn-group">
+        <a href="#" class="px-3 btn btn-sm btn-success" data-toggle="modal" data-target="#updateModal" onclick="show_modal({{ $data->id }});">
+            <i class="bi bi-pencil"></i>
+        </a>
+    </div>
+    
+    <div class="btn-group">
+        <!-- edit_modal(id, image, category, model, group, karat, berat, baki) -->
+        <a href="#" class="px-3 btn btn-sm btn-info" data-toggle="modal" data-target="#detailModal" onclick="edit_product(
+        {{ $data->id }},
+        '{{ $data->category->id ?? '' }}',
+        '{{ $data->model->id ?? '' }}',
+        '{{ $data->karat->id ?? '' }}',
+        '{{ $data->group->id ?? '' }}',
+        '{{ $data->product_code ?? '' }}',
+        '{{ $data->berat_emas }}',
+        '{{ $data->baki->id ?? '' }}'
+        );">
+            <i class="bi bi-pencil"></i>
+        </a>
+    </div>
 </div>
 
 

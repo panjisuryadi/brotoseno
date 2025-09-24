@@ -463,11 +463,11 @@ class GoodReceiptController extends Controller
 
             $gambar = '';
             $doc    = isset($request['document'][$i]) ? $request['document'][$i] : '';
-            if(empty($doc) && empty($request['webcam'])){
+            if(empty($doc) && empty($request['webcam'][$i])){
                 toast('Image Required', 'error');
                 return redirect()->back();
             }
-            $gam                     = $this->getUploadedImage($request['webcam'], $doc);
+            $gam                     = $this->getUploadedImage($request['webcam'][$i], $doc);
             if(!empty($gam)){
                 $gambar = $gam;
             }

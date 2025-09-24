@@ -78,21 +78,21 @@
                                     <div class="form-group">
                                         <div class="py-1">
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="upload" id="up2" checked>
-                                                <label class="form-check-label" for="up2">Upload</label>
+                                                <input class="form-check-input" type="radio" name="upload[]" id="up2_{{$number}}" onchange="pilih_upload('up_2', '{{$number}}');" checked>
+                                                <label class="form-check-label" for="up2_{{$number}}">Upload</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="upload" id="up1">
-                                                <label class="form-check-label" for="up1">Webcam</label>
+                                                <input class="form-check-input" type="radio" name="upload[]" id="up1_{{$number}}" onchange="pilih_upload('up_1', '{{$number}}');">
+                                                <label class="form-check-label" for="up1_{{$number}}">Webcam</label>
                                             </div>
                                         </div>
-                                        <div id="upload2" style="display: none !important;" class="align-items-center justify-content-center" wire:ignore>
+                                        <div id="upload2_{{$number}}" style="display: none !important;" class="align-items-center justify-content-center" wire:ignore>
                                         @livewire('webcam', ['key' => 0], key('cam-'. 0))
                                         </div>
-                                        <div id="upload1" wire:ignore>
+                                        <div id="upload1_{{$number}}" wire:ignore>
                                             <div class="form-group">
 
-                                                <div class="dropzone d-flex flex-wrap align-items-center justify-content-center" id="document-dropzone">
+                                                <div class="dropzone d-flex flex-wrap align-items-center justify-content-center" id="document-dropzone_{{$number}}">
                                                     <div class="dz-message" data-dz-message>
                                                         <i class="bi bi-cloud-arrow-up"></i>
                                                     </div>

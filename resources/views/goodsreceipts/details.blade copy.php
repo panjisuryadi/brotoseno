@@ -71,28 +71,31 @@
                             @php
                                 $id_karat = $pro->karat_id;  
                             @endphp
+
                             @for($x = 0; $x < $pro->qty; $x++)
+                            @php
+                                $uniqueId = $pro->id . '_' . $x; // Create a unique ID for each item
+                            @endphp
                             <div class="flex flex-row grid grid-cols-3 gap-2 mt-2">
 
                                 <div class="px-0 py-2">
                                     <div class="form-group">
                                         <div class="py-1">
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="upload" id="up2" checked>
-                                                <label class="form-check-label" for="up2">Upload</label>
+                                                <input class="form-check-input" type="radio" name="upload_{{ $uniqueId }}[]" id="up2_{{ $uniqueId }}" onchange="pilih_upload('up_2', '{{ $uniqueId }}');" checked>
+                                                <label class="form-check-label" for="up2_{{ $uniqueId }}">Upload</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="upload" id="up1">
-                                                <label class="form-check-label" for="up1">Webcam</label>
+                                                <input class="form-check-input" type="radio" name="upload_{{ $uniqueId }}[]" id="up1_{{ $uniqueId }}" onchange="pilih_upload('up_1', '{{ $uniqueId }}');">
+                                                <label class="form-check-label" for="up1_{{ $uniqueId }}">Webcam</label>
                                             </div>
                                         </div>
-                                        <div id="upload2" style="display: none !important;" class="align-items-center justify-content-center" wire:ignore>
-                                        @livewire('webcam', ['key' => 0], key('cam-'. 0))
+                                        <div id="upload2_{{ $uniqueId }}" style="display: none !important;" class="align-items-center justify-content-center" wire:ignore>
+                                            @livewire('webcam', ['key' => 0], key('cam-'. $uniqueId))
                                         </div>
-                                        <div id="upload1" wire:ignore>
+                                        <div id="upload1_{{ $uniqueId }}" wire:ignore>
                                             <div class="form-group">
-
-                                                <div class="dropzone d-flex flex-wrap align-items-center justify-content-center" id="document-dropzone">
+                                                <div class="dropzone d-flex flex-wrap align-items-center justify-content-center" id="document-dropzone-{{ $uniqueId }}">
                                                     <div class="dz-message" data-dz-message>
                                                         <i class="bi bi-cloud-arrow-up"></i>
                                                     </div>
@@ -342,66 +345,86 @@
 @endsection
 @push('page_scripts')
 <script>
-    
 
-    var uploadedDocumentMap = {}
-    Dropzone.options.documentDropzone = {
-        url: "{{ route('dropzone.upload') }}",
-        maxFilesize: 1,
-        acceptedFiles: '.jpg, .jpeg, .png',
-        maxFiles: 1,
-        addRemoveLinks: true,
-        dictRemoveFile: "<i class='bi bi-x-circle text-danger'></i> remove",
-        headers: {
-            "X-CSRF-TOKEN": "{{ csrf_token() }}"
-        },
-        success: function(file, response) {
-            $('form').append('<input type="hidden" name="document[]" value="' + response.name + '">');
-            uploadedDocumentMap[file.name] = response.name;
-            Livewire.emit('imageUploaded',response.name);
-            console.log(response.name);
-        },
-        removedfile: function(file) {
-            file.previewElement.remove();
-            var name = '';
-            if (typeof file.file_name !== 'undefined') {
-                name = file.file_name;
-            } else {
-                name = uploadedDocumentMap[file.name];
-            }
-            $.ajax({
-                type: "POST",
-                url: "{{ route('dropzone.delete') }}",
-                data: {
-                    '_token': "{{ csrf_token() }}",
-                    'file_name': `${name}`
-                },
-            });
-            $('form').find('input[name="document[]"][value="' + name + '"]').remove();
-            Livewire.emit('imageRemoved',name);
-        },
-        init: function() {
-            @if(isset($product) && $product->getMedia('pembelian'))
-            var files = {
-                !!json_encode($product->getMedia('pembelian')) !!
-            };
-            for (var i in files) {
-                var file = files[i];
-                this.options.addedfile.call(this, file);
-                this.options.thumbnail.call(this, file, file.original_url);
-                file.previewElement.classList.add('dz-complete');
-                $('form').append('<input type="hidden" name="document[]" value="' + file.file_name + '">');
-            }
-            @endif
+    function pilih_upload(up, id){
+        if(up == 'up_2'){
+            $('#upload2_'+id).hide();
+            $('#upload1_'+id).show();
+        }else{
+            $('#upload1_'+id).hide();
+            $('#upload2_'+id).show();
         }
     }
+    
 
-    window.addEventListener('webcam-image:remove', event => {
-        $('#imageprev0').attr('src','');
+    document.addEventListener('DOMContentLoaded', function() {
+    var dropzoneElements = document.querySelectorAll('.dropzone');
+
+    dropzoneElements.forEach(function(element) {
+        var uniqueId = element.id.replace('document-dropzone-', '');
+        var uploadedDocumentMap = {};
+
+        new Dropzone("#" + element.id, {
+            url: "{{ route('dropzone.upload') }}",
+            maxFilesize: 1,
+            acceptedFiles: '.jpg, .jpeg, .png',
+            maxFiles: 1,
+            addRemoveLinks: true,
+            dictRemoveFile: "<i class='bi bi-x-circle text-danger'></i> remove",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            success: function(file, response) {
+                // Append hidden input with a unique name to identify which product it belongs to
+                $('form').append('<input type="hidden" name="document[' + uniqueId + '][]" value="' + response.name + '">');
+                // $('form').append('<input type="hidden" name="document[]" value="' + response.name + '">');
+                uploadedDocumentMap[file.name] = response.name;
+                Livewire.emit('imageUploaded', uniqueId, response.name); // Pass uniqueId to Livewire
+                console.log(response.name);
+            },
+            removedfile: function(file) {
+                file.previewElement.remove();
+                var name = '';
+                if (typeof file.file_name !== 'undefined') {
+                    name = file.file_name;
+                } else {
+                    name = uploadedDocumentMap[file.name];
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('dropzone.delete') }}",
+                    data: {
+                        '_token': "{{ csrf_token() }}",
+                        'file_name': `${name}`
+                    },
+                });
+                $('form').find('input[name="document[' + uniqueId + '][]"][value="' + name + '"]').remove();
+                Livewire.emit('imageRemoved', uniqueId, name); // Pass uniqueId to Livewire
+            },
+            init: function() {
+                // This part needs to be handled on the server-side to pass the correct data
+                // For now, this part is commented out as it requires a different approach for bulk inserts
+            }
+        });
     });
-    window.addEventListener('uploaded-image:remove', event => {
-        Dropzone.forElement("div#document-dropzone").removeAllFiles(true);
-    });
+});
+
+window.addEventListener('webcam-image:remove', event => {
+    // Modify this to target the correct image based on the event data
+    $('#imageprev' + event.detail.key).attr('src','');
+    $('#image-preview-' + event.detail.key).attr('src','');
+
+});
+window.addEventListener('uploaded-image:remove', event => {
+    // Modify this to target the correct dropzone
+    var dropzoneId = 'document-dropzone-' + event.detail.key;
+    Dropzone.forElement("#" + dropzoneId).removeAllFiles(true);
+});
+
+window.addEventListener('webcam-image:remove', event => {
+    // Use event.detail.key to target the specific image
+    $('#image-preview-' + event.detail.key).attr('src','');
+});
 </script>
 
 @endpush

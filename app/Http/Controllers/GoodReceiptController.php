@@ -8,6 +8,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Gate;
 use Modules\People\Entities\Supplier;
 use DateTime;
+use App\Models\Baki;
+use App\Models\ProductHistories;
 use Modules\Karat\Models\Karat;
 use Modules\Product\Entities\Category;
 use Modules\Group\Models\Group;
@@ -439,7 +441,12 @@ class GoodReceiptController extends Controller
     }
 
     public function product_update(Request $request){
+        // echo json_encode($_POST);
+        // echo json_encode($_GET);
+        // echo json_encode($_FILES);
         $id = $request->id;
+
+        // exit();
         $hitung     = count($request->category);
         for ($i=0; $i < $hitung; $i++) {
             $group  = Group::where('id', $request->group[$i])->first();
@@ -447,6 +454,23 @@ class GoodReceiptController extends Controller
             $model  = ProdukModel::where('id', $request->model[$i])->first();
             $model_name = $model->name;
             $product_name   = $group_name.' '.$model_name;
+            $status = 0;
+            $stat_history   = 'P';
+            if(isset($request->baki[$i])){
+                $status    = 1;
+                $stat_history = 'O';
+            }
+
+            $gambar = '';
+            $doc    = isset($request['document'][$i]) ? $request['document'][$i] : '';
+            if(empty($doc) && empty($request['webcam'])){
+                toast('Image Required', 'error');
+                return redirect()->back();
+            }
+            $gam                     = $this->getUploadedImage($request['webcam'], $doc);
+            if(!empty($gam)){
+                $gambar = $gam;
+            }
 
             $product    = Product::create([
                 'category_id'       => $request->category[$i],
@@ -455,33 +479,39 @@ class GoodReceiptController extends Controller
                 'product_barcode_symbology'       => 'C128',
                 'product_unit'       => 'Gram',
                 'product_stock_alert'       => 5,
-                'status'       => 0,
+                'status'       => $status,
                 'karat_id'       => $request->karat[$i],
-                'images'       => 'jpg',
-                'berat_emas'       => $request->total[$i],
+                'images'       => $gambar,
+                'berat_emas'       => $request->berat[$i],
                 'product_price'       => 0,
                 'status_id'       => 11,
                 'group_id'       => $request->group[$i],
                 'model_id'       => $request->model[$i],
+                'baki_id'       => $request->baki[$i],
                 'goodreceipt_item_id' => $id
             ]);
 
-            $productItem    = ProductItem::create([
-                'product_id'       => $product->id,
-                'berat_total'       => $request->total[$i],
-                'berat_emas'       => $request->emas[$i],
-                'berat_accessories'       => $request->acc[$i],
-                'tag_label'       => $request->tag[$i],
-                'berat_label'       => 0,
+            $product_history = ProductHistories::create([
+                'product_id'    => $product->id,
+                'status'        => $stat_history,
+                'keterangan'    => $request->keterangan[$i],
+                'harga'         => 0,
+                'tanggal'       => date('Y-m-d'),
             ]);
         }
 
-        $goodsReceiptItem = GoodsReceiptItem::findOrFail($id);
-        $idnya  = $goodsReceiptItem['goodsreceipt_id'];
+        $goodsReceipt = GoodsReceipt::where('id', $id)->first();
+        // $idnya  = $goodsReceipt['goodsreceipt_id'];
+        $goodsReceipt->status = 2;
+        $goodsReceipt->save();
+
+        $goodsReceiptItem = GoodsReceiptItem::where('goodsreceipt_id', $id)->first();
+        // $idnya  = $goodsReceiptItem['goodsreceipt_id'];
         $goodsReceiptItem->status = 2;
         $goodsReceiptItem->save();
+        return redirect('product/pembelian/');
+        // return redirect()->action([GoodReceiptController::class, 'detail'], ['id' => $idnya]);
 
-        return redirect()->action([GoodReceiptController::class, 'detail'], ['id' => $idnya]);
     }
 
     public function products(Request $request){
@@ -530,6 +560,17 @@ class GoodReceiptController extends Controller
         $dataKarat = Karat::where('status', 'A')->whereNull('parent_id')->get();
         $groups = Group::all();  // Assuming Supplier model is set up
         $karats = Karat::where('id', $products[0]->karat_id)->first();
+        $baki = Baki::select('*')
+            ->selectSub(function ($query) {
+                $query->from('products')
+                    ->selectRaw('COUNT(products.id)')
+                    ->whereColumn('products.baki_id', 'baki.id')
+                    ->where('products.status', 2)
+                    ->where('products.status_id', 2);
+            }, 'used')
+            ->where('status', 'A')
+            ->orderByDesc('id')
+            ->get();
         $nama   = $karats->name;
         return view(
             'goodsreceipts.details', // Path to your create view file
@@ -541,6 +582,7 @@ class GoodReceiptController extends Controller
                 'product_categories',
                 'groups',
                 'models',
+                'baki',
                 // 'isLogamMulia',
                 // 'hari_ini',
                 'dataKarat',

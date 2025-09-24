@@ -483,7 +483,7 @@ class ProductController extends Controller
             $baki = Baki::find($baki_id);
             if ($baki) {
                 $posisi = $baki->posisi;
-                $stat_history = 'R';
+                $stat_history = 'O';
                 if ($posisi == 'etalase') {
                     $stat = 1;
                 }

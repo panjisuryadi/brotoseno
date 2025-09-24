@@ -110,12 +110,14 @@ document.addEventListener('livewire:load', function () {
         webcam.snap(function(data_uri) {
             document.getElementById('imageprev' + key).src = data_uri
             Livewire.emit('webcamCaptured',key,data_uri)
-            document.getElementById('hasilcapture').value = data_uri
+            document.getElementById('hasilcapture_' + key).value = data_uri
+            // document.getElementById('hasilcapture').value = data_uri
         });
         webcam.reset()
     });
 
     Livewire.on('removePrev', function(key){
+        document.getElementById('hasilcapture_' + key).value = '';
         document.getElementById('hasilcapture').value = '';
         document.getElementById('imageprev' + key).style = 'display:none'
         Livewire.emit('webcamReset',key)

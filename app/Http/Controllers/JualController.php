@@ -1766,6 +1766,7 @@ class JualController extends Controller
                 }
             }
             $data[$number]['from'] = 'luar';
+            $data[$number]['sales_gold_id'] = $b->sales_gold_id;
             $data[$number]['tanggal'] = $b->created_at;
             $data[$number]['trx'] = $nota;
             $data[$number]['category'] = $b->category_name;
@@ -1804,6 +1805,7 @@ class JualController extends Controller
                 $transfer   = $b->harga;
             }
             $data[$number]['from'] = 'buyback';
+            $data[$number]['sales_gold_id'] = $b->sales_gold_id;
             $data[$number]['tanggal'] = $b->created_at;
             $data[$number]['trx'] = $b->nota;
             $data[$number]['category'] = $b->category_name;
@@ -1879,6 +1881,7 @@ class JualController extends Controller
             }
 
             $data[$number]['from'] = 'pos';
+            $data[$number]['sales_gold_id'] = $b->sales_gold_id;
             $data[$number]['tanggal'] = $b->created_at;
             $data[$number]['trx'] = $b->nomor;
             $data[$number]['category'] = $kategori;
@@ -1954,8 +1957,10 @@ class JualController extends Controller
         $total_cicil                = 0;
 
         $no = 1;
-
+        $tanggal    = '';
+        $sales_gold_id  = '';
         foreach ($data as $row) {
+            $hitung = 0;
             $red    = '';
             $minus  = '';
             if($row['from'] == 'buyback' || $row['from'] == 'luar'){
@@ -1978,12 +1983,17 @@ class JualController extends Controller
             if($row['count'] == 0){
                 
             }else{
-                echo '<td align="right" '.$red.' rowspan="'.$row['count'].'">'.$minus.'Rp ' . number_format($row['cash'], 0, ',', '.') . '</td>';
-                echo '<td align="right" '.$red.' rowspan="'.$row['count'].'">'.$minus.'Rp ' . number_format($row['transfer'], 0, ',', '.') . '</td>';
-                echo '<td align="right" '.$red.' rowspan="'.$row['count'].'">'.$minus.'Rp ' . number_format($row['edc'], 0, ',', '.') . '</td>';
-                echo '<td align="right" '.$red.' rowspan="'.$row['count'].'">'.$minus.'Rp ' . number_format($row['qr'], 0, ',', '.') . '</td>';
-                echo '<td align="right" '.$red.' rowspan="'.$row['count'].'">'.$minus.'Rp ' . number_format($row['cc'], 0, ',', '.') . '</td>';
-                echo '<td align="right" '.$red.' rowspan="'.$row['count'].'">'.$minus.'Rp ' . number_format($row['cicil'], 0, ',', '.') . '</td>';
+                if($sales_gold_id == $row['sales_gold_id'] && $row['from'] == 'pos'){
+                    
+                }else{
+                    echo '<td align="right" '.$red.' rowspan="'.$row['count'].'">'.$minus.'Rp ' . number_format($row['cash'], 0, ',', '.') . '</td>';
+                    echo '<td align="right" '.$red.' rowspan="'.$row['count'].'">'.$minus.'Rp ' . number_format($row['transfer'], 0, ',', '.') . '</td>';
+                    echo '<td align="right" '.$red.' rowspan="'.$row['count'].'">'.$minus.'Rp ' . number_format($row['edc'], 0, ',', '.') . '</td>';
+                    echo '<td align="right" '.$red.' rowspan="'.$row['count'].'">'.$minus.'Rp ' . number_format($row['qr'], 0, ',', '.') . '</td>';
+                    echo '<td align="right" '.$red.' rowspan="'.$row['count'].'">'.$minus.'Rp ' . number_format($row['cc'], 0, ',', '.') . '</td>';
+                    echo '<td align="right" '.$red.' rowspan="'.$row['count'].'">'.$minus.'Rp ' . number_format($row['cicil'], 0, ',', '.') . '</td>';
+                }
+                $sales_gold_id = $row['sales_gold_id'];
             }
             echo '</tr>';
 

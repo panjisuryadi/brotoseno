@@ -39,8 +39,19 @@
 <div id="passwordModal2" style="display: none; position: fixed; z-index: 9999; background: rgba(0,0,0,0.6); top: 0; left: 0; width: 100%; height: 100%;">
   <div style="background: white; width: 300px; margin: 15% auto; padding: 20px; border-radius: 5px; position: relative;">
     <h5>Enter Password</h5>
-    <input type="password" id="sidebarPasswordInput2" class="form-control mb-3" placeholder="Password" />
-    <div class="text-right">
+    <div class="row">
+        <div class="col-9">
+            <input type="password" id="sidebarPasswordInput2" class="form-control" placeholder="Password">
+
+        </div>
+        <div class="col-3">
+            <button type="button" class="btn btn-sm position-absolute top-50 end-0 translate-middle-y me-2 border-0 bg-transparent p-0" onclick="togglePasswords()" tabindex="-1">
+                <i id="eye-icon" class="bi bi-eye-fill text-secondary"></i>
+            </button>
+        </div>
+    </div>
+    <!-- <input type="password" id="sidebarPasswordInput2" class="form-control mb-3" placeholder="Password" /> -->
+    <div class="text-right mt-5">
       <button onclick="verifyPassword2()" class="btn btn-primary btn-sm">Confirm</button>
       <button onclick="closePasswordModal2()" class="btn btn-secondary btn-sm">Cancel</button>
     </div>
@@ -52,7 +63,23 @@
 <script>
 let targetUrl = '';
 
+  function togglePasswords() {
+    const input = document.getElementById("sidebarPasswordInput2");
+    const icon = document.getElementById("eye-icon");
+
+    if (input.type === "password") {
+      input.type = "text";
+      icon.classList.remove("bi-eye-fill");
+      icon.classList.add("bi-eye-slash-fill");
+    } else {
+      input.type = "password";
+      icon.classList.remove("bi-eye-slash-fill");
+      icon.classList.add("bi-eye-fill");
+    }
+  }
+
 function openPasswordModal(event, url) {
+  console.log('password');
     event.preventDefault();
     targetUrl = url;
     document.getElementById('passwordModal2').style.display = 'block';
@@ -66,7 +93,7 @@ function closePasswordModal2() {
 
 function verifyPassword2() {
     const input = document.getElementById('sidebarPasswordInput2').value;
-    if (input === 'luvenia12345') {
+    if (input === 'Paopao000') {
         window.location.href = targetUrl;
     } else {
         document.getElementById('passwordError2').style.display = 'block';

@@ -38,7 +38,7 @@
                                 <i class="bi bi-speedometer2 font-2xl"></i>
                             </div>
                             <div>
-                                <div class="text-value text-primary">{{ $formattedStockWeight }}</div>
+                                <div class="text-value text-primary"  id="total_weight">{{ $formattedStockWeight }}</div>
                                 <div class="text-muted text-uppercase font-weight-bold small">
                                     @lang('Total Weight')
                                 </div>
@@ -54,7 +54,7 @@
                                 <i class="bi bi-box font-2xl"></i>
                             </div>
                             <div>
-                                <div class="text-value text-warning">{{ $stockQuantity }} Pcs</div>
+                                <div class="text-value text-warning" id="total_quantity">{{ $stockQuantity }} Pcs</div>
                                 <div class="text-muted text-uppercase font-weight-bold small">
                                     @lang('Total Quantity')
                                 </div>
@@ -70,7 +70,7 @@
                                 <i class="bi bi-cash font-2xl"></i>
                             </div>
                             <div>
-                                <div class="text-value text-success">{{ $formattedNilaiAset }}</div>
+                                <div class="text-value text-success" id="total_nilaiaset">{{ $formattedNilaiAset }}</div>
                                 <div class="text-muted text-uppercase font-weight-bold small">
                                     @lang('Asset Value')
                                 </div>
@@ -86,7 +86,7 @@
                                 <i class="bi bi-cash font-2xl"></i>
                             </div>
                             <div>
-                                <div class="text-value text-info">{{ $formattedPotensiAset }}</div>
+                                <div class="text-value text-info" id="total_potensiaset">{{ $formattedPotensiAset }}</div>
                                 <div class="text-muted text-uppercase font-weight-bold small">
                                     @lang('Asset Potential')
                                 </div>
@@ -172,7 +172,7 @@
                             </div>
                         </div>
 
-                        <div class="col-12">
+                        <div class="col-12 mb-3">
                             <h5 class="mb-2">Filter Karat: </h5>
                             <div class="row">
                                 @foreach ($karats as $karat)
@@ -182,6 +182,20 @@
                                         <label for="karat_{{ $karat->id }}">{{ $karat->name }}</label>
                                     </div>
                                 @endforeach
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <h5 class="mb-2">Filter Tanggal: </h5>
+                            <div class="row">
+                                <div class="col-6">
+                                    <label for="start_date">Mulai:</label>
+                                    <input type="date" id="start_date" name="start_date" class="form-control tanggal-filter">
+                                </div>
+                                <div class="col-6">
+                                    <label for="end_date">Selesai:</label>
+                                    <input type="date" id="end_date" name="end_date" class="form-control tanggal-filter">
+                                </div>
                             </div>
                         </div>
 
@@ -259,7 +273,9 @@
                     data: function(d) {
                         d.categories = getSelectedCategories();
                         d.karats = getSelectedKarats();
-                        // console.log(d); // debug data d
+                        d.startDate = $('#start_date').val();
+                        d.endDate = $('#end_date').val();
+                        console.log(d); // debug data d
                     }
                 },
                 dom: 'Blrtip',
@@ -297,8 +313,39 @@
             stockReportTable.buttons().container().appendTo("#buttons");
 
             // auto submit ketika checkbox di change
-            $('.category-filter, .karat-filter').on('change', function() {
+            $('.category-filter, .karat-filter, .tanggal-filter').on('change', function() {
                 stockReportTable.ajax.reload();
+
+                // HIT AJAX HERE 
+                const selectedCategories = getSelectedCategories();
+                const selectedKarats = getSelectedKarats();
+                const startDate = $('#start_date').val();
+                const endDate = $('#end_date').val();
+
+                // Make the AJAX call to get the updated summary values
+                $.ajax({
+                    url: '{{ route('stock-report.summary') }}', // Use the named route here
+                    method: 'GET',
+                    data: {
+                        categories: selectedCategories,
+                        karats: selectedKarats,
+                        startDate: startDate,
+                        endDate: endDate
+                    },
+                    success: function(response) {
+                        // console.log(response);
+                        // Update the values in the card elements
+                        $('#total_weight').text(response.totalWeight);
+                        $('#total_quantity').text(response.totalQuantity);
+                        $('#total_nilaiaset').text(response.totalNilaiAset);
+                        $('#total_potensiaset').text(response.totalPotensiAset);
+                        // Update other card values here based on the response
+                        // For example: $('.text-value.text-info').text(response.totalPotentialAssetValue);
+                    },
+                    error: function(error) {
+                        console.error('Error fetching filtered summary:', error);
+                    }
+                });
             });
         });
     </script>

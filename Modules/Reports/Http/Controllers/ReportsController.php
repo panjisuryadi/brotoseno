@@ -115,46 +115,35 @@ class ReportsController extends Controller
 
         foreach ($coefWeightAndMargin as $cwm) {
 
-            // KOMPONEN UNTUK HARGA JUAL:
             $coef = $cwm->coef; // mengambil coef dari tiap karat
             $persenMargin = $cwm->persen; // mengambil persen margin dari tiap karat
             $weight = $cwm->berat_emas; // mengambil berat emas dari tiap produk
 
-            // nilaiAset = coef * berat * harga (IDR tanpa margin karat)
             $nilaiAset += ($coef * $weight * $hargaEmas);
 
-            // perhitungan harga jual
             $hargaCoef = $coef * $hargaEmas;
             $hargaJual = $hargaCoef + ($hargaCoef * ($persenMargin / 100));
             $hargaAkhirProduk = ceil($hargaJual * $weight / 1000) * 1000;
 
-            // potensiAset = harga jual * berat dari setiap produk (IDR dengan margin karat)
             $potensiAset += $hargaAkhirProduk;
         }
 
-        // format nilaiAset yang didapat agar lebih indah
         $formattedNilaiAset = 'Rp. ' . number_format($nilaiAset, 0, ',', '.');
 
-        // format potensiAset yang didapat agar lebih indah
         $formattedPotensiAset = 'Rp. ' . number_format($potensiAset, 0, ',', '.');
 
-        // total berat produk
         $stockWeight = Product::leftJoin('karats', 'products.karat_id', '=', 'karats.id')
             ->where('products.status_id', 1)
             ->sum('products.berat_emas');
 
-        // total kuantitas produk
         $stockQuantity = Product::leftJoin('karats', 'products.karat_id', '=', 'karats.id')
             ->where('products.status_id', 1)
             ->count('products.id');
 
-        // format stockWeight
         $formattedStockWeight = number_format($stockWeight, 2, ',', '.') . ' Gram';
 
-        // data categories yang ada di stok
         $categories = $products->select('categories.id', 'categories.category_code')->distinct()->get();
 
-        // data categories yang ada di stok
         $karats = $products->select('karats.id', 'karats.name')->distinct()->orderBy('karats.name', 'asc')->get();
 
         return view('reports::stock.index', compact(
@@ -167,7 +156,57 @@ class ReportsController extends Controller
         ));
     }
 
-    // data untuk table Laporan Stok pada halaman stock/report
+    public function getFilteredSummary(Request $request)
+    {
+        // Get the latest gold price
+        $hargaEmas = Harga::latest()->first()->harga ?? 0;
+
+        // Build the query with optional filters
+        $query = Product::where('status_id', 1)->with('karat', 'category');
+
+        // Apply category filter
+        if ($request->has('categories') && !empty($request->categories)) {
+            $query->whereIn('category_id', $request->categories);
+        }
+
+        // Apply karat filter
+        if ($request->has('karats') && !empty($request->karats)) {
+            $query->whereIn('karat_id', $request->karats);
+        }
+
+        // Apply date range filter
+        if (!empty($request->startDate) && !empty($request->endDate)) {
+            $query->whereBetween('created_at', [$request->startDate, $request->endDate]);
+        }
+
+        // Execute the query to get the filtered products
+        $products = $query->get();
+
+        // Calculate totals using the filtered collection
+        $totalWeight = $products->sum('berat_emas');
+        $totalQuantity = $products->count();
+        $totalNilaiAset = $products->sum(function ($product) use ($hargaEmas) {
+            return ($product->karat->coef ?? 0) * $product->berat_emas * $hargaEmas;
+        });
+        $totalPotensiAset = $products->sum(function ($product) use ($hargaEmas) {
+            $coef = $product->karat->coef ?? 0;
+            $persenMargin = $product->karat->persen ?? 0;
+            $weight = $product->berat_emas;
+
+            $hargaCoef = $coef * $hargaEmas;
+            $hargaJual = $hargaCoef + ($hargaCoef * ($persenMargin / 100));
+            return ceil($hargaJual * $weight / 1000) * 1000;
+        });
+
+        // Return the formatted values as a JSON response
+        return response()->json([
+            'totalWeight' => number_format($totalWeight, 2, ',', '.') . ' Gram',
+            'totalQuantity' => number_format($totalQuantity) . ' Pcs',
+            'totalNilaiAset' => 'Rp. ' . number_format($totalNilaiAset, 0, ',', '.'),
+            'totalPotensiAset' => 'Rp. ' . number_format($totalPotensiAset, 0, ',', '.'),
+        ]);
+    }
+
     public function stockReportData(Request $request)
     {
         $query = Product::leftJoin('karats', 'products.karat_id', '=', 'karats.id')
@@ -180,6 +219,10 @@ class ReportsController extends Controller
 
         if (!empty($request->karats)) {
             $query->whereIn('products.karat_id', $request->karats);
+        }
+
+        if (!empty($request->startDate) && !empty($request->endDate)) {
+            $query->whereBetween('products.created_at', [$request->startDate, $request->endDate]);
         }
 
         $stockData = $query->select('categories.category_code', 'karats.name', DB::raw('SUM(products.berat_emas) as total_berat'), DB::raw('COUNT(products.id) as total_produk'))

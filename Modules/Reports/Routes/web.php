@@ -44,6 +44,9 @@ Route::group(['middleware' => 'auth'], function () {
     // Stock Report Page
     Route::get('/stock/report', 'ReportsController@stockReport')
         ->name('stock-report.index');
+
+    Route::get('/stock-report/summary', 'ReportsController@getFilteredSummary')
+        ->name('stock-report.summary');
     // Stock Report Data
     Route::get('/stock/report/data', 'ReportsController@stockReportData')
         ->name('stock-report-data.index');

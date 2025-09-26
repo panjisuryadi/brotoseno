@@ -308,9 +308,6 @@
     }
 
     function openPasswordModal2(event, id, code, imagePath) {
-        console.log(id);
-        console.log(code);
-        console.log(imagePath);
         document.getElementById('delete_form').action = "./products/delete/" + id;
 
         // Update hidden input

@@ -2974,34 +2974,37 @@ class GenerateMenus
             //     ]);
 
 
-            $tenant = $menu->add('<i class="c-sidebar-nav-icon mb-1 bi bi-gear"></i>' . __('Tenant') . '', [
-                'class' => 'c-sidebar-nav-dropdown',
-            ])
-                ->data([
-                    'order'         => 90,
-                    'activematches' => [
-                        'currencies*',
+            // START TENANT
+            // $tenant = $menu->add('<i class="c-sidebar-nav-icon mb-1 bi bi-gear"></i>' . __('Tenant') . '', [
+            //     'class' => 'c-sidebar-nav-dropdown',
+            // ])
+            //     ->data([
+            //         'order'         => 90,
+            //         'activematches' => [
+            //             'currencies*',
 
-                    ],
-                    'permission'    => ['access_currencies', 'access_settings'],
-                ]);
-            $tenant->link->attr([
-                'class' => 'c-sidebar-nav-dropdown-toggle',
-                'href'  => '#',
-            ]);
+            //         ],
+            //         'permission'    => ['access_currencies', 'access_settings'],
+            //     ]);
+            // $tenant->link->attr([
+            //     'class' => 'c-sidebar-nav-dropdown-toggle',
+            //     'href'  => '#',
+            // ]);
 
-            $tenant->add('<i class="c-sidebar-nav-icon bi bi-sliders"></i> ' . __('List Tenant') . '', [
-                'route' => 'tenant.index',
-                'class' => 'nav-item',
-            ])
-            ->data([
-                'order'         => 91,
-                'activematches' => 'settings*',
-                'permission'    => ['access_settings'],
-            ])
-            ->link->attr([
-                'class' => 'c-sidebar-nav-link',
-            ]);
+            // $tenant->add('<i class="c-sidebar-nav-icon bi bi-sliders"></i> ' . __('List Tenant') . '', [
+            //     'route' => 'tenant.index',
+            //     'class' => 'nav-item',
+            // ])
+            // ->data([
+            //     'order'         => 91,
+            //     'activematches' => 'settings*',
+            //     'permission'    => ['access_settings'],
+            // ])
+            // ->link->attr([
+            //     'class' => 'c-sidebar-nav-link',
+            // ]);
+
+            // END TENANT
 
 
 

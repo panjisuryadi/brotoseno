@@ -181,11 +181,11 @@
                 <div class="modal-body p-4">
                     <form action="/products_insert_luar" target="_blank" method="post">
                         @csrf
-                        <input type="hidden" name="webcam" id="hasilcapture">
+                        @php
+                            $number = 0;
+                        @endphp
+                        <input type="hidden" name="webcam" id="hasilcapture_{{$number}}">
                         <div class="px-0 py-2">
-                            @php
-                                $number = 0;
-                            @endphp
                             <div class="col-span-2 px-2">
                                 <div class="flex flex-row grid grid-cols-2 gap-1">
                                     <div class="form-group">

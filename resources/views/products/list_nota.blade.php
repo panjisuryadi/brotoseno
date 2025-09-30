@@ -131,11 +131,10 @@
                 <form action="/products_insert_nota" method="post" enctype="multipart/form-data">
                     @csrf
                     @php
-                    $number = 0;
+                        $number = 0;
                     @endphp
                     <input type="hidden" name="webcam" id="hasilcapture_{{$number}}">
                     <div class="px-0 py-2">
-                                
                                 <div class="col-span-2 px-2">
                                     <div class="flex flex-row grid grid-cols-2 gap-1">
                                         <div class="form-group">

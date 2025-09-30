@@ -111,8 +111,11 @@ class ProductController extends Controller
 
     public function insert_luar(Request $request)
     {
+        // echo json_encode($request);
+        // echo json_encode($_POST);
         $doc    = isset($request['document'][0]) ? $request['document'][0] : '';
         if(empty($doc) && empty($request['webcam'])){
+            // echo 'image';
             toast('Image Required', 'error');
             return redirect()->back();
         }
@@ -120,6 +123,17 @@ class ProductController extends Controller
         if(!empty($gam)){
             $gambar = $gam;
         }
+        // exit();
+
+        // $doc    = isset($request['document'][0]) ? $request['document'][0] : '';
+        // if(empty($doc) && empty($request['webcam'])){
+        //     toast('Image Required', 'error');
+        //     return redirect()->back();
+        // }
+        // $gam                     = $this->getUploadedImage($request['webcam'], $doc);
+        // if(!empty($gam)){
+        //     $gambar = $gam;
+        // }
         $berat  = str_replace(',', '.', $request->new_product_berat);
         $berat  = (float)$berat;
 

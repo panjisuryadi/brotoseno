@@ -228,9 +228,9 @@
                                             $invalid = $errors->has($field_name) ? ' is-invalid' : '';
                                             $required = "required";
                                             ?>
-                                            <label for="{{ $field_name }}" class="form-label d-block">@lang($field_lable)
+                                            <label for="{{ $field_name }}" class="form-label d-block">Pabrik
                                                 <span class="text-danger">*</span>
-                                                <span class="small">Jenis Perhiasan</span>
+                                                <span class="small">Jenis Pabrik</span>
                                             </label>
                                             <select class="form-control select2 @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}" required>
                                                 <option value="" selected disabled>Pilih {{ $field_lable }}</option>
@@ -441,9 +441,9 @@
                                             $invalid = $errors->has($field_name) ? ' is-invalid' : '';
                                             $required = "required";
                                             ?>
-                                            <label for="{{ $field_name }}" class="form-label d-block">@lang($field_lable)
+                                            <label for="{{ $field_name }}" class="form-label d-block">Pabrik
                                                 <span class="text-danger">*</span>
-                                                <span class="small">Jenis Perhiasan</span>
+                                                <span class="small">Jenis Pabrik</span>
                                             </label>
                                             <select class="form-control select2 @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}" required>
                                                 <option value="" selected disabled>Pilih {{ $field_lable }}</option>
@@ -577,7 +577,7 @@
 
         $('#group_0').select2({
             dropdownParent: $('#createModal'),
-            placeholder: "Pilih Group",
+            placeholder: "Pilih Pabrik",
             allowClear: true
         });
 
@@ -607,7 +607,7 @@
 
         $('#group_1').select2({
             dropdownParent: $('#detailModal'),
-            placeholder: "Pilih Group",
+            placeholder: "Pilih Pabrik",
             allowClear: true
         });
 

@@ -1675,7 +1675,7 @@ class GenerateMenus
             //=========================== end menu kategori
 
             //==== Access Control Dropdown Categories
-            $jenisGropus = $masterData->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Group'), [
+            $jenisGropus = $masterData->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Pabrik'), [
                 'class' => 'c-sidebar-nav-dropdown',
             ])
                 ->data([
@@ -1694,7 +1694,7 @@ class GenerateMenus
 
 
             // JenisGroups
-            $jenisGropus->add('<i class="c-sidebar-nav-icon  bi bi-dot text-sm"></i> ' . __('Jenis Group'), [
+            $jenisGropus->add('<i class="c-sidebar-nav-icon  bi bi-dot text-sm"></i> ' . __('Jenis Pabrik'), [
                 'route' => 'jenisgroup.index',
                 'class' => 'nav-item',
             ])
@@ -1709,7 +1709,7 @@ class GenerateMenus
 
 
             // Groups
-            $jenisGropus->add('<i class="c-sidebar-nav-icon  bi bi-dot text-sm"></i> ' . __('Group'), [
+            $jenisGropus->add('<i class="c-sidebar-nav-icon  bi bi-dot text-sm"></i> ' . __('Pabrik'), [
                 'route' => 'group.index',
                 'class' => 'nav-item',
             ])

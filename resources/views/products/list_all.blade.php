@@ -155,9 +155,9 @@
                                             $invalid = $errors->has($field_name) ? ' is-invalid' : '';
                                             $required = "required";
                                             ?>
-                                            <label for="{{ $field_name }}">@lang($field_lable)
+                                            <label for="{{ $field_name }}">Pabrik
                                                 <span class="text-danger">*</span>
-                                                <span class="small">Jenis Perhiasan</span>
+                                                <span class="small">Jenis Pabrik</span>
                                             </label>
                                             <select class="form-control @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}">
                                                 <option value="" selected disabled>Pilih {{ $field_lable }}</option>

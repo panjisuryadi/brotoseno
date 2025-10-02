@@ -834,7 +834,7 @@ $(document).on('click', '#Tambah,#QrCode,#Show, #Edit', function(e){
         // var myModalEl = document.getElementById('ModalGue');
         // var modal = new bootstrap.Modal(myModalEl);
         // modal.show();
-        // $('#ModalGue').modal('show');
+        $('#ModalGue').modal('show');
     });
 
 

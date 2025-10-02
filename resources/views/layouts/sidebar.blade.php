@@ -10,8 +10,11 @@
 
 if (settings()->site_logo) {
             $logo = asset("storage/logo/" .settings()->site_logo);
+            $logo   = asset("storage/logo/toko_logo.png");
+
         }else{
             $logo = asset('images/logo.png');
+            $logo   = asset("storage/logo/toko_logo.png");
         }
 
 

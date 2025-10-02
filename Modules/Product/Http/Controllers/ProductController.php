@@ -1075,7 +1075,7 @@ class ProductController extends Controller
         $module_action = 'Qrcode';
         $category = Category::get();
         $detail = $module_model::where('id', $id)->first();
-        //dd($pembelian->code);
+        // dd($detail);
         return view(
             'product::products.modal.qrcode',
             compact(

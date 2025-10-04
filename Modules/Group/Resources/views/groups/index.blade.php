@@ -6,7 +6,7 @@
 @section('breadcrumb')
 <ol class="breadcrumb border-0 m-0">
     <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-    <li class="breadcrumb-item active">{{$module_title}}</li>
+    <li class="breadcrumb-item active">Pabrik</li>
 </ol>
 @endsection
 @section('content')
@@ -21,7 +21,7 @@
                                 id="Tambah"
                                 data-toggle="tooltip"
                                  class="btn btn-primary px-3">
-                                 <i class="bi bi-plus"></i>@lang('Add')&nbsp;{{ $module_title }}
+                                 <i class="bi bi-plus"></i>@lang('Add')&nbsp;Kategori Jenis
                                 </a>
 
                         </div>
@@ -34,11 +34,7 @@
                 <thead>
                     <tr>
                         <th style="width: 6%!important;">No</th>
-                        <th style="width: 13%!important;" class="text-center">{{ __('Kode group') }}</th>
-                        <th style="width: 15%!important;" class="text-center">{{ __('Jenis group') }}</th>
-                        <th class="text-lef">{{ __('Name') }}</th>
-                        {{-- <th style="width: 10%!important;" class="text-center"> {{ __('Harga') }} </th>
-                        <th style="width: 14%!important;" class="text-center"> {{ __('Harga Modal') }} </th> --}}
+                        <th style="width: 13%!important;" class="text-center">{{ __('Jenis') }}</th>
                         <th style="width: 18%!important;" class="text-center">
                             {{ __('Action') }}
                         </th>
@@ -117,8 +113,8 @@
                 },
 
                 {data: 'code', name: 'code'},
-                {data: 'jenis', name: 'jenis'},
-                {data: 'name', name: 'name'},
+                // {data: 'jenis', name: 'jenis'},
+                // {data: 'name', name: 'name'},
                 // {data: 'harga', name: 'harga'},
                 // {data: 'harga_modal', name: 'harga_modal'},
 

@@ -8,22 +8,23 @@
                     <div class="form-group">
                         <?php
                         $field_name = 'code';
-                        $field_lable = label_case('Kode Group');
+                        $field_lable = label_case('Jenis');
                         $field_placeholder = $field_lable;
                         $invalid = $errors->has($field_name) ? ' is-invalid' : '';
                         $required = "required";
                         ?>
                         <label for="{{ $field_name }}">{{ $field_lable }}<span class="text-danger">*</span></label>
                         <input class="form-control" type="text" name="{{ $field_name }}"
-                        placeholder="{{ $field_placeholder }}">
+                        placeholder="Jenis">
                         <span class="invalid feedback" role="alert">
                             <span class="text-danger error-text {{ $field_name }}_err"></span>
                         </span>
                     </div>
+                    {{-- 
                     <div class="form-group">
-                        <label for="jenis_group_id">@lang('Jenis Group') <span class="text-danger">*</span></label>
+                        <label for="jenis_group_id">@lang('Jenis Pabrik') <span class="text-danger">*</span></label>
                         <select class="form-control" name="jenis_group_id" id="jenis_group_id" required>
-                            <option value="" selected disabled>Select Jenis Group</option>
+                            <option value="" selected disabled>Select Jenis Pabrik</option>
                             @foreach(\Modules\JenisGroup\Models\JenisGroup::all() as $jg)
                             <option value="{{ $jg->id }}">{{ $jg->code }}</option>
                             @endforeach
@@ -44,6 +45,7 @@
                             <span class="text-danger error-text {{ $field_name }}_err"></span>
                         </span>
                     </div>
+                    --}}
                 </div>
             </div>
             {{-- <div class="form-group">

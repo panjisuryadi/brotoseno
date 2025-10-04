@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', $module_title)
+@section('title', 'Baki')
 @section('third_party_stylesheets')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css">
 @endsection
@@ -17,31 +17,31 @@
                 <div class="card-body">
                     <div class="flex justify-between py-1 border-bottom">
                         <div>
-                           <a href="{{ route(''.$module_name.'.create') }}"
-                                id="Tambah"
-                                data-toggle="tooltip"
-                                 class="btn btn-primary px-3">
-                                 <i class="bi bi-plus"></i>@lang('Add')&nbsp;@lang($module_title)
-                                </a>
 
-                        </div>
-                        <div id="buttons">
-                        </div>
+                <div class="btn-group">
+                    <a href="#" class="px-3 btn btn-danger" data-toggle="modal" data-target="#createModal">
+                        Tambah Pabrik <i class="bi bi-plus"></i>
+                    </a>
+                </div>
+
+                    </div>
+                        <div id="buttons"></div>
                     </div>
                     <div class="table-responsive mt-1">
-                        <table id="datatable" style="width: 100%" class="table table-bordered table-hover table-responsive-sm">
+                        <table id="datatable" class="table table-bordered table-hover table-responsive-sm">
                             <thead>
                                 <tr>
-                                    <th style="width: 6%!important;">No</th>
-                                    <th class="text-lef">{{ __('Kode Pabrik') }}</th>
-                                   <th style="width: 15%!important;" class="text-center">{{ __('Harga') }}</th>
-                                   <th style="width: 15%!important;" class="text-center">{{ __('Harga Modal') }}</th>
-
-                                    <th style="width: 15%!important;" class="text-center">
-                                         {{ __('Updated') }}
+                                    <th style="width: 5%!important;">
+                                        NO
                                     </th>
-                                    <th style="width: 18%!important;" class="text-center">
-                                        {{ __('Action') }}
+                                    <th style="width: 15%!important;" class="text-center">
+                                        Name
+                                    </th>  
+                                    <th style="width: 15%!important;" class="text-center">
+                                        Created
+                                    </th> 
+                                    <th style="width: 25%!important;" class="text-center">
+                                       {{__('Action')}}
                                     </th>
                                 </tr>
                             </thead>
@@ -52,8 +52,32 @@
         </div>
     </div>
 </div>
-@endsection
 
+<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-lg font-bold" id="addModalLabel">Tambah Pabrik</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-4">
+                <form action="/pabric" method="post">
+                    @csrf
+                    <div class="form-group">
+                        <label for="">Name</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <br>
+                    <button class="btn btn-sm btn-success">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@endsection
 <x-library.datatable />
 @push('page_scripts')
    <script type="text/javascript">
@@ -85,10 +109,9 @@
                 }
             ],
             "sPaginationType": "simple_numbers",
-            ajax: '{{ route("$module_name.index_data") }}',
+            ajax: '{{ route("pabrics.index_data") }}',
             dom: 'Blfrtip',
             buttons: [
-
                 'excel',
                 'pdf',
                 'print'
@@ -100,12 +123,13 @@
                         return meta.row + meta.settings._iDisplayStart + 1;
                     }
                 },
-
-                {data: 'code', name: 'code'},
-                {data: 'harga', name: 'harga'},
-                {data: 'harga_modal', name: 'harga_modal'},
-                {data: 'updated_at', name: 'updated_at'},
-
+                {
+                    data: 'name',
+                    name: 'name'
+                },{
+                    data: 'created',
+                    name: 'created'
+                },
                 {
                     data: 'action',
                     name: 'action',
@@ -117,12 +141,9 @@
         .buttons()
         .container()
         .appendTo("#buttons");
-
-
-
     </script>
 
-<script type="text/javascript">
+    <script type="text/javascript">
 jQuery.noConflict();
 (function( $ ) {
 $(document).on('click', '#Tambah, #Edit', function(e){
@@ -135,7 +156,6 @@ $(document).on('click', '#Tambah, #Edit', function(e){
         }
         if($(this).attr('id') == 'Edit')
         {
-            $('.modal-dialog').addClass('modal-lg');
             $('.modal-dialog').removeClass('modal-sm');
             $('#ModalHeader').html('<i class="bi bi-grid-fill"></i> &nbsp;Edit {{ Label_case($module_title) }}');
         }

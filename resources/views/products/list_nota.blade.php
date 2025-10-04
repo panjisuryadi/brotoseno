@@ -170,6 +170,19 @@
                                         <!-- </div> -->
                                         <div class="form-group">
                                             <?php
+                                            $field_id   = 'pabrik_'.$number;
+                                            ?>
+                                            <label for="product_category" class="form-label d-block">Pabrik</label>
+                                            <select name="pabrik" id="{{$field_id}}" class="select2 form-control @error('new_product.product_category_id') is-invalid @enderror" required>
+                                            <option value="">Semua Pabrik</option>
+
+                                                @foreach($pabrik as $pab)
+                                                    <option value="{{ $pab->id }}">{{ $pab->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <?php
                                             $field_id   = 'product_category_'.$number;
                                             ?>
                                             <label for="product_category" class="form-label d-block">Product Category</label>
@@ -223,14 +236,14 @@
                                             <?php
                                             $field_name = 'new_product.group_id';
                                             $field_id   = 'group_'.$number;
-                                            $field_lable = label_case('group');
+                                            $field_lable = label_case('jenis');
                                             $field_placeholder = $field_lable;
                                             $invalid = $errors->has($field_name) ? ' is-invalid' : '';
                                             $required = "required";
                                             ?>
-                                            <label for="{{ $field_name }}" class="form-label d-block">Pabrik
+                                            <label for="{{ $field_name }}" class="form-label d-block">Jenis
                                                 <span class="text-danger">*</span>
-                                                <span class="small">Jenis Pabrik</span>
+                                                <span class="small">Kategori Jenis</span>
                                             </label>
                                             <select class="form-control select2 @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}" required>
                                                 <option value="" selected disabled>Pilih {{ $field_lable }}</option>
@@ -383,6 +396,20 @@
 
                                         <div class="form-group">
                                             <?php
+                                            $field_id   = 'pabrik_'.$number;
+                                            ?>
+                                            <label for="product_category" class="form-label d-block">Pabrik</label>
+                                            <select name="pabrik" id="{{$field_id}}" class="select2 form-control @error('new_product.product_category_id') is-invalid @enderror" required>
+                                            <option value="">Semua Pabrik</option>
+
+                                                @foreach($pabrik as $pab)
+                                                    <option value="{{ $pab->id }}">{{ $pab->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <?php
                                             $field_id   = 'product_category_'.$number;
                                             ?>
                                             <label for="product_category" class="form-label d-block">Product Category</label>
@@ -441,9 +468,9 @@
                                             $invalid = $errors->has($field_name) ? ' is-invalid' : '';
                                             $required = "required";
                                             ?>
-                                            <label for="{{ $field_name }}" class="form-label d-block">Pabrik
+                                            <label for="{{ $field_name }}" class="form-label d-block">Jenis
                                                 <span class="text-danger">*</span>
-                                                <span class="small">Jenis Pabrik</span>
+                                                <span class="small">Kategori Jenis</span>
                                             </label>
                                             <select class="form-control select2 @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}" required>
                                                 <option value="" selected disabled>Pilih {{ $field_lable }}</option>
@@ -540,12 +567,13 @@
 <script src="{{  asset('js/jquery.min.js') }}"></script>
 
 <script>
-    function edit_product(id, category, model, karat, group, code, berat, baki){
+    function edit_product(id, category, model, karat, group, pabrik, code, berat, baki){
         $("#product_id").val(id);
         $("#product_category_1").val(category);
         $("#model_1").val(model);
         $("#karat_1").val(karat);
         $("#group_1").val(group);
+        $("#pabrik_1").val(pabrik);
         $("#baki_id_1").val(baki);
         $("#code_1").val(code);
         // $("#keterangan_1").val(keterangan);
@@ -577,6 +605,12 @@
 
         $('#group_0').select2({
             dropdownParent: $('#createModal'),
+            placeholder: "Pilih Group",
+            allowClear: true
+        });
+
+        $('#pabrik_0').select2({
+            dropdownParent: $('#createModal'),
             placeholder: "Pilih Pabrik",
             allowClear: true
         });
@@ -606,6 +640,12 @@
         });
 
         $('#group_1').select2({
+            dropdownParent: $('#detailModal'),
+            placeholder: "Pilih Jenis",
+            allowClear: true
+        });
+
+        $('#pabrik_1').select2({
             dropdownParent: $('#detailModal'),
             placeholder: "Pilih Pabrik",
             allowClear: true

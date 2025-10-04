@@ -21,6 +21,7 @@ use Modules\GoodsReceipt\Models\GoodsReceiptItem;
 use Modules\Stok\Models\StockOffice;
 use App\Models\Harga;
 use App\Models\Baki;
+use App\Models\Pabric;
 use App\Models\Modal;
 use App\Models\ModalData;
 use App\Models\StockOpname;
@@ -518,6 +519,7 @@ class ProductController extends Controller
             'baki_id' => $baki_id,
             'status_id' => $stat,
             'group_id' => $request->new_product_group_id,
+            'pabrik_id'       => $request->pabrik,
             'model_id' => $request->new_product_model_id,
         ]);
 
@@ -595,6 +597,7 @@ class ProductController extends Controller
             'status_id'       => $stat, // brankas
             'group_id'       => $request->new_product_group_id,
             'model_id'       => $request->new_product_model_id,
+            'pabrik_id'       => $request->pabrik,
             'goodreceipt_item_id' => 0,
             'is_nota' => false,
         ]);
@@ -961,6 +964,7 @@ class ProductController extends Controller
     {
         $product_categories = Category::all();  // Assuming Supplier model is set up
         $groups = Group::all();  // Assuming Supplier model is set up
+        $pabrik = Pabric::where('status', 'A')->get();  // Assuming Supplier model is set up
         $models = ProdukModel::all();  // Assuming Supplier model is set up
         $hari_ini = new DateTime();
         $hari_ini = $hari_ini->format('Y-m-d');
@@ -1006,6 +1010,7 @@ class ProductController extends Controller
                 'cat_id',
                 'product_categories',
                 'groups',
+                'pabrik',
                 'models',
                 'isLogamMulia',
                 'hari_ini',
@@ -1878,7 +1883,7 @@ class ProductController extends Controller
         $module_name_singular = Str::singular($module_name);
 
         $module_action = 'List';
-        $$module_name = $module_model::with('category', 'product_item', 'baki', 'model', 'group');
+        $$module_name = $module_model::with('category', 'product_item', 'baki', 'model', 'group', 'pabrik');
         if ($request->get('status')) {
             $$module_name = $$module_name->where('status_id', $request->get('status'));
         }

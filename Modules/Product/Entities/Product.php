@@ -4,6 +4,7 @@ namespace Modules\Product\Entities;
 
 use App\Models\LookUp;
 use App\Models\Baki;
+use App\Models\Pabric;
 use App\Models\ProductHistories;
 use App\Models\SalesItem;
 use Illuminate\Database\Eloquent\Model;
@@ -225,6 +226,10 @@ class Product extends Model implements HasMedia
 
        public function karats(){
         return $this->belongsTo(Karat::class, 'karat_id', 'id');
+       }
+
+       public function pabrik(){
+        return $this->belongsTo(Pabric::class, 'pabrik_id', 'id');
        }
 
        public function statuses(){

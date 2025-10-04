@@ -9,7 +9,7 @@
                     <div class="form-group">
                         <?php
                         $field_name = 'code';
-                        $field_lable = label_case('Kode Group');
+                        $field_lable = label_case('Jenis');
                         $field_placeholder = $field_lable;
                         $invalid = $errors->has($field_name) ? ' is-invalid' : '';
                         $required = "required";
@@ -21,10 +21,11 @@
                             <span class="text-danger error-text {{ $field_name }}_err"></span>
                         </span>
                     </div>
+                    {{-- 
                     <div class="form-group">
-                        <label for="jenis_group_id">@lang('Jenis Group') <span class="text-danger">*</span></label>
+                        <label for="jenis_group_id">@lang('Jenis Pabrik') <span class="text-danger">*</span></label>
                         <select class="form-control" name="jenis_group_id" id="jenis_group_id" required>
-                            <option value="" selected disabled>Select Jenis Group</option>
+                            <option value="" selected disabled>Select Jenis Pabrik</option>
                             @foreach(\Modules\JenisGroup\Models\JenisGroup::all() as $jg)
                              <option {{ $jg->id == $detail->jenis_group_id ? 'selected' : '' }}
                               value="{{ $jg->id }}">{{ $jg->code }}</option>
@@ -34,7 +35,7 @@
                     <div class="form-group">
                         <?php
                         $field_name = 'name';
-                        $field_lable = label_case('Nama Group');
+                        $field_lable = label_case('Nama Pabrik');
                         $field_placeholder = $field_lable;
                         $invalid = $errors->has($field_name) ? ' is-invalid' : '';
                         $required = "required";
@@ -46,6 +47,7 @@
                             <span class="text-danger error-text {{ $field_name }}_err"></span>
                         </span>
                     </div>
+                    -- }}
                 </div>
             </div>
             {{-- <div class="form-group">

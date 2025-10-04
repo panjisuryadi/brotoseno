@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', $module_title)
+@section('title', 'Karat')
 @section('third_party_stylesheets')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css">
 @endsection
@@ -17,32 +17,38 @@
                 <div class="card-body">
                     <div class="flex justify-between py-1 border-bottom">
                         <div>
-                           <a href="{{ route(''.$module_name.'.create') }}"
-                                id="Tambah"
-                                data-toggle="tooltip"
-                                 class="btn btn-primary px-3">
-                                 <i class="bi bi-plus"></i>@lang('Add')&nbsp;@lang($module_title)
-                                </a>
 
+                <div class="btn-group">
+                        <div class="text-center ml-5">
+                            <div class="fw-bold h3" style="text-decoration: underline;">
+                                {{ number_format($harga->harga) }}
+                            </div>
+                            <div>
+                                {{ $harga->updated_at }}
+                            </div>
                         </div>
-                        <div id="buttons">
-                        </div>
+                </div>
+
+                    </div>
+                        <div id="buttons"></div>
                     </div>
                     <div class="table-responsive mt-1">
-                        <table id="datatable" style="width: 100%" class="table table-bordered table-hover table-responsive-sm">
+                        <table id="datatable" class="table table-bordered table-hover table-responsive-sm">
                             <thead>
                                 <tr>
-                                    <th style="width: 6%!important;">No</th>
-                                    <th class="text-lef">{{ __('Kode Pabrik') }}</th>
-                                   <th style="width: 15%!important;" class="text-center">{{ __('Harga') }}</th>
-                                   <th style="width: 15%!important;" class="text-center">{{ __('Harga Modal') }}</th>
+                                    <th style="width: 7%!important;">
+                                        NO
+                                    </th>
+                                    <th>
+                                        Harga
+                                    </th>
+                                     <th style="width: 13%!important;" class="text-center">
+                                        Tanggal
+                                    </th>  
 
-                                    <th style="width: 15%!important;" class="text-center">
-                                         {{ __('Updated') }}
-                                    </th>
-                                    <th style="width: 18%!important;" class="text-center">
-                                        {{ __('Action') }}
-                                    </th>
+                                     <th style="width: 9%!important;" class="text-center">
+                                        User
+                                    </th>  
                                 </tr>
                             </thead>
                         </table>
@@ -52,8 +58,50 @@
         </div>
     </div>
 </div>
-@endsection
 
+<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-lg font-bold" id="addModalLabel">Set Harga</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-4">
+                <form action="/karats" method="post">
+                    @csrf
+                    <label for="">Harga</label>
+                    <input type="number" class="form-control" name="harga">
+                    <button class="btn btn-sm btn-success">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-lg font-bold" id="addModalLabel">Set Harga</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-4">
+                <form action="/karats_update" method="post">
+                    @csrf
+                    <label for="">Harga</label>
+                    <input type="number" class="form-control" name="harga">
+                    <button class="btn btn-sm btn-success">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@endsection
 <x-library.datatable />
 @push('page_scripts')
    <script type="text/javascript">
@@ -85,10 +133,9 @@
                 }
             ],
             "sPaginationType": "simple_numbers",
-            ajax: '{{ route("$module_name.index_data") }}',
+            ajax: '{{ route("karats.history_data") }}',
             dom: 'Blfrtip',
             buttons: [
-
                 'excel',
                 'pdf',
                 'print'
@@ -101,28 +148,24 @@
                     }
                 },
 
-                {data: 'code', name: 'code'},
-                {data: 'harga', name: 'harga'},
-                {data: 'harga_modal', name: 'harga_modal'},
-                {data: 'updated_at', name: 'updated_at'},
-
                 {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
+                    data: 'harga',
+                    name: 'harga'
+                },{
+                    data: 'tanggal',
+                    name: 'tanggal'
+                },{
+                    data: 'user',
+                    name: 'user'
                 }
             ]
         })
         .buttons()
         .container()
         .appendTo("#buttons");
-
-
-
     </script>
 
-<script type="text/javascript">
+    <script type="text/javascript">
 jQuery.noConflict();
 (function( $ ) {
 $(document).on('click', '#Tambah, #Edit', function(e){
@@ -135,7 +178,6 @@ $(document).on('click', '#Tambah, #Edit', function(e){
         }
         if($(this).attr('id') == 'Edit')
         {
-            $('.modal-dialog').addClass('modal-lg');
             $('.modal-dialog').removeClass('modal-sm');
             $('#ModalHeader').html('<i class="bi bi-grid-fill"></i> &nbsp;Edit {{ Label_case($module_title) }}');
         }

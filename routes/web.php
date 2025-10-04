@@ -83,6 +83,21 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/stockopname/opname_data/{id}', 'StockOpnameController@opname_data')
         ->name('stock_opname.opname_data');
 
+    Route::get('/pabric', 'PabricController@list')
+        ->name('pabrics.list');
+
+    Route::get('/pabric/index_data', 'PabricController@index_data')
+        ->name('pabrics.index_data');
+
+    Route::post('/pabric', 'PabricController@insert')
+        ->name('pabrics.insert');
+
+    Route::put('/pabric/{id}', 'PabricController@update')
+        ->name('pabrics.update');
+
+    Route::delete('/pabric/delete/{id}', 'PabricController@delete')
+        ->name('pabrics.delete');
+
     Route::get('/bakis', 'BakiController@list')
         ->name('bakis.list');
 

@@ -1619,15 +1619,28 @@ class GenerateMenus
                 ]);
 
 
-            // GoldCategories
-            $Categories->add('<i class="c-sidebar-nav-icon  bi bi-award text-sm"></i> ' . __('Gold Categories'), [
-                'route' => 'goldcategory.index',
+            // GoldCategories ganti ke category jenis
+            // $Categories->add('<i class="c-sidebar-nav-icon  bi bi-award text-sm"></i> ' . __('Gold Categories'), [
+            //     'route' => 'goldcategory.index',
+            //     'class' => 'nav-item',
+            // ])
+            //     ->data([
+            //         'order'         => 3,
+            //         'activematches' => ['goldcategories*'],
+            //         'permission'    => ['access_goldcategories'],
+            //     ])
+            //     ->link->attr([
+            //         'class' => 'c-sidebar-nav-link py-2',
+            //     ]);
+
+            $Categories->add('<i class="c-sidebar-nav-icon  bi bi-dot text-sm"></i> ' . __('Kategori Jenis'), [
+                'route' => 'group.index',
                 'class' => 'nav-item',
             ])
                 ->data([
                     'order'         => 3,
-                    'activematches' => ['goldcategories*'],
-                    'permission'    => ['access_goldcategories'],
+                    'activematches' => ['groups*'],
+                    'permission'    => ['access_groups'],
                 ])
                 ->link->attr([
                     'class' => 'c-sidebar-nav-link py-2',
@@ -1694,8 +1707,21 @@ class GenerateMenus
 
 
             // JenisGroups
-            $jenisGropus->add('<i class="c-sidebar-nav-icon  bi bi-dot text-sm"></i> ' . __('Jenis Pabrik'), [
-                'route' => 'jenisgroup.index',
+            // $jenisGropus->add('<i class="c-sidebar-nav-icon  bi bi-dot text-sm"></i> ' . __('Pabrik'), [
+            //     'route' => 'jenisgroup.index',
+            //     'class' => 'nav-item',
+            // ])
+            //     ->data([
+            //         'order'         => 3,
+            //         'activematches' => ['jenisgroups*'],
+            //         'permission'    => ['access_jenisgroups'],
+            //     ])
+            //     ->link->attr([
+            //         'class' => 'c-sidebar-nav-link py-2',
+            //     ]);
+
+            $jenisGropus->add('<i class="c-sidebar-nav-icon  bi bi-dot text-sm"></i> ' . __('Pabrik'), [
+                'route' => 'pabrics.list',
                 'class' => 'nav-item',
             ])
                 ->data([
@@ -1709,18 +1735,18 @@ class GenerateMenus
 
 
             // Groups
-            $jenisGropus->add('<i class="c-sidebar-nav-icon  bi bi-dot text-sm"></i> ' . __('Pabrik'), [
-                'route' => 'group.index',
-                'class' => 'nav-item',
-            ])
-                ->data([
-                    'order'         => 3,
-                    'activematches' => ['groups*'],
-                    'permission'    => ['access_groups'],
-                ])
-                ->link->attr([
-                    'class' => 'c-sidebar-nav-link py-2',
-                ]);
+            // $jenisGropus->add('<i class="c-sidebar-nav-icon  bi bi-dot text-sm"></i> ' . __('Kategori Jenis'), [
+            //     'route' => 'group.index',
+            //     'class' => 'nav-item',
+            // ])
+            //     ->data([
+            //         'order'         => 3,
+            //         'activematches' => ['groups*'],
+            //         'permission'    => ['access_groups'],
+            //     ])
+            //     ->link->attr([
+            //         'class' => 'c-sidebar-nav-link py-2',
+            //     ]);
 
 
             // JenisBuyBacks

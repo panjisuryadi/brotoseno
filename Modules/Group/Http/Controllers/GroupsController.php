@@ -150,6 +150,7 @@ public function index_data(Request $request)
 
 public function store(Request $request)
     {
+
         $module_title = $this->module_title;
         $module_name = $this->module_name;
         $module_path = $this->module_path;
@@ -166,8 +167,9 @@ public function store(Request $request)
 
         $input = $request->all();
         $input = $request->except('_token');
+        $input['jenis_group_id'] = 18; // hardcode general
         $input['code'] = $input['code'];
-        $input['name'] = $input['name'];
+        $input['name'] = $input['code'];
         // $input['harga'] = preg_replace("/[^0-9]/", "", $input['harga']);
         // $input['harga_modal'] = preg_replace("/[^0-9]/", "", $input['harga_modal']);
         // dd($input);
@@ -271,14 +273,16 @@ public function update(Request $request, $id)
 
         $input = $request->all();
         $input = $request->except('_token');
+        $input['jenis_group_id'] = 18; // hardcode general
         $input['code'] = $input['code'];
-        $input['name'] = $input['name'];
+        $input['name'] = $input['code'];
+        // $input['name'] = $input['name'];
         //$input['harga'] = $input['harga'];
         $input['harga'] = preg_replace("/[^0-9]/", "", $input['harga'] ?? 0);
         $input['harga_modal'] = preg_replace("/[^0-9]/", "", $input['harga_modal'] ?? 0);
         //dd($input);
         $$module_name_singular->update($input);
-        return response()->json(['success'=>'  '.$module_title.' Sukses diupdate.']);
+        return response()->json(['success'=>'Jenis Sukses diupdate.']);
 
  }
 

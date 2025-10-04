@@ -5,9 +5,9 @@
                             @method('patch')
              <div class="flex flex-row grid grid-cols-3 gap-4">
        <div class="form-group">
-                <label for="group_id">@lang('Jenis Group') <span class="text-danger">*</span></label>
+                <label for="group_id">@lang('Jenis Pabrik') <span class="text-danger">*</span></label>
                 <select class="form-control" name="group_id" id="group_id" required>
-                    <option value="" selected disabled>@lang('Select Kode Group')</option>
+                    <option value="" selected disabled>@lang('Select Kode Pabrik')</option>
                     @foreach(\Modules\Group\Models\Group::all() as $main)
                     <option {{ $main->id == $detail->group_id ? 'selected' : '' }} value="{{ $main->id }}">{{ $main->code }}</option>
                     @endforeach

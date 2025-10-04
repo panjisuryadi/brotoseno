@@ -49,6 +49,7 @@
         '{{ $data->model->id ?? '' }}',
         '{{ $data->karat->id ?? '' }}',
         '{{ $data->group->id ?? '' }}',
+        '{{ $data->pabrik->id ?? '' }}',
         '{{ $data->product_code ?? '' }}',
         '{{ $data->berat_emas }}',
         '{{ $data->baki->id ?? '' }}'

@@ -92,7 +92,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/pabric', 'PabricController@insert')
         ->name('pabrics.insert');
 
-    Route::put('/pabric/{id}', 'PabricController@update')
+    Route::put('/pabric', 'PabricController@update')
         ->name('pabrics.update');
 
     Route::delete('/pabric/delete/{id}', 'PabricController@delete')

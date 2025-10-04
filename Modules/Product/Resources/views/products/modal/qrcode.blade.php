@@ -23,7 +23,7 @@
       <div class="col-6 flex justify-center items-center">
         <div class="py-2 ml-3 inconsolata text-center font-semibold tr uppercase no-underline text-lg leading-tight" style="font-size: 80pt;">
           <br>&nbsp;<strong>{{ $detail->product_code }}</strong>
-          <br style="font-size: 55pt;">&nbsp;<strong> {{ $detail->group->name }},{{ $detail->berat_emas }} gr, {{ $detail->karat->name }}|{{ $detail->karat->kode }}</strong></br>
+          <br style="font-size: 55pt;">&nbsp;<strong>{{ $detail->berat_emas }} gr, {{ $detail->karat->name }}|{{ $detail->karat->kode }}</strong></br>
         </div>
       </div>
     </div>

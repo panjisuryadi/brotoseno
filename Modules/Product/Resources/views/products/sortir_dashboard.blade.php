@@ -19,7 +19,7 @@ display: inline-block;
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-body">
-                        <div class="text-value-lg">23</div>
+                        <div class="text-value-lg">0</div>
                         <div>Total Stok Opname</div>
                         <div class="progress progress-xs my-2">
                             <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
@@ -119,76 +119,76 @@ display: inline-block;
 @push('page_scripts')
 
 <script type="text/javascript">
-    $('#datatable').DataTable({
-        processing: true,
-        serverSide: true,
-        autoWidth: true,
-        responsive: true,
-        lengthChange: true,
-        searching: true,
-        "oLanguage": {
-            "sSearch": "<i class='bi bi-search'></i> {{ __("labels.table.search") }} : ",
-            "sLengthMenu": "_MENU_ &nbsp;&nbsp;Data Per {{ __("labels.table.page") }} ",
-            "sInfo": "{{ __("labels.table.showing") }} _START_ s/d _END_ {{ __("labels.table.from") }} <b>_TOTAL_ data</b>",
-            "sInfoFiltered": "(filter {{ __("labels.table.from") }} _MAX_ total data)",
-            "sZeroRecords": "{{ __("labels.table.not_found") }}",
-            "sEmptyTable": "{{ __("labels.table.empty") }}",
-            "sLoadingRecords": "Harap Tunggu...",
-            "oPaginate": {
-                "sPrevious": "{{ __("labels.table.prev") }}",
-                "sNext": "{{ __("labels.table.next") }}"
-            }
-        },
-        "aaSorting": [[ 0, "desc" ]],
-        "columnDefs": [
-        {
-            "targets": 'no-sort',
-            "orderable": false,
-        }
-        ],
-        "sPaginationType": "simple_numbers",
-        ajax: '{{ route("products.ajax_sortir") }}',
-        dom: 'Blfrtip',
-        buttons: [
-        'excel',
-        'pdf',
-        'print'
-        ],
-        columns: [{
-            "data": 'id',
-            "sortable": false,
-            render: function(data, type, row, meta) {
-                return meta.row + meta.settings._iDisplayStart + 1;
-            }
-        },
-        {
-            data: 'product_image',
-            name: 'product_image'
-        }, {
-            data: 'product_name',
-            name: 'product_name'
-        },
-        {
-            data: 'product_price',
-            name: 'product_price'
-        }, {
-            data: 'status',
-            name: 'status'
-        }, {
-            data: 'lokasi',
-            name: 'lokasi'
-        },
-        {
-            data: 'action',
-            name: 'action',
-            orderable: false,
-            searchable: false
-        }
-        ]
-    })
-    .buttons()
-    .container()
-    .appendTo("#buttons");
+    // $('#datatable').DataTable({
+    //     processing: true,
+    //     serverSide: true,
+    //     autoWidth: true,
+    //     responsive: true,
+    //     lengthChange: true,
+    //     searching: true,
+    //     "oLanguage": {
+    //         "sSearch": "<i class='bi bi-search'></i> {{ __("labels.table.search") }} : ",
+    //         "sLengthMenu": "_MENU_ &nbsp;&nbsp;Data Per {{ __("labels.table.page") }} ",
+    //         "sInfo": "{{ __("labels.table.showing") }} _START_ s/d _END_ {{ __("labels.table.from") }} <b>_TOTAL_ data</b>",
+    //         "sInfoFiltered": "(filter {{ __("labels.table.from") }} _MAX_ total data)",
+    //         "sZeroRecords": "{{ __("labels.table.not_found") }}",
+    //         "sEmptyTable": "{{ __("labels.table.empty") }}",
+    //         "sLoadingRecords": "Harap Tunggu...",
+    //         "oPaginate": {
+    //             "sPrevious": "{{ __("labels.table.prev") }}",
+    //             "sNext": "{{ __("labels.table.next") }}"
+    //         }
+    //     },
+    //     "aaSorting": [[ 0, "desc" ]],
+    //     "columnDefs": [
+    //     {
+    //         "targets": 'no-sort',
+    //         "orderable": false,
+    //     }
+    //     ],
+    //     "sPaginationType": "simple_numbers",
+    //     ajax: '{{ route("products.ajax_sortir") }}',
+    //     dom: 'Blfrtip',
+    //     buttons: [
+    //     'excel',
+    //     'pdf',
+    //     'print'
+    //     ],
+    //     columns: [{
+    //         "data": 'id',
+    //         "sortable": false,
+    //         render: function(data, type, row, meta) {
+    //             return meta.row + meta.settings._iDisplayStart + 1;
+    //         }
+    //     },
+    //     {
+    //         data: 'product_image',
+    //         name: 'product_image'
+    //     }, {
+    //         data: 'product_name',
+    //         name: 'product_name'
+    //     },
+    //     {
+    //         data: 'product_price',
+    //         name: 'product_price'
+    //     }, {
+    //         data: 'status',
+    //         name: 'status'
+    //     }, {
+    //         data: 'lokasi',
+    //         name: 'lokasi'
+    //     },
+    //     {
+    //         data: 'action',
+    //         name: 'action',
+    //         orderable: false,
+    //         searchable: false
+    //     }
+    //     ]
+    // })
+    // .buttons()
+    // .container()
+    // .appendTo("#buttons");
 
 
 </script>

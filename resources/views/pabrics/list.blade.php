@@ -76,7 +76,53 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-lg font-bold" id="addModalLabel">Update Pabrik</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-4">
+                
+                <form id="editForm" action="pabric" method="post"> 
+                    @csrf
+                    @method('PUT') 
+                    <div class="px-0 py-2">
+                        <div class="col-span-2 px-2">
+                            <div class="flex flex-row grid grid-cols-2 gap-1">
+                                <div class="form-group">
+                                    <label for="name_input">Name</label>
+                                    <input type="hidden" name="id" id="id">
+                                    <input type="text" class="form-control" name="name" id="name" required> 
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-success">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
+<script>
+/**
+ * Fungsi untuk mengisi data dan action URL Modal Edit
+ * @param {string} id - ID dari baris data yang diklik
+ * @param {string} name - Nama dari pabric
+ * @param {string} update_url - URL route update
+ */
+function show_modal(id, name){
+    console.log(id);
+    console.log(name);
+    // 1. Isi nilai input form
+    // document.getElementById("id").value = id;
+    // document.getElementById("name").value = name;
+    
+}
+</script>
 @endsection
 <x-library.datatable />
 @push('page_scripts')
@@ -143,7 +189,12 @@
         .appendTo("#buttons");
     </script>
 
-    <script type="text/javascript">
+<script type="text/javascript">
+    function show_modal(id, name){
+        document.getElementById("id").value = id;
+        document.getElementById("name").value = name;
+    }
+
 jQuery.noConflict();
 (function( $ ) {
 $(document).on('click', '#Tambah, #Edit', function(e){

@@ -31,6 +31,11 @@ class StockOpname extends Model
     public static function check_opname()
     {
         $stock  = self::latest()->first();
-        return $stock->status; // or StockOpname::latest()->get();
+        if($stock){
+            return $stock->status; // or StockOpname::latest()->get();
+
+        }else{
+            return 'N';
+        }
     }
 }

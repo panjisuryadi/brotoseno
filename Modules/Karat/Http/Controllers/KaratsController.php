@@ -36,6 +36,9 @@ class KaratsController extends Controller
      */
 
   public function index() {
+    // exit();
+        return redirect()->route('karats.list');
+
         $module_title = $this->module_title;
         $module_name = $this->module_name;
         $module_path = $this->module_path;

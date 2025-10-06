@@ -44,6 +44,11 @@ class PabricController extends Controller
     
     public function insert(Request $request)
     {
+        $check  = Pabric::where('name', $request->name)->where('status', 'A')->first();
+        if($check){
+            toast('Nama Pabrik Sudah ada', 'error');
+            return redirect()->back();
+        }
         $pabric    = pabric::create([
             'name'      => $request->name,
         ]);
@@ -53,6 +58,11 @@ class PabricController extends Controller
 
     public function update(Request $request)
     {
+        $check  = Pabric::where('id', '!=', $request->id)->where('name', $request->name)->where('status', 'A')->first();
+        if($check){
+            toast('Nama Pabrik Sudah ada', 'error');
+            return redirect()->back();
+        }
         $pabric = pabric::where('id', $request->id)->firstOrFail();
         $pabric->name = $request->name;
         $pabric->save();

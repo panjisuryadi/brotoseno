@@ -96,7 +96,7 @@
                 }
             ],
             "sPaginationType": "simple_numbers",
-            ajax: '{{ route("stock_opname.index_data",["id" => $stockopname->id]) }}',
+            ajax: '{{ route("stock_opname.index_data",["id" => $stockopname->id ?? 0]) }}',
             dom: 'Blfrtip',
             buttons: [
                 'excel',

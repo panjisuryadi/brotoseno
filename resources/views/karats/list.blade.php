@@ -146,7 +146,7 @@
     function muncul_submit(){
         let pass = document.getElementById('password').value;
         console.log(pass);
-        if (pass === 'Paopao000') {
+        if (pass === 'brotoseno321') {
             document.getElementById('SimpanUpdate').style.display = 'block';
         } else {
             document.getElementById('SimpanUpdate').style.display = 'none';

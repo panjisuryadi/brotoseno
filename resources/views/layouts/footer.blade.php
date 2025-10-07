@@ -93,7 +93,7 @@ function closePasswordModal2() {
 
 function verifyPassword2() {
     const input = document.getElementById('sidebarPasswordInput2').value;
-    if (input === 'Paopao000') {
+    if (input === 'brotoseno321') {
         window.location.href = targetUrl;
     } else {
         document.getElementById('passwordError2').style.display = 'block';

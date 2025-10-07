@@ -10,18 +10,14 @@
         }
 
         body {
-            /* Remove width from body to allow the receipt to define size */
+            width: 80mm;
             margin: 0;
             padding: 0;
         }
 
         .receipt {
-            width: 80mm; /* Define receipt width here */
             padding: 10px;
-            box-sizing: border-box; /* Include padding in the 80mm width */
         }
-
-        /* ... (rest of your existing styles: .title, .line, .right, etc.) ... */
 
         .title {
             text-align: center;
@@ -38,6 +34,10 @@
             text-align: right;
         }
 
+        .left {
+            text-align: left;
+        }
+
         .center {
             text-align: center;
         }
@@ -46,33 +46,21 @@
             font-size: 10px;
         }
 
-        /* CSS for 2x Printing */
         @media print {
             @page {
-                /* Set the margin to 0 for a continuous receipt roll */
-                margin: 0; 
+                margin: 0;
                 size: 80mm auto;
             }
 
             body {
                 margin: 0;
             }
-
-            /* This forces a break/cut after the first receipt copy */
-            .page-break {
-                display: block;
-                /* Adjust height based on your printer's auto-cut margin. 
-                   Adding a bit of space helps ensure a clean cut */
-                height: 10mm; 
-                visibility: hidden; 
-            }
         }
     </style>
 </head>
 <body onload="window.print()">
-
     <div class="receipt">
-        <div class="title">Brotoseno</div>
+        <div class="title">Lovin Cahaya</div>
         <div class="center small">No Nota: {{$buyback->nota}}</div>
         <div class="center small">Tanggal: {{ date('d/m/Y H:i:s', strtotime($buyback->created_at)) }}</div>
 
@@ -101,37 +89,5 @@
 
         <div class="center small">Terima kasih </div>
     </div>
-    <div class="page-break"></div>
-
-    <div class="receipt">
-        <div class="title">Brotoseno (Printed)</div>
-        <div class="center small">No Nota: {{$buyback->nota}}</div>
-        <div class="center small">Tanggal: {{ date('d/m/Y H:i:s', strtotime($buyback->created_at)) }}</div>
-
-        <div class="line"></div>
-
-        <div><strong>Produk:</strong></div>
-        <div>{{$buyback->product->product_name}}</div>
-        <div>{{$buyback->product->product_code}}</div>
-        <div>Berat: {{$buyback->product->berat_emas}} gram</div>
-        <div class="right">Rp {{number_format($buyback->harga)}}</div>
-
-        <div class="line"></div>
-
-        <table style="width: 100%;">
-            <tr>
-                <td><strong>Metode Pembayaran</strong></td>
-                <td class="right">{{ucfirst($buyback->payment)}}</td>
-            </tr>
-            <tr>
-                <td><strong>Total</strong></td>
-                <td class="right"><strong>Rp {{number_format($buyback->harga)}}</strong></td>
-            </tr>
-        </table>
-
-        <div class="line"></div>
-
-        <div class="center small">Terima kasih </div>
-    </div>
-    </body>
+</body>
 </html>

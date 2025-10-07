@@ -85,6 +85,14 @@ class BuybackController extends Controller
         $product = $request->product;
         $potongan   = $request->potongan ?? 0;
         $tambahan   = $request->tambahan ?? 0;
+        $password   = $request->password ?? "";
+        $manual   = $request->manual ?? "";
+        if(!empty($manual)){
+            if($password !== 'brotoseno321'){
+                toast('Password Salah', 'error');
+                return redirect()->back();
+            }
+        }
         // $products = Product::where('id', $product)->first();
         // echo json_encode($products);
         // exit();

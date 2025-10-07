@@ -125,8 +125,14 @@ class StockopnameController extends Controller
     public function data(Request $request)
     {
         $stockopname   = Stockopname::where('status', 'B')->latest()->first();
-        $stockopname_id   = $stockopname->id;
-        $status = $stockopname->status;
+        if($stockopname){
+            $stockopname_id   = $stockopname->id;
+            $status = $stockopname->status;
+
+        }else{
+            $stockopname_id   = 0;
+            $status = 'B';
+        }
 
         
         $module_title = $this->module_title;
@@ -255,21 +261,30 @@ class StockopnameController extends Controller
     public function list(Request $request)
     {
         $stockopname   = Stockopname::latest()->first();
-        $stockopname_id   = $stockopname->id;
-        $status = $stockopname->status;
-        if($status !== 'A'){
+        if($stockopname){
+            $stockopname_id   = $stockopname->id;
+            $status = $stockopname->status;
+            if($status !== 'A'){
+                $stockopname    = Stockopname::create([
+                    'status'      => 'A',
+                ]);
+            }
+            $button = '';
+            $count  = StockOpnameBaki::where('stock_opname_id', $stockopname_id)->where('status', 'P')->count();
+            if($count > 0){
+                $button = 'disabled';
+            }
+
+            $stockopname_id = $stockopname->id;
+
+        }else{
             $stockopname    = Stockopname::create([
                 'status'      => 'A',
             ]);
+            $button = 'enabled';
         }
 
-        $button = '';
-        $count  = StockOpnameBaki::where('stock_opname_id', $stockopname_id)->where('status', 'P')->count();
-        if($count > 0){
-            $button = 'disabled';
-        }
-
-        $stockopname_id = $stockopname->id;
+        
         $baki   = Baki::latest()->get();
         if($status !== 'A'){
             foreach($baki as $b){

@@ -249,7 +249,7 @@
             </div>
 
             <div class="col-6">
-                <h3 style="text-align: center;">{{ $product['toko'] }}</h3>
+                <h3 style="text-align: center;">{{ $product['toko'] }} {{ $product['print'] }}</h3>
                 <p>{{ $product['alamat'] }}</p>
                 <p>{{ $product['telp'] }}</p>
             </div>

@@ -329,6 +329,19 @@
                                             <!-- <input class="form-control" type="number" name="{{ $field_name }}" id="{{ $field_name }}" id="{{ $field_name }}" placeholder="{{ $field_placeholder }}" style="background-color: #e6ffe6; color: #006400; border: 1px solid #00cc00;"> -->
                                         </div>
 
+                                        <div class="form-group">
+                                            <?php
+                                            $field_name = 'nilai_tukar_emas';
+                                            $field_lable = label_case('Nilai Tukat Emas');
+                                            $field_placeholder = 0;
+                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                            $required = "required";
+                                            ?>
+                                            <label class="mb-0" for="{{ $field_name }}">{{ $field_lable }}<span class="text-danger">*</span></label>
+                                            <input class="form-control" type="text" name="{{ $field_name }}" id="{{ $field_name }}" id="{{ $field_name }}" placeholder="{{ $field_placeholder }}" style="background-color: #e6ffe6; color: #d9cb4bff; border: 1px solid #bfd421ff;">
+                                            <!-- <input class="form-control" type="number" name="{{ $field_name }}" id="{{ $field_name }}" id="{{ $field_name }}" placeholder="{{ $field_placeholder }}" style="background-color: #e6ffe6; color: #006400; border: 1px solid #00cc00;"> -->
+                                        </div>
+
                                         <div class="form-group" style="display:none;">
                                             <?php
                                             $field_name = 'berat_timbangan';

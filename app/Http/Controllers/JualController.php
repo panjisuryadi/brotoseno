@@ -957,10 +957,10 @@ class JualController extends Controller
         $id         = $request->id;
         $password   = $request->password;
         $print      = '';
-        if($password !== 'Paopao000'){
-            $print  = '';
-            toast('Password Salah!', 'error');
-            return redirect()->back();
+        if($password !== 'brotoseno321'){
+            $print  = 'Printed';
+            // toast('Password Salah!', 'error');
+            // return redirect()->back();
         }
         $nama_cus   = '';
         $address    = '';

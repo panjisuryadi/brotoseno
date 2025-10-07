@@ -233,7 +233,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-3">
+                            <div class="col-2">
                                 <div class="form-group">
                                     <label for="" id="label_tambahan">Max Harga Tambahan : </label>
                                     <input type="number" class="form-control" tambahan="{{ $tambahan }}"
@@ -242,12 +242,21 @@
                                 </div>
                             </div>
 
-                            <div class="col-3">
+                            <div class="col-2">
                                 <div class="form-group">
                                     <label for="" id="label_manual">Input Harga Manual : </label>
                                     <input type="number" class="form-control" 
                                         name="manual" id="manual" onkeyup="change_harga();" required
                                         value="0">
+                                </div>
+                            </div>
+
+                            <div class="col-2">
+                                <div class="form-group">
+                                    <label for="" id="label_manual">Password : </label>
+                                    <input type="password" class="form-control" 
+                                        name="password" id="password" onkeyup="change_harga();"
+                                        value="" disabled>
                                 </div>
                             </div>
 
@@ -522,6 +531,7 @@
             let manual = $("#manual");
             let potongan = $("#potongan");
             let tambahan = $("#tambahan");
+            let password = $("#password");
             let tambahanPercent = parseFloat($('#tambahan').attr('tambahan')) || 0;
             let maxTambahan = awal * tambahanPercent / 100;
             let potonganPercent = parseFloat($('#potongan').attr('potongan')) || 0;
@@ -559,6 +569,7 @@
             else if (manualVal > 0) {
                 potongan.val(0).prop("disabled", true).prop("readonly", true);
                 tambahan.val(0).prop("disabled", true).prop("readonly", true);
+                password.prop("disabled", false).prop("readonly", false);
 
                 harga = manualVal;
             }

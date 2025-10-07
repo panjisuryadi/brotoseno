@@ -194,7 +194,7 @@ class GenerateMenus
             ]);
 
             // EMAS - PEMBELIAN - PENERIMAAN BARANG
-            $Purchases->add('<i class="c-sidebar-nav-icon  bi bi-inboxes text-sm"></i> ' . __('Goods Receipts'), [
+            $Purchases->add('<i class="c-sidebar-nav-icon  bi bi-inboxes text-sm"></i> ' . __('Penerimaan Supplier'), [
                 'route' => 'goodsreceipt.index',
                 'class' => 'nav-item',
             ])

@@ -1646,6 +1646,19 @@ class GenerateMenus
                     'class' => 'c-sidebar-nav-link py-2',
                 ]);
 
+            $Categories->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Produk Models'), [
+                'route' => 'produkmodel.index',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 3,
+                    'activematches' => ['produkmodels*'],
+                    'permission'    => ['access_produkmodels'],
+                ])
+                ->link->attr([
+                    'class' => 'c-sidebar-nav-link py-2',
+                ]);
+
 
             // JenisPerhiasans
             // $Categories->add('<i class="c-sidebar-nav-icon  bi bi-dot text-sm"></i> '.__('Jenis Perhiasan'), [
@@ -1816,18 +1829,18 @@ class GenerateMenus
             ]);
 
             // ProdukModels
-            $dataMaster->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Produk Models'), [
-                'route' => 'produkmodel.index',
-                'class' => 'nav-item',
-            ])
-                ->data([
-                    'order'         => 3,
-                    'activematches' => ['produkmodels*'],
-                    'permission'    => ['access_produkmodels'],
-                ])
-                ->link->attr([
-                    'class' => 'c-sidebar-nav-link py-2',
-                ]);
+            // $dataMaster->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Produk Models'), [
+            //     'route' => 'produkmodel.index',
+            //     'class' => 'nav-item',
+            // ])
+            //     ->data([
+            //         'order'         => 3,
+            //         'activematches' => ['produkmodels*'],
+            //         'permission'    => ['access_produkmodels'],
+            //     ])
+            //     ->link->attr([
+            //         'class' => 'c-sidebar-nav-link py-2',
+            //     ]);
 
             $dataMaster->add('<i class="c-sidebar-nav-icon  bi bi-chevron-right text-sm"></i> ' . __('Baki'), [
                 'route' => 'bakis.list',

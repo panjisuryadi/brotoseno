@@ -303,27 +303,26 @@ public function update(Request $request, $id)
     {
 
         try {
-        $module_title = $this->module_title;
-        $module_name = $this->module_name;
-        $module_path = $this->module_path;
-        $module_icon = $this->module_icon;
-        $module_model = $this->module_model;
-        $module_name_singular = Str::singular($module_name);
+            $module_title = $this->module_title;
+            $module_name = $this->module_name;
+            $module_path = $this->module_path;
+            $module_icon = $this->module_icon;
+            $module_model = $this->module_model;
+            $module_name_singular = Str::singular($module_name);
 
-        $module_action = 'Delete';
+            $module_action = 'Delete';
 
-        $$module_name_singular = $module_model::findOrFail($id);
+            $$module_name_singular = $module_model::findOrFail($id);
 
-        $$module_name_singular->delete();
-         toast(''. $module_title.' Deleted!', 'success');
-         return redirect()->route(''.$module_name.'.index');
+            $$module_name_singular->delete();
+            toast(''. $module_title.' Deleted!', 'success');
+            return redirect()->route(''.$module_name.'.index');
 
-          } catch (\Exception $e) {
+        } catch (\Exception $e) {
            // dd($e);
                 toast(''. $module_title.' error!', 'warning');
                 return redirect()->back();
             }
-
     }
 
 }

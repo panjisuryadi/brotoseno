@@ -224,7 +224,7 @@
                                             $invalid = $errors->has($field_name) ? ' is-invalid' : '';
                                             $required = "required";
                                             ?>
-                                            <label for="{{ $field_name }}" class="form-label d-block">@lang('Karat') <span class="text-danger">*</span></label>
+                                            <label for="{{ $field_name }}" class="form-label d-block">@lang('Presentase') <span class="text-danger">*</span></label>
                                             <select class="select2 form-control select2 @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}" required>
                                                 @foreach($dataKarat as $karat)
                                                     <option value="{{ $karat->id }}" >{{ $karat->label }}</option>
@@ -241,11 +241,11 @@
                                             $invalid = $errors->has($field_name) ? ' is-invalid' : '';
                                             $required = "required";
                                             ?>
-                                            <label for="{{ $field_name }}" class="form-label d-block">Jenis
+                                            <label for="{{ $field_name }}" class="form-label d-block">Type
                                                 <span class="text-danger">*</span>
-                                                <span class="small">Kategori Jenis</span>
+                                                <span class="small">Kategori Type</span>
                                             </label>
-                                            <select class="form-control select2 @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}" required>
+                                            <select class="form-control select2 @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}" onchange="check_silver();" required>
                                                 <option value="" selected disabled>Pilih {{ $field_lable }}</option>
                                                 @foreach($groups as $group)
                                                 <option value="{{ $group->id }}">{{ $group->name }}</option>
@@ -285,6 +285,36 @@
                                             <!-- <div class="input-group">
                                             </div> -->
                                         </div>
+
+                                        <!-- HARGA BELI DAN JUAL -->
+
+                                        <div class="form-group silver" style="display: none;">
+                                            <?php
+                                            $field_name = 'buying_price';
+                                            $field_id   = 'buying_price_'.$number;
+                                            $field_lable = label_case('Harga beli');
+                                            $field_placeholder = $field_lable;
+                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                            $required = "required";
+                                            ?>
+                                            <label for="{{ $field_name }}">{{ $field_lable }}</label>
+                                            <input type="text" id="{{ $field_id }}" name="buying_price" class="form-control ">
+                                        </div>
+
+                                        <div class="form-group silver" style="display: none;">
+                                            <?php
+                                            $field_name = 'product_price';
+                                            $field_id   = 'product_price_'.$number;
+                                            $field_lable = label_case('Harga Jual');
+                                            $field_placeholder = $field_lable;
+                                            $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                            $required = "required";
+                                            ?>
+                                            <label for="{{ $field_name }}">{{ $field_lable }}</label>
+                                            <input type="text" id="{{ $field_id }}" name="product_price" class="form-control ">
+                                        </div>
+
+                                        <!-- END HARGA BELI JUAL -->
 
                                         <div class="form-group">
                                             <?php
@@ -451,7 +481,7 @@
                                             $invalid = $errors->has($field_name) ? ' is-invalid' : '';
                                             $required = "required";
                                             ?>
-                                            <label for="{{ $field_name }}" class="form-label d-block">@lang('Karat') <span class="text-danger">*</span></label>
+                                            <label for="{{ $field_name }}" class="form-label d-block">@lang('Presentase') <span class="text-danger">*</span></label>
                                             <select class="select2 form-control select2 @error($field_name) is-invalid @enderror" name="{{ $field_name }}" id="{{ $field_id }}" required>
                                                 @foreach($dataKarat as $karat)
                                                     <option value="{{ $karat->id }}" >{{ $karat->label }}</option>
@@ -567,6 +597,15 @@
 <script src="{{  asset('js/jquery.min.js') }}"></script>
 
 <script>
+
+    function check_silver(){
+        console.log($("#group_0").val());
+        if($("#group_0").val() == 32){ // model
+            $(".silver").show();
+        }else{
+            $(".silver").hide();
+        }
+    }
     function edit_product(id, category, model, karat, group, pabrik, code, berat, baki){
         $("#product_id").val(id);
         $("#product_category_1").val(category);

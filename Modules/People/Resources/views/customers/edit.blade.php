@@ -53,6 +53,12 @@
                                         <input type="text" class="form-control" name="city" value="{{ $customer->city }}">
                                     </div>
                                 </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label for="nik">{{ __('NIK') }} </label>
+                                        <input type="text" class="form-control" name="nik" value="{{ $customer->nik }}">
+                                    </div>
+                                </div>
                                 {{-- <div class="col-lg-4">
                                     <div class="form-group">
                                         <label for="country">{{ __('Country') }} </label>

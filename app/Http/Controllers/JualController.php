@@ -17,6 +17,7 @@ use App\Models\SalesGold;
 use App\Models\SalesItem;
 use App\Models\Service;
 use App\Models\Harga;
+use App\Models\HargaSilver;
 use App\Models\Config;
 use App\Models\Modal;
 use App\Models\BuyBack;
@@ -2472,9 +2473,19 @@ class JualController extends Controller
         }else{
             $harga = $harga->harga;
         }
+
+        $hargaSilver = HargaSilver::latest()->first();
+        if($hargaSilver == null){
+            $hargaSilver  = 0;
+        }else{
+            $hargaSilver = $hargaSilver->harga;
+        }
         $$module_name = $$module_name->latest()->get();
         $$module_name->each(function ($item) use ($harga) {
             $item->harga = $harga; // Add the harga attribute to the model
+        });
+        $$module_name->each(function ($item) use ($hargaSilver) {
+            $item->hargaSilver = $hargaSilver; // Add the harga attribute to the model
         });
         $data = $$module_name;
 
@@ -2569,7 +2580,13 @@ class JualController extends Controller
                         $price  = $data->karat->harga;
                     }
                     elseif($data->karat->type == 'SILVER'){
-                        $price  = $data->karat->harga;
+                        if($data->group_id == 32){ // harga jual
+                            $price  = $data->product_price;
+                        }elseif($data->group_id == 31){ // presentase dari harga silver
+                            // $hargaSilver    = HargaSilver::latest()->first();
+                            // $harga_silver   = $hargaSilver->harga;
+                            $price  = $data->berat_emas*$data->karat->coef*$data->hargaSilver;
+                        }
                     }
                 }
 

@@ -18,7 +18,6 @@ use Modules\GoodsReceipt\Models\TipePembelian;
 use Modules\GoodsReceipt\Models\GoodsReceiptItem;
 use Modules\Stok\Models\StockOffice;
 use App\Models\Harga;
-use App\Models\HargaSilver;
 use Yajra\DataTables\DataTables;
 
 class KaratController extends Controller
@@ -73,17 +72,6 @@ class KaratController extends Controller
         $harga->save();
 
         return redirect()->action([KaratController::class, 'list']);
-    }
-
-    public function harga_silver_update(Request $request)
-    {
-        $hargaSilver    = HargaSilver::create([
-            'tanggal'   => date('Y-m-d'),
-            'harga'     => $request->harga,
-            'user'      => 1,
-        ]);
-
-        return redirect()->action([KaratController::class, 'list_silver']);
     }
 
     public function update_diskon(Request $request, Karat $data)
@@ -197,7 +185,7 @@ class KaratController extends Controller
     public function list_silver(Request $request)
     {
         // $harga = Harga::where('tanggal', date('Y-m-d'))->first();
-        // $harga = Harga::latest()->first();
+        $harga = Harga::latest()->first();
         // echo json_encode($harga);
         // exit();
 
@@ -206,7 +194,6 @@ class KaratController extends Controller
         $module_path = $this->module_path;
         $module_icon = $this->module_icon;
         $module_model = $this->module_model;
-        $hargaSilver   = HargaSilver::latest()->first();
         $dataKarat = Karat::whereNull('parent_id')->get();
         return view(
             'karats.list_silver', // Path to your create view file
@@ -217,7 +204,7 @@ class KaratController extends Controller
                 'module_icon',
                 'module_model',
                 'dataKarat',
-                'hargaSilver',
+                'harga',
             )
         );
     }
@@ -358,21 +345,8 @@ class KaratController extends Controller
         $module_name_singular = Str::singular($module_name);
 
         $module_action = 'List';
-        $hargaSilver  = HargaSilver::latest()->first();
-        if($hargaSilver == null){
-            $hargaSilver  = 0;
-        }else{
-            $hargaSilver = $hargaSilver->harga;
-        }     
-        // echo $hargaSilver;
-        // exit();
-        // $karat = Karat::where('type', 'SILVER')->latest()->get();
-
-        $karat = Karat::where('type', 'SILVER')->where('status', 'A')->latest()->get();
-        $karat->each(function ($item) use ($hargaSilver) {
-            $item->harga_silver = $hargaSilver; // Add the harga attribute to the model
-        });
         
+        $karat = Karat::where('type', 'SILVER')->latest()->get();
         
         return Datatables::of($karat)
                     ->addColumn('action', function ($data) {
@@ -422,7 +396,7 @@ class KaratController extends Controller
                         
                         ->editColumn('rekomendasi', function($data){
                             return '<div class="items-center text-center">
-                                            <h3 class="text-sm font-bold text-gray-800"> ' .number_format(($data->coef*$data->harga_silver)+$data->margin) . '</h3>
+                                            <h3 class="text-sm font-bold text-gray-800"> ' .number_format(($data->coef*$data->harga)+$data->margin) . '</h3>
                                     </div>';
                             })
 

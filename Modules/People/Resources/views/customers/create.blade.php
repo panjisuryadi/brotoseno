@@ -51,6 +51,10 @@
                                     <label for="city">{{ __('City') }}</label>
                                     <input type="text" class="form-control" name="city">
                                 </div>
+                                <div class="form-group">
+                                    <label for="nik">{{ __('NIK') }}</label>
+                                    <input type="text" class="form-control" name="nik">
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -489,6 +489,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::patch('/discounts/update_diskon/{id}', 'KaratController@update_diskon')
         ->name('karat.update_diskon');
 
+    Route::post('/harga_silver_update', 'KaratController@harga_silver_update')
+        ->name('harga_silver.update');
+
     Route::get('/karats', 'KaratController@list')
         ->name('karats.list');
 

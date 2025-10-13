@@ -36,6 +36,7 @@ class CustomersController extends Controller
             'city'           => 'max:255',
             // 'country'        => 'max:255',
             'address'        => 'max:500',
+            'nik'        => 'max:50',
         ]);
 
         Customer::create([
@@ -44,7 +45,8 @@ class CustomersController extends Controller
             'customer_email' => $request->customer_email,
             'city'           => $request->city,
             // 'country'        => $request->country,
-            'address'        => $request->address
+            'address'        => $request->address,
+            'nik'        => $request->nik
         ]);
 
         toast('Customer Created!', 'success');
@@ -77,6 +79,7 @@ class CustomersController extends Controller
             // 'city'           => 'string|max:255',
             // 'country'        => 'string|max:255',
             // 'address'        => 'required|string|max:500',
+            'nik' => 'required|max:50',
         ]);
 
         $customer->update([
@@ -85,7 +88,8 @@ class CustomersController extends Controller
             'customer_email' => $request->customer_email,
             'city'           => $request->city,
             // 'country'        => $request->country,
-            'address'        => $request->address
+            'address'        => $request->address,
+            'nik'        => $request->nik
         ]);
 
         toast('Customer Updated!', 'info');

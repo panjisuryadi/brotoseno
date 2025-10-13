@@ -21,9 +21,19 @@
                             <a href="#" class="px-3 btn btn-danger" data-toggle="modal" data-target="#createModal">
                                 Add Silver <i class="bi bi-plus"></i>
                             </a>
+                            <a href="#" class="px-3 btn btn-success" data-toggle="modal" data-target="#updateModal">
+                                Set Harga <i class="bi bi-plus"></i>
+                            </a>
                         </div>
                         <div id="buttons">
-                            
+                            <div class="text-center ml-5">
+                            <div class="fw-bold h3 text-danger" style="text-decoration: underline;">
+                                IDR {{ number_format($hargaSilver->harga) }}
+                            </div>
+                            <div>
+                                Updated at : {{ $hargaSilver->updated_at }}
+                            </div>
+                        </div>
                         </div>
                     </div>
                     <div class="table-responsive mt-1">
@@ -101,6 +111,7 @@
                                     <input type="text" id="{{ $field_id }}" name="{{ $field_name }}" class="form-control " required>
                                 </div>
 
+                                {{-- 
                                 <div class="form-group">
                                     <?php
                                     $field_name = 'harga';
@@ -113,6 +124,20 @@
                                     <label for="{{ $field_name }}">{{ $field_lable }}<span class="text-danger">*</span></label>
                                     <input type="number" id="{{ $field_id }}" name="{{ $field_name }}" class="form-control " required>
                                 </div>
+                                --}}
+
+                                <div class="form-group">
+                                    <?php
+                                    $field_name = 'coef';
+                                    $field_id = 'coef';
+                                    $field_lable = label_case('coef');
+                                    $field_placeholder = $field_lable;
+                                    $invalid = $errors->has($field_name) ? ' is-invalid' : '';
+                                    $required = 'required';
+                                    ?>
+                                    <label for="{{ $field_name }}">{{ $field_lable }}<span class="text-danger">*</span></label>
+                                    <input type="text" id="{{ $field_id }}" name="{{ $field_name }}" class="form-control " required>
+                                </div>
 
                             </div>
 
@@ -120,6 +145,28 @@
 
                         </div>
                         <button class="btn btn-success" onclick="return confirmAndReload();">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updatemodal" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-lg font-bold" id="updatemodal">Set Harga</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-4">
+                <form action="/harga_silver_update" method="post">
+                    @csrf
+                    <label for="">Harga</label>
+                    <input type="number" class="form-control" name="harga">
+                    <button class="btn btn-sm btn-success">Submit</button>
                 </form>
             </div>
         </div>
@@ -198,8 +245,8 @@
                 //     name: 'margin'
                 // },
                 {
-                    data: 'harga',
-                    name: 'harga'
+                    data: 'rekomendasi',
+                    name: 'rekomendasi'
                 },
                 {
                     data: 'action',

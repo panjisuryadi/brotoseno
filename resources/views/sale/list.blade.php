@@ -1501,7 +1501,10 @@
         const previewArea = $('#preview-area');
         const setHarga    = data.harga;
         const type        = data.karats.type;
+        const group_id    = data.group_id;
+        const product_price    = data.product_price;
         const har         = data.karats.harga;
+        const hargaSilver = data.hargaSilver;
         const coef        = data.karats.coef;
         const margin      = data.karats.persen/100;
         const roundAwal   = Math.ceil(setHarga*coef / 1000) * 1000;
@@ -1516,9 +1519,14 @@
         }
 
         if(type == 'SILVER'){
+            if(group_id == 31){
+                harga   = hargaSilver*berat*coef;
+            }else if(group_id == 32){
+                harga   = product_price;
+            }
             // let result = value.split(",")[0];
-            harga   = har.split(",")[0];
-            harga   = harga.split(".")[0];
+            // harga   = har.split(",")[0];
+            // harga   = harga.split(".")[0];
         }
         const rekomendasi = formatRupiah(harga);
         const price       = (harga);

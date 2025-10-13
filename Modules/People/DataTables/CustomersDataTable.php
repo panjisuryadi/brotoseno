@@ -66,6 +66,9 @@ class CustomersDataTable extends DataTable
             Column::make('customer_phone')
                 ->title (__('Phone'))
                 ->className('text-center align-middle'),
+            Column::make('nik')
+                ->title (__('NIK'))
+                ->className('text-center align-middle'),
 
             Column::computed('action')
                 ->title (__('action'))

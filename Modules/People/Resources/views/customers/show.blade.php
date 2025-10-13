@@ -49,6 +49,10 @@
                                     <th>{{ __('Address') }}</th>
                                     <td>{{ $customer->address }}</td>
                                 </tr>
+                                <tr>
+                                    <th>{{ __('NIK') }}</th>
+                                    <td>{{ $customer->nik }}</td>
+                                </tr>
                             </table>
                         </div>
                     </div>

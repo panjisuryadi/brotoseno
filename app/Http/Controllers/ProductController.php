@@ -581,11 +581,15 @@ class ProductController extends Controller
         }else{
             $baki_id    = 0;
         }
+
+        $product_price  = $request->product_price ?? 0;
+        $buying_price  = $request->buying_price ?? 0;
         $product    = Product::create([
             'category_id'       => $request->new_product_category_id,
             'product_code'       => $request->new_product_code_id,
             'product_name'       => $product_name,
-            'product_price'       => 0,
+            'product_price'       => $product_price,
+            'buying_price'       => $buying_price,
             'product_barcode_symbology'       => 'C128',
             'product_unit'       => 'Gram',
             'karat_id'       => $request->new_product_karat_id,
